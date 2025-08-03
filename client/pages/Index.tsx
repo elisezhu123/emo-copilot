@@ -69,15 +69,18 @@ const EmoCopilotDashboard = () => {
     }
   };
 
-  const togglePlayPause = () => {
-    if (!isPlaying && playlist.length > 0) {
+  const togglePlayPause = async () => {
+    if (!audioState.isPlaying && playlist.length > 0) {
       // When starting to play, get a random track from the playlist
       const randomTrack = musicService.getRandomTrack();
       if (randomTrack) {
+        await audioManager.playTrack(randomTrack);
         setCurrentTrack(randomTrack);
       }
+    } else {
+      // Toggle play/pause
+      await audioManager.togglePlay();
     }
-    setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
