@@ -43,13 +43,13 @@ const StatusBar: React.FC<StatusBarProps> = ({
       if (!apiKey || apiKey === 'your-openweather-api-key') {
         // Fallback to simulated temperature based on time of day
         const hour = new Date().getHours();
-        const simulatedTemp = hour < 6 ? 65 : hour < 12 ? 72 : hour < 18 ? 78 : 70;
-        setTemperature(`${simulatedTemp}°F`);
+        const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
+        setTemperature(`${simulatedTemp}°C`);
         return;
       }
 
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=imperial`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`
       );
 
       if (!response.ok) {
@@ -58,14 +58,14 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
       const data = await response.json();
       const temp = Math.round(data.main.temp);
-      setTemperature(`${temp}°F`);
+      setTemperature(`${temp}°C`);
       
     } catch (error) {
       console.error('Weather API error:', error);
       // Fallback to simulated temperature
       const hour = new Date().getHours();
-      const simulatedTemp = hour < 6 ? 65 : hour < 12 ? 72 : hour < 18 ? 78 : 70;
-      setTemperature(`${simulatedTemp}°F`);
+      const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
+      setTemperature(`${simulatedTemp}°C`);
     }
   };
 
@@ -85,8 +85,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
           console.error('Geolocation error:', error);
           // Set fallback temperature even without location
           const hour = new Date().getHours();
-          const simulatedTemp = hour < 6 ? 65 : hour < 12 ? 72 : hour < 18 ? 78 : 70;
-          setTemperature(`${simulatedTemp}°F`);
+          const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
+          setTemperature(`${simulatedTemp}°C`);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );

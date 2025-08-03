@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
+import { musicService } from '../services/musicService';
 
 const MusicSelection = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+
+  // Load saved genres on component mount
+  useEffect(() => {
+    const savedGenres = musicService.loadSelectedGenres();
+    setSelectedGenres(savedGenres);
+  }, []);
 
   const musicGenres = [
     { name: 'Classical', color: 'bg-emotion-default' },
@@ -21,11 +28,12 @@ const MusicSelection = () => {
   ];
 
   const toggleGenre = (genreName: string) => {
-    setSelectedGenres(prev => 
-      prev.includes(genreName)
-        ? prev.filter(genre => genre !== genreName)
-        : [...prev, genreName]
-    );
+    const newGenres = selectedGenres.includes(genreName)
+      ? selectedGenres.filter(genre => genre !== genreName)
+      : [...selectedGenres, genreName];
+
+    setSelectedGenres(newGenres);
+    musicService.saveSelectedGenres(newGenres);
   };
 
   const isSelected = (genreName: string) => selectedGenres.includes(genreName);
@@ -36,7 +44,7 @@ const MusicSelection = () => {
       <StatusBar
         title="Music Selection"
         showHomeButton={true}
-        showTemperature={true}
+        showTemperature={false}
       />
 
       {/* Header */}

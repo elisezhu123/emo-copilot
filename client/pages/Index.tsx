@@ -1,28 +1,123 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import MusicProgressBar from '../components/MusicProgressBar';
 import StatusBar from '../components/StatusBar';
+import { musicService, Track } from '../services/musicService';
+import { audioManager, AudioState } from '../services/audioManager';
+import { freesoundService } from '../services/freesoundService';
 
 const EmoCopilotDashboard = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [isCoolingOn, setIsCoolingOn] = useState(false);
   const [isLightingOn, setIsLightingOn] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [audioState, setAudioState] = useState<AudioState>({
+    isPlaying: false,
+    isPaused: false,
+    currentTime: 0,
+    duration: 0,
+    volume: 0.7,
+    isMuted: false,
+    isLoading: false,
+    error: null
+  });
 
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
+  // Load music based on selected genres and subscribe to audio manager
+  useEffect(() => {
+    const loadMusic = () => {
+      musicService.loadSelectedGenres();
+      const filteredTracks = musicService.getFilteredTracks();
+      setPlaylist(filteredTracks);
+
+      if (filteredTracks.length > 0 && !currentTrack) {
+        setCurrentTrack(filteredTracks[0]);
+      }
+    };
+
+    loadMusic();
+
+    // Subscribe to audio state changes
+    const unsubscribe = audioManager.subscribe((state: AudioState) => {
+      setAudioState(state);
+
+      // Update current track if it's different
+      const audioTrack = audioManager.getCurrentTrack();
+      if (audioTrack && audioTrack.id !== currentTrack?.id) {
+        setCurrentTrack(audioTrack);
+      }
+    });
+
+    // Refresh playlist when window gains focus (user returns from music selection)
+    const handleFocus = () => {
+      loadMusic();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      unsubscribe();
+    };
+  }, [currentTrack]);
+
+  // Update playlist when returning from music selection
+  const refreshPlaylist = () => {
+    const filteredTracks = musicService.getFilteredTracks();
+    setPlaylist(filteredTracks);
+
+    if (filteredTracks.length > 0) {
+      setCurrentTrack(filteredTracks[0]);
+    }
+  };
+
+  const togglePlayPause = async () => {
+    if (!audioState.isPlaying && playlist.length > 0) {
+      // When starting to play, try to get a track from API first, then fallback
+      try {
+        const randomTrack = await musicService.getRandomTrackFromAPI();
+        if (randomTrack) {
+          await audioManager.playTrack(randomTrack);
+          setCurrentTrack(randomTrack);
+        }
+      } catch (error) {
+        console.error('Error getting track from API, using local tracks:', error);
+        const randomTrack = musicService.getRandomTrack();
+        if (randomTrack) {
+          await audioManager.playTrack(randomTrack);
+          setCurrentTrack(randomTrack);
+        }
+      }
+    } else {
+      // Toggle play/pause
+      await audioManager.togglePlay();
+    }
   };
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
+    audioManager.toggleMute();
+  };
+
+  // Text-to-speech function
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    }
   };
 
   const toggleCooling = () => {
-    setIsCoolingOn(!isCoolingOn);
+    const newState = !isCoolingOn;
+    setIsCoolingOn(newState);
+    speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
   };
 
   const toggleLighting = () => {
-    setIsLightingOn(!isLightingOn);
+    const newState = !isLightingOn;
+    setIsLightingOn(newState);
+    speakText(newState ? "Lighting turned on" : "Lighting turned off");
   };
 
   return (
@@ -134,13 +229,28 @@ const EmoCopilotDashboard = () => {
           }}
         >
           <div className="flex items-center gap-2 mb-2 lg:gap-4 lg:mb-4">
-            <div className="w-12 h-12 bg-emotion-orange rounded-lg lg:w-16 lg:h-16"></div>
-            <div className="flex-1">
-              <h4 className="text-base font-medium text-black lg:text-xl">Relaxing Music</h4>
-              <p className="text-xs text-emotion-default lg:text-sm">Jelly Daisy</p>
+            <div className="w-12 h-12 bg-emotion-orange rounded-lg lg:w-16 lg:h-16 flex items-center justify-center">
+              <svg className="w-6 h-6 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3V20.5C12 21.3284 11.3284 22 10.5 22H9.5C8.67157 22 8 21.3284 8 20.5V11.5C8 10.6716 8.67157 10 9.5 10H10.5C11.3284 10 12 10.6716 12 11.5V20.5ZM12 3V20.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M12 7L18 5V18.5C18 19.3284 17.3284 20 16.5 20H15.5C14.6716 20 14 19.3284 14 18.5V9.5C14 8.67157 14.6716 8 15.5 8H16.5C17.3284 8 18 8.67157 18 9.5V18.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
             </div>
-            <button className="p-1 lg:p-2" onClick={togglePlayPause}>
-              {isPlaying ? (
+            <div className="flex-1">
+              <h4 className="text-base font-medium text-black lg:text-xl">
+                {currentTrack ? currentTrack.title : (musicService.hasSelectedGenres() ? 'Select a track' : 'Choose genres first')}
+              </h4>
+              <p className="text-xs text-emotion-default lg:text-sm">
+                {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` :
+                 (musicService.hasSelectedGenres() ? `${playlist.length} tracks available` : 'Go to Music Selection')}
+              </p>
+            </div>
+            <button
+              className="p-1 lg:p-2 transition-opacity duration-200"
+              onClick={togglePlayPause}
+              disabled={audioState.isLoading}
+              style={{ opacity: audioState.isLoading ? 0.5 : 1 }}
+            >
+              {audioState.isPlaying ? (
                 // Pause icon
                 <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
                   <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
@@ -153,7 +263,7 @@ const EmoCopilotDashboard = () => {
               )}
             </button>
             <button className="p-1 lg:p-2" onClick={toggleMute}>
-              {isMuted ? (
+              {audioState.isMuted ? (
                 // Muted volume icon from Figma design
                 <svg className="w-6 h-6 lg:w-7 lg:h-7" viewBox="0 0 24 25" fill="none">
                   <path d="M15 4.75C15 3.67138 13.7255 3.09915 12.9195 3.81583L8.42794 7.80909C8.29065 7.93116 8.11333 7.99859 7.92961 7.99859H4.25C3.00736 7.99859 2 9.00595 2 10.2486V14.7465C2 15.9891 3.00736 16.9965 4.25 16.9965H7.92956C8.11329 16.9965 8.29063 17.0639 8.42793 17.186L12.9194 21.1797C13.7255 21.8965 15 21.3243 15 20.2456V4.75ZM16.2197 9.71967C16.5126 9.42678 16.9874 9.42678 17.2803 9.71967L19 11.4393L20.7197 9.71967C21.0126 9.42678 21.4874 9.42678 21.7803 9.71967C22.0732 10.0126 22.0732 10.4874 21.7803 10.7803L20.0607 12.5L21.7803 14.2197C22.0732 14.5126 22.0732 14.9874 21.7803 15.2803C21.4874 15.5732 21.0126 15.5732 20.7197 15.2803L19 13.5607L17.2803 15.2803C16.9874 15.5732 16.5126 15.5732 16.2197 15.2803C15.9268 14.9874 15.9268 14.5126 16.2197 14.2197L17.9393 12.5L16.2197 10.7803C15.9268 10.4874 15.9268 10.0126 16.2197 9.71967Z" fill="#FFA680"/>
@@ -169,13 +279,25 @@ const EmoCopilotDashboard = () => {
           
           {/* Interactive Progress Bar */}
           <MusicProgressBar
-            currentTime={100}
-            duration={200}
+            currentTime={audioState.currentTime}
+            duration={audioState.duration || (currentTrack ? currentTrack.duration : 180)}
             onProgressChange={(progress) => {
               console.log('Progress changed:', progress);
-              // Here you can add logic to update the music playback position
+              audioManager.seekToPercent(progress);
             }}
           />
+
+          {/* Audio Source Status */}
+          <div className="mt-2 text-center">
+            <p className="text-xs text-emotion-default opacity-75">
+              {freesoundService.isConfigured() ? '🎵 Using Freesound.org API' : '🎵 Demo tracks - configure API for real audio'}
+            </p>
+            {audioState.error && (
+              <p className="text-xs text-flowkit-red mt-1">
+                Audio Error: {audioState.error}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Control Buttons */}
@@ -192,12 +314,13 @@ const EmoCopilotDashboard = () => {
           
           <Link
             to="/music-selection"
+            onClick={refreshPlaylist}
             className="flex-1 flex items-center justify-center gap-2 bg-emotion-orange text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 hover:scale-105 transition-transform duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
               <path d="M15.5351 2.72561C16.179 2.52439 16.8334 3.00545 16.8334 3.68009V14C16.8334 15.3807 15.7141 16.5 14.3334 16.5C12.9527 16.5 11.8334 15.3807 11.8334 14C11.8334 12.6193 12.9527 11.5 14.3334 11.5C14.8962 11.5 15.4155 11.686 15.8334 11.9998V6.68009L8.83337 8.8676V16C8.83337 17.3807 7.71409 18.5 6.33337 18.5C4.95266 18.5 3.83337 17.3807 3.83337 16C3.83337 14.6193 4.95266 13.5 6.33337 13.5C6.89618 13.5 7.41554 13.686 7.83337 13.9998V5.86759C7.83337 5.43021 8.11762 5.04358 8.5351 4.91311L15.5351 2.72561ZM8.83337 7.8199L15.8334 5.6324V3.68009L8.83337 5.86759V7.8199ZM6.33337 14.5C5.50495 14.5 4.83337 15.1716 4.83337 16C4.83337 16.8284 5.50495 17.5 6.33337 17.5C7.1618 17.5 7.83337 16.8284 7.83337 16C7.83337 15.1716 7.1618 14.5 6.33337 14.5ZM12.8334 14C12.8334 14.8284 13.5049 15.5 14.3334 15.5C15.1618 15.5 15.8334 14.8284 15.8334 14C15.8334 13.1716 15.1618 12.5 14.3334 12.5C13.5049 12.5 12.8334 13.1716 12.8334 14Z" fill="white"/>
             </svg>
-            Play Music
+            Select Music
           </Link>
           
           <button
