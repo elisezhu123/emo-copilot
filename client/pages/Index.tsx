@@ -14,14 +14,29 @@ const EmoCopilotDashboard = () => {
 
   // Load music based on selected genres
   useEffect(() => {
-    musicService.loadSelectedGenres();
-    const filteredTracks = musicService.getFilteredTracks();
-    setPlaylist(filteredTracks);
+    const loadMusic = () => {
+      musicService.loadSelectedGenres();
+      const filteredTracks = musicService.getFilteredTracks();
+      setPlaylist(filteredTracks);
 
-    if (filteredTracks.length > 0 && !currentTrack) {
-      setCurrentTrack(filteredTracks[0]);
-    }
-  }, []);
+      if (filteredTracks.length > 0 && !currentTrack) {
+        setCurrentTrack(filteredTracks[0]);
+      }
+    };
+
+    loadMusic();
+
+    // Refresh playlist when window gains focus (user returns from music selection)
+    const handleFocus = () => {
+      loadMusic();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [currentTrack]);
 
   // Update playlist when returning from music selection
   const refreshPlaylist = () => {
