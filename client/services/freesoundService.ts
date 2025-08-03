@@ -70,8 +70,12 @@ class FreesoundService {
       }
 
       const data = await response.json();
-      
-      return data.results.map((track: FreesoundTrack) => this.convertToTrack(track, genre));
+      console.log(`✅ Freesound API returned ${data.results.length} tracks for query: "${searchQuery}"`);
+
+      const convertedTracks = data.results.map((track: FreesoundTrack) => this.convertToTrack(track, genre));
+      console.log('🎵 Converted tracks:', convertedTracks.map(t => ({ title: t.title, artist: t.artist, url: t.url })));
+
+      return convertedTracks;
       
     } catch (error) {
       console.error('Error fetching from Freesound:', error);
