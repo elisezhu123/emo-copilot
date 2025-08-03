@@ -312,6 +312,32 @@ const EmoCopilotDashboard = () => {
                 Audio Error: {audioState.error}
               </p>
             )}
+            {audioState.isLoading && (
+              <p className="text-xs text-emotion-orange mt-1">
+                ⏳ Loading audio...
+              </p>
+            )}
+            {/* Debug button */}
+            <button
+              onClick={async () => {
+                console.log('🔍 Debug: Current audio state:', audioState);
+                console.log('🔍 Debug: Current track:', currentTrack);
+                console.log('🔍 Debug: Playlist length:', playlist.length);
+
+                // Try direct audio test
+                try {
+                  const testAudio = new Audio('https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav');
+                  await testAudio.play();
+                  console.log('✅ Direct audio test successful');
+                  testAudio.pause();
+                } catch (error) {
+                  console.error('❌ Direct audio test failed:', error);
+                }
+              }}
+              className="text-xs text-emotion-blue underline mt-1"
+            >
+              Debug Audio
+            </button>
           </div>
         </div>
 
