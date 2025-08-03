@@ -579,7 +579,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       <StatusBar
         title="Co-Driver Assistant"
         showHomeButton={true}
-        showTemperature={true}
+        showTemperature={false}
       />
 
       {/* Conversation Container */}
