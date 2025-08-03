@@ -71,11 +71,20 @@ const EmoCopilotDashboard = () => {
 
   const togglePlayPause = async () => {
     if (!audioState.isPlaying && playlist.length > 0) {
-      // When starting to play, get a random track from the playlist
-      const randomTrack = musicService.getRandomTrack();
-      if (randomTrack) {
-        await audioManager.playTrack(randomTrack);
-        setCurrentTrack(randomTrack);
+      // When starting to play, try to get a track from API first, then fallback
+      try {
+        const randomTrack = await musicService.getRandomTrackFromAPI();
+        if (randomTrack) {
+          await audioManager.playTrack(randomTrack);
+          setCurrentTrack(randomTrack);
+        }
+      } catch (error) {
+        console.error('Error getting track from API, using local tracks:', error);
+        const randomTrack = musicService.getRandomTrack();
+        if (randomTrack) {
+          await audioManager.playTrack(randomTrack);
+          setCurrentTrack(randomTrack);
+        }
       }
     } else {
       // Toggle play/pause
