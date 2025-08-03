@@ -234,8 +234,13 @@ const EmoCopilotDashboard = () => {
                  (musicService.hasSelectedGenres() ? `${playlist.length} tracks available` : 'Go to Music Selection')}
               </p>
             </div>
-            <button className="p-1 lg:p-2" onClick={togglePlayPause}>
-              {isPlaying ? (
+            <button
+              className="p-1 lg:p-2 transition-opacity duration-200"
+              onClick={togglePlayPause}
+              disabled={audioState.isLoading}
+              style={{ opacity: audioState.isLoading ? 0.5 : 1 }}
+            >
+              {audioState.isPlaying ? (
                 // Pause icon
                 <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
                   <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
