@@ -254,9 +254,24 @@ class MusicService {
   getRandomTrack(): Track | null {
     const tracks = this.getFilteredTracks();
     if (tracks.length === 0) return null;
-    
+
     const randomIndex = Math.floor(Math.random() * tracks.length);
     return tracks[randomIndex];
+  }
+
+  // Get a random track from API
+  async getRandomTrackFromAPI(): Promise<Track | null> {
+    try {
+      const tracks = await this.getFilteredTracksFromAPI();
+      if (tracks.length === 0) return null;
+
+      const randomIndex = Math.floor(Math.random() * tracks.length);
+      return tracks[randomIndex];
+
+    } catch (error) {
+      console.error('Error getting random track from API:', error);
+      return this.getRandomTrack(); // Fallback
+    }
   }
 
   // Get current playlist based on selected genres
