@@ -34,6 +34,13 @@ const EmoCopilotDashboard = () => {
   };
 
   const togglePlayPause = () => {
+    if (!isPlaying && playlist.length > 0) {
+      // When starting to play, get a random track from the playlist
+      const randomTrack = musicService.getRandomTrack();
+      if (randomTrack) {
+        setCurrentTrack(randomTrack);
+      }
+    }
     setIsPlaying(!isPlaying);
   };
 
