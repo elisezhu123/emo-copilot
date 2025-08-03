@@ -30,7 +30,8 @@ class AudioManager {
 
   private initializeAudio() {
     this.audio = new Audio();
-    this.audio.crossOrigin = 'anonymous';
+    // Remove CORS restriction to allow Freesound URLs
+    // this.audio.crossOrigin = 'anonymous';
     this.audio.preload = 'metadata';
 
     console.log('🎵 Audio element initialized');
