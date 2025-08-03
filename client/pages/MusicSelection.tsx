@@ -36,7 +36,7 @@ const MusicSelection = () => {
       <StatusBar
         title="Music Selection"
         showHomeButton={true}
-        showTemperature={true}
+        showTemperature={false}
       />
 
       {/* Header */}
