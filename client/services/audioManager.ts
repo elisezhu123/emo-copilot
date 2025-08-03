@@ -33,6 +33,8 @@ class AudioManager {
     this.audio.crossOrigin = 'anonymous';
     this.audio.preload = 'metadata';
 
+    console.log('🎵 Audio element initialized');
+
     // Add event listeners
     this.audio.addEventListener('loadstart', () => this.notifyListeners());
     this.audio.addEventListener('loadeddata', () => this.notifyListeners());
