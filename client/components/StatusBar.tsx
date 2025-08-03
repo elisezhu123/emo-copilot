@@ -114,25 +114,16 @@ const StatusBar: React.FC<StatusBarProps> = ({
         <span className="font-medium">{title}</span>
       </div>
 
-      {/* Center - Temperature (for dashboard) */}
-      {showTemperature && title === 'Emo-Copilot Active' && temperature && (
-        <div className="flex items-center gap-1">
-          <span className="font-medium">Temperature: {temperature}</span>
+      {/* Center - Temperature */}
+      {showTemperature && temperature && (
+        <div className="flex items-center justify-center">
+          <span className="font-medium text-emotion-default">Temperature: {temperature}</span>
         </div>
       )}
 
       {/* Right Side - Time, Icons, Home Button */}
       <div className="flex items-center gap-3">
-        {/* Temperature (for other pages) */}
-        {showTemperature && title !== 'Emo-Copilot Active' && temperature && (
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C13.1046 2 14 2.89543 14 4V13.1707C15.1652 13.5825 16 14.6938 16 16C16 17.6569 14.6569 19 13 19C11.3431 19 10 17.6569 10 16C10 14.6938 10.8348 13.5825 12 13.1707V4C12 2.89543 12.8954 2 12 2Z" fill="#FF8B7E"/>
-              <path d="M12 15C12.5523 15 13 15.4477 13 16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16C11 15.4477 11.4477 15 12 15Z" fill="white"/>
-            </svg>
-            <span className="font-medium text-xs">{temperature}</span>
-          </div>
-        )}
+
         
         {/* Real-time Clock */}
         <span className="font-medium">{formatTime(currentTime)}</span>

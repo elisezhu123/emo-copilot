@@ -85,81 +85,321 @@ const mockMusicDatabase: MusicGenre[] = [
   {
     name: 'Hip-Pop',
     tracks: [
-      { id: 'h1', title: 'Urban Vibes', artist: 'Free Beat Collective', duration: 210, genre: 'Hip-Pop' },
-      { id: 'h2', title: 'City Nights', artist: 'Open Source Rap', duration: 180, genre: 'Hip-Pop' },
-      { id: 'h3', title: 'Street Poetry', artist: 'Creative Commons MC', duration: 195, genre: 'Hip-Pop' }
+      {
+        id: 'h1',
+        title: 'Urban Vibes',
+        artist: 'Free Beat Collective',
+        duration: 210,
+        genre: 'Hip-Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'h2',
+        title: 'City Nights',
+        artist: 'Open Source Rap',
+        duration: 180,
+        genre: 'Hip-Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'h3',
+        title: 'Street Poetry',
+        artist: 'Creative Commons MC',
+        duration: 195,
+        genre: 'Hip-Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Chillout',
     tracks: [
-      { id: 'ch1', title: 'Sunset Lounge', artist: 'Chill Collective', duration: 270, genre: 'Chillout' },
-      { id: 'ch2', title: 'Lazy Sunday', artist: 'Relaxed Minds', duration: 250, genre: 'Chillout' },
-      { id: 'ch3', title: 'Coffee Shop Dreams', artist: 'Mellow Beats', duration: 220, genre: 'Chillout' }
+      {
+        id: 'ch1',
+        title: 'Sunset Lounge',
+        artist: 'Chill Collective',
+        duration: 270,
+        genre: 'Chillout',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'ch2',
+        title: 'Lazy Sunday',
+        artist: 'Relaxed Minds',
+        duration: 250,
+        genre: 'Chillout',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'ch3',
+        title: 'Coffee Shop Dreams',
+        artist: 'Mellow Beats',
+        duration: 220,
+        genre: 'Chillout',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Country',
     tracks: [
-      { id: 'co1', title: 'Country Road', artist: 'Folk Guitar', duration: 200, genre: 'Country' },
-      { id: 'co2', title: 'Hometown Blues', artist: 'Americana Collective', duration: 240, genre: 'Country' },
-      { id: 'co3', title: 'Prairie Wind', artist: 'Open Range Band', duration: 210, genre: 'Country' }
+      {
+        id: 'co1',
+        title: 'Country Road',
+        artist: 'Folk Guitar',
+        duration: 200,
+        genre: 'Country',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'co2',
+        title: 'Hometown Blues',
+        artist: 'Americana Collective',
+        duration: 240,
+        genre: 'Country',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'co3',
+        title: 'Prairie Wind',
+        artist: 'Open Range Band',
+        duration: 210,
+        genre: 'Country',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Blues',
     tracks: [
-      { id: 'b1', title: 'Midnight Blues', artist: 'Blues Foundation', duration: 280, genre: 'Blues' },
-      { id: 'b2', title: 'Delta Dreams', artist: 'Mississippi Open', duration: 260, genre: 'Blues' },
-      { id: 'b3', title: 'Electric Sorrow', artist: 'Free Blues Society', duration: 300, genre: 'Blues' }
+      {
+        id: 'b1',
+        title: 'Midnight Blues',
+        artist: 'Blues Foundation',
+        duration: 280,
+        genre: 'Blues',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'b2',
+        title: 'Delta Dreams',
+        artist: 'Mississippi Open',
+        duration: 260,
+        genre: 'Blues',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'b3',
+        title: 'Electric Sorrow',
+        artist: 'Free Blues Society',
+        duration: 300,
+        genre: 'Blues',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Electro Pop',
     tracks: [
-      { id: 'e1', title: 'Neon Nights', artist: 'Synth Wave', duration: 190, genre: 'Electro Pop' },
-      { id: 'e2', title: 'Digital Heart', artist: 'Electronic Dreams', duration: 210, genre: 'Electro Pop' },
-      { id: 'e3', title: 'Cyber Love', artist: 'Future Sounds', duration: 180, genre: 'Electro Pop' }
+      {
+        id: 'e1',
+        title: 'Neon Nights',
+        artist: 'Synth Wave',
+        duration: 190,
+        genre: 'Electro Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'e2',
+        title: 'Digital Heart',
+        artist: 'Electronic Dreams',
+        duration: 210,
+        genre: 'Electro Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'e3',
+        title: 'Cyber Love',
+        artist: 'Future Sounds',
+        duration: 180,
+        genre: 'Electro Pop',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Downbeat',
     tracks: [
-      { id: 'd1', title: 'Slow Motion', artist: 'Trip Hop Collective', duration: 320, genre: 'Downbeat' },
-      { id: 'd2', title: 'Urban Shadows', artist: 'Downtempo Masters', duration: 290, genre: 'Downbeat' },
-      { id: 'd3', title: 'Night Walker', artist: 'Chill Beats', duration: 310, genre: 'Downbeat' }
+      {
+        id: 'd1',
+        title: 'Slow Motion',
+        artist: 'Trip Hop Collective',
+        duration: 320,
+        genre: 'Downbeat',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'd2',
+        title: 'Urban Shadows',
+        artist: 'Downtempo Masters',
+        duration: 290,
+        genre: 'Downbeat',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'd3',
+        title: 'Night Walker',
+        artist: 'Chill Beats',
+        duration: 310,
+        genre: 'Downbeat',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Rock',
     tracks: [
-      { id: 'r1', title: 'Electric Thunder', artist: 'Rock Liberation', duration: 220, genre: 'Rock' },
-      { id: 'r2', title: 'Highway Anthem', artist: 'Open Road Band', duration: 240, genre: 'Rock' },
-      { id: 'r3', title: 'Rebel Spirit', artist: 'Free Rock Alliance', duration: 200, genre: 'Rock' }
+      {
+        id: 'r1',
+        title: 'Electric Thunder',
+        artist: 'Rock Liberation',
+        duration: 220,
+        genre: 'Rock',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'r2',
+        title: 'Highway Anthem',
+        artist: 'Open Road Band',
+        duration: 240,
+        genre: 'Rock',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'r3',
+        title: 'Rebel Spirit',
+        artist: 'Free Rock Alliance',
+        duration: 200,
+        genre: 'Rock',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Folk',
     tracks: [
-      { id: 'f1', title: 'Mountain Song', artist: 'Folk Heritage', duration: 250, genre: 'Folk' },
-      { id: 'f2', title: 'River Tale', artist: 'Acoustic Storytellers', duration: 280, genre: 'Folk' },
-      { id: 'f3', title: 'Village Dance', artist: 'Traditional Sounds', duration: 230, genre: 'Folk' }
+      {
+        id: 'f1',
+        title: 'Mountain Song',
+        artist: 'Folk Heritage',
+        duration: 250,
+        genre: 'Folk',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'f2',
+        title: 'River Tale',
+        artist: 'Acoustic Storytellers',
+        duration: 280,
+        genre: 'Folk',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'f3',
+        title: 'Village Dance',
+        artist: 'Traditional Sounds',
+        duration: 230,
+        genre: 'Folk',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'New Age',
     tracks: [
-      { id: 'n1', title: 'Crystal Meditation', artist: 'Spiritual Sounds', duration: 360, genre: 'New Age' },
-      { id: 'n2', title: 'Healing Light', artist: 'Inner Peace', duration: 400, genre: 'New Age' },
-      { id: 'n3', title: 'Chakra Balance', artist: 'Wellness Music', duration: 320, genre: 'New Age' }
+      {
+        id: 'n1',
+        title: 'Crystal Meditation',
+        artist: 'Spiritual Sounds',
+        duration: 360,
+        genre: 'New Age',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'n2',
+        title: 'Healing Light',
+        artist: 'Inner Peace',
+        duration: 400,
+        genre: 'New Age',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'n3',
+        title: 'Chakra Balance',
+        artist: 'Wellness Music',
+        duration: 320,
+        genre: 'New Age',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
     name: 'Jazz',
     tracks: [
-      { id: 'j1', title: 'Smooth Evening', artist: 'Jazz Collective', duration: 270, genre: 'Jazz' },
-      { id: 'j2', title: 'Blue Note Cafe', artist: 'Bebop Society', duration: 300, genre: 'Jazz' },
-      { id: 'j3', title: 'Midnight Sax', artist: 'Free Jazz Group', duration: 250, genre: 'Jazz' }
+      {
+        id: 'j1',
+        title: 'Smooth Evening',
+        artist: 'Jazz Collective',
+        duration: 270,
+        genre: 'Jazz',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'j2',
+        title: 'Blue Note Cafe',
+        artist: 'Bebop Society',
+        duration: 300,
+        genre: 'Jazz',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'j3',
+        title: 'Midnight Sax',
+        artist: 'Free Jazz Group',
+        duration: 250,
+        genre: 'Jazz',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   }
 ];
@@ -201,8 +441,10 @@ class MusicService {
   // Get tracks filtered by selected genres
   getFilteredTracks(): Track[] {
     if (this.selectedGenres.length === 0) {
-      // If no genres selected, return a mix from all genres
-      return this.getAllTracks().slice(0, 10);
+      // If no genres selected, set some default genres for testing
+      console.log('⚠️ No genres selected, setting default genres for testing');
+      this.selectedGenres = ['Ambient', 'Classical'];
+      this.saveSelectedGenres(this.selectedGenres);
     }
 
     const filteredTracks: Track[] = [];
@@ -214,6 +456,7 @@ class MusicService {
       }
     }
 
+    console.log(`🎵 Filtered tracks for genres [${this.selectedGenres.join(', ')}]:`, filteredTracks.length, 'tracks');
     return filteredTracks;
   }
 
@@ -262,14 +505,21 @@ class MusicService {
   // Get a random track from API
   async getRandomTrackFromAPI(): Promise<Track | null> {
     try {
+      console.log('🎵 Getting tracks from API for selected genres:', this.selectedGenres);
       const tracks = await this.getFilteredTracksFromAPI();
-      if (tracks.length === 0) return null;
+
+      if (tracks.length === 0) {
+        console.log('⚠️ No tracks returned from API, using fallback');
+        return this.getRandomTrack();
+      }
 
       const randomIndex = Math.floor(Math.random() * tracks.length);
-      return tracks[randomIndex];
+      const selectedTrack = tracks[randomIndex];
+      console.log('✅ Selected random track from API:', selectedTrack.title, 'by', selectedTrack.artist);
+      return selectedTrack;
 
     } catch (error) {
-      console.error('Error getting random track from API:', error);
+      console.error('❌ Error getting random track from API:', error);
       return this.getRandomTrack(); // Fallback
     }
   }
