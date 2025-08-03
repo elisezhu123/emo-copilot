@@ -51,9 +51,33 @@ const mockMusicDatabase: MusicGenre[] = [
   {
     name: 'Ambient',
     tracks: [
-      { id: 'a1', title: 'Ocean Waves', artist: 'Nature Sounds Collective', duration: 300, genre: 'Ambient' },
-      { id: 'a2', title: 'Forest Dawn', artist: 'Peaceful Minds', duration: 420, genre: 'Ambient' },
-      { id: 'a3', title: 'Cosmic Drift', artist: 'Space Ambient', duration: 360, genre: 'Ambient' }
+      {
+        id: 'a1',
+        title: 'Ocean Waves',
+        artist: 'Nature Sounds Collective',
+        duration: 300,
+        genre: 'Ambient',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'a2',
+        title: 'Forest Dawn',
+        artist: 'Peaceful Minds',
+        duration: 420,
+        genre: 'Ambient',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'a3',
+        title: 'Cosmic Drift',
+        artist: 'Space Ambient',
+        duration: 360,
+        genre: 'Ambient',
+        url: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
