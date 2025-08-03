@@ -4,6 +4,7 @@ import MusicProgressBar from '../components/MusicProgressBar';
 import StatusBar from '../components/StatusBar';
 import { musicService, Track } from '../services/musicService';
 import { audioManager, AudioState } from '../services/audioManager';
+import { freesoundService } from '../services/freesoundService';
 
 const EmoCopilotDashboard = () => {
   const [isCoolingOn, setIsCoolingOn] = useState(false);
