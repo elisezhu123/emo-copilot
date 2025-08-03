@@ -49,14 +49,24 @@ class FreesoundService {
       url.searchParams.append('page_size', '20');
       url.searchParams.append('filter', 'duration:[10.0 TO 300.0]'); // 10 seconds to 5 minutes
 
-      const response = await fetch(url.toString());
-      
+      console.log('🎵 Fetching from Freesound API:', url.toString());
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+
+      console.log('🎵 Freesound API Response Status:', response.status);
+
       if (!response.ok) {
         if (response.status === 401) {
-          console.warn('Freesound API key not configured, using fallback tracks');
+          console.warn('⚠️ Freesound API authentication failed, using fallback tracks');
           return this.getFallbackTracks(genre || 'music');
         }
-        throw new Error(`Freesound API error: ${response.status}`);
+        console.error(`❌ Freesound API error: ${response.status} ${response.statusText}`);
+        return this.getFallbackTracks(genre || 'music');
       }
 
       const data = await response.json();
