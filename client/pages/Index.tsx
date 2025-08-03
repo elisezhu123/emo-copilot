@@ -71,25 +71,40 @@ const EmoCopilotDashboard = () => {
   };
 
   const togglePlayPause = async () => {
-    if (!audioState.isPlaying && playlist.length > 0) {
-      // When starting to play, try to get a track from API first, then fallback
+    console.log('🎵 Play/Pause clicked, current state:', {
+      isPlaying: audioState.isPlaying,
+      currentTrack: currentTrack?.title,
+      playlistLength: playlist.length
+    });
+
+    if (!audioState.isPlaying && !currentTrack && playlist.length > 0) {
+      // Starting fresh - get a new track
       try {
+        console.log('🔄 Getting new track to play...');
         const randomTrack = await musicService.getRandomTrackFromAPI();
         if (randomTrack) {
+          console.log('✅ Got track from API:', randomTrack.title);
           await audioManager.playTrack(randomTrack);
           setCurrentTrack(randomTrack);
         }
       } catch (error) {
-        console.error('Error getting track from API, using local tracks:', error);
+        console.error('❌ Error getting track from API, using local tracks:', error);
         const randomTrack = musicService.getRandomTrack();
         if (randomTrack) {
+          console.log('✅ Using local track:', randomTrack.title);
           await audioManager.playTrack(randomTrack);
           setCurrentTrack(randomTrack);
+        } else {
+          console.error('❌ No tracks available in playlist');
         }
       }
-    } else {
-      // Toggle play/pause
+    } else if (currentTrack) {
+      // We have a current track, just toggle play/pause
+      console.log('🔄 Toggling play/pause for current track');
       await audioManager.togglePlay();
+    } else if (playlist.length === 0) {
+      // No tracks available
+      console.log('⚠️ No tracks available - user needs to select music genres first');
     }
   };
 
