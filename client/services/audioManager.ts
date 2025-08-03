@@ -164,17 +164,20 @@ class AudioManager {
     if (!this.audio) return;
 
     try {
-      const fallbackUrl = this.getFallbackAudioUrl();
-      console.log('🔄 Trying fallback audio URL:', fallbackUrl);
+      // Use a very simple, known working audio URL for testing
+      const testUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEUCjyRzfPBeCkCKYPH8diNOwhZsEd+ynZtNcbvFZdXN3Qnpgj7TGqKjQf3lEkxhBrGMl4SQCX+SqO0MKtMcUKnCbpLnoqzpQj8KXEOm9Z2Qz0c4lM3yq5WMKcJJ1hxf6TKTXpgpzLKcYzm1t7dq2JEg0g9UcN6PnuQqJD5LDXiSAGZ2/rJaKA3F8ZrVqRp4QhkSsJgHlKJggzLFZnY5XtKDzL8k0VNyKV2WRrDLVq5IWNVNCo5bQhvGGHyZVEAJJYjqDi7hWnNc3F9IIcHh2d7XqZcjcY2AQAPAAAAgJT2';
 
-      this.audio.src = fallbackUrl;
-      await this.waitForLoad();
+      console.log('🔄 Trying simple test audio...');
+
+      this.audio.src = testUrl;
+
+      // Don't wait for load for data URL
       await this.audio.play();
 
-      console.log('✅ Fallback audio playing for:', track.title);
+      console.log('✅ Test audio playing for:', track.title);
 
     } catch (fallbackError) {
-      console.error('❌ Fallback audio also failed:', fallbackError);
+      console.error('❌ Even test audio failed:', fallbackError);
       this.notifyListeners();
     }
   }
