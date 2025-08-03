@@ -21,7 +21,7 @@ const EmoCopilotDashboard = () => {
     error: null
   });
 
-  // Load music based on selected genres
+  // Load music based on selected genres and subscribe to audio manager
   useEffect(() => {
     const loadMusic = () => {
       musicService.loadSelectedGenres();
@@ -35,6 +35,17 @@ const EmoCopilotDashboard = () => {
 
     loadMusic();
 
+    // Subscribe to audio state changes
+    const unsubscribe = audioManager.subscribe((state: AudioState) => {
+      setAudioState(state);
+
+      // Update current track if it's different
+      const audioTrack = audioManager.getCurrentTrack();
+      if (audioTrack && audioTrack.id !== currentTrack?.id) {
+        setCurrentTrack(audioTrack);
+      }
+    });
+
     // Refresh playlist when window gains focus (user returns from music selection)
     const handleFocus = () => {
       loadMusic();
@@ -44,6 +55,7 @@ const EmoCopilotDashboard = () => {
 
     return () => {
       window.removeEventListener('focus', handleFocus);
+      unsubscribe();
     };
   }, [currentTrack]);
 
