@@ -114,10 +114,10 @@ const StatusBar: React.FC<StatusBarProps> = ({
         <span className="font-medium">{title}</span>
       </div>
 
-      {/* Center - Temperature (for dashboard) */}
-      {showTemperature && title === 'Emo-Copilot Active' && temperature && (
-        <div className="flex items-center gap-1">
-          <span className="font-medium">Temperature: {temperature}</span>
+      {/* Center - Temperature */}
+      {showTemperature && temperature && (
+        <div className="flex items-center justify-center">
+          <span className="font-medium text-xs text-emotion-default">Temperature: {temperature}</span>
         </div>
       )}
 
