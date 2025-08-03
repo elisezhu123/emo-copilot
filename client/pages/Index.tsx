@@ -286,6 +286,18 @@ const EmoCopilotDashboard = () => {
               audioManager.seekToPercent(progress);
             }}
           />
+
+          {/* Audio Source Status */}
+          <div className="mt-2 text-center">
+            <p className="text-xs text-emotion-default opacity-75">
+              {freesoundService.isConfigured() ? '🎵 Using Freesound.org API' : '🎵 Demo tracks - configure API for real audio'}
+            </p>
+            {audioState.error && (
+              <p className="text-xs text-flowkit-red mt-1">
+                Audio Error: {audioState.error}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Control Buttons */}
