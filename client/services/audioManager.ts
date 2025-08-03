@@ -174,19 +174,32 @@ class AudioManager {
         return;
       }
 
-      const onLoad = () => {
+      // Set a timeout to avoid hanging indefinitely
+      const timeout = setTimeout(() => {
         this.audio?.removeEventListener('canplay', onLoad);
+        this.audio?.removeEventListener('canplaythrough', onLoad);
+        this.audio?.removeEventListener('error', onError);
+        reject(new Error('Audio loading timeout'));
+      }, 10000); // 10 second timeout
+
+      const onLoad = () => {
+        clearTimeout(timeout);
+        this.audio?.removeEventListener('canplay', onLoad);
+        this.audio?.removeEventListener('canplaythrough', onLoad);
         this.audio?.removeEventListener('error', onError);
         resolve();
       };
 
       const onError = (e: Event) => {
+        clearTimeout(timeout);
         this.audio?.removeEventListener('canplay', onLoad);
+        this.audio?.removeEventListener('canplaythrough', onLoad);
         this.audio?.removeEventListener('error', onError);
         reject(new Error('Failed to load audio'));
       };
 
       this.audio.addEventListener('canplay', onLoad);
+      this.audio.addEventListener('canplaythrough', onLoad);
       this.audio.addEventListener('error', onError);
     });
   }
