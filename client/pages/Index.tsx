@@ -31,7 +31,7 @@ const EmoCopilotDashboard = () => {
   const toggleCooling = () => {
     const newState = !isCoolingOn;
     setIsCoolingOn(newState);
-    speakText(newState ? "Cooling AC turned on" : "Cooling AC turned off");
+    speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
   };
 
   const toggleLighting = () => {
