@@ -99,7 +99,7 @@ class AudioManager {
       };
     }
 
-    return {
+    const state = {
       isPlaying: !this.audio.paused && !this.audio.ended,
       isPaused: this.audio.paused,
       currentTime: this.audio.currentTime,
@@ -109,6 +109,13 @@ class AudioManager {
       isLoading: this.audio.readyState < 3,
       error: this.audio.error ? this.audio.error.message : null
     };
+
+    // Log state changes for debugging
+    if (state.error) {
+      console.error('🔴 Audio State Error:', state.error);
+    }
+
+    return state;
   }
 
   // Load and play a track
