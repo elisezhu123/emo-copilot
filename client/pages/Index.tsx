@@ -3,14 +3,23 @@ import { Link } from 'react-router-dom';
 import MusicProgressBar from '../components/MusicProgressBar';
 import StatusBar from '../components/StatusBar';
 import { musicService, Track } from '../services/musicService';
+import { audioManager, AudioState } from '../services/audioManager';
 
 const EmoCopilotDashboard = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [isCoolingOn, setIsCoolingOn] = useState(false);
   const [isLightingOn, setIsLightingOn] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [audioState, setAudioState] = useState<AudioState>({
+    isPlaying: false,
+    isPaused: false,
+    currentTime: 0,
+    duration: 0,
+    volume: 0.7,
+    isMuted: false,
+    isLoading: false,
+    error: null
+  });
 
   // Load music based on selected genres
   useEffect(() => {
