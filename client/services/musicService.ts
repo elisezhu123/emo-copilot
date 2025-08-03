@@ -206,7 +206,7 @@ class MusicService {
     }
 
     const filteredTracks: Track[] = [];
-    
+
     for (const genreName of this.selectedGenres) {
       const genre = mockMusicDatabase.find(g => g.name === genreName);
       if (genre) {
@@ -215,6 +215,28 @@ class MusicService {
     }
 
     return filteredTracks;
+  }
+
+  // Get real tracks from Freesound API by genres
+  async getFilteredTracksFromAPI(): Promise<Track[]> {
+    if (this.selectedGenres.length === 0) {
+      return this.getFilteredTracks(); // Fallback to mock data
+    }
+
+    try {
+      const allTracks: Track[] = [];
+
+      for (const genre of this.selectedGenres) {
+        const tracks = await freesoundService.getTracksByGenre(genre);
+        allTracks.push(...tracks.slice(0, 3)); // Limit to 3 tracks per genre
+      }
+
+      return allTracks.length > 0 ? allTracks : this.getFilteredTracks();
+
+    } catch (error) {
+      console.error('Error fetching tracks from API:', error);
+      return this.getFilteredTracks(); // Fallback to mock data
+    }
   }
 
   // Get all tracks from all genres
