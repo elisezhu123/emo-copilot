@@ -28,11 +28,12 @@ const MusicSelection = () => {
   ];
 
   const toggleGenre = (genreName: string) => {
-    setSelectedGenres(prev => 
-      prev.includes(genreName)
-        ? prev.filter(genre => genre !== genreName)
-        : [...prev, genreName]
-    );
+    const newGenres = selectedGenres.includes(genreName)
+      ? selectedGenres.filter(genre => genre !== genreName)
+      : [...selectedGenres, genreName];
+
+    setSelectedGenres(newGenres);
+    musicService.saveSelectedGenres(newGenres);
   };
 
   const isSelected = (genreName: string) => selectedGenres.includes(genreName);
