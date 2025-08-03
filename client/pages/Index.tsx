@@ -84,7 +84,7 @@ const EmoCopilotDashboard = () => {
   };
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
+    audioManager.toggleMute();
   };
 
   // Text-to-speech function
