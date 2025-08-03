@@ -180,10 +180,20 @@ const EmoCopilotDashboard = () => {
           }}
         >
           <div className="flex items-center gap-2 mb-2 lg:gap-4 lg:mb-4">
-            <div className="w-12 h-12 bg-emotion-orange rounded-lg lg:w-16 lg:h-16"></div>
+            <div className="w-12 h-12 bg-emotion-orange rounded-lg lg:w-16 lg:h-16 flex items-center justify-center">
+              <svg className="w-6 h-6 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3V20.5C12 21.3284 11.3284 22 10.5 22H9.5C8.67157 22 8 21.3284 8 20.5V11.5C8 10.6716 8.67157 10 9.5 10H10.5C11.3284 10 12 10.6716 12 11.5V20.5ZM12 3V20.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M12 7L18 5V18.5C18 19.3284 17.3284 20 16.5 20H15.5C14.6716 20 14 19.3284 14 18.5V9.5C14 8.67157 14.6716 8 15.5 8H16.5C17.3284 8 18 8.67157 18 9.5V18.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
             <div className="flex-1">
-              <h4 className="text-base font-medium text-black lg:text-xl">Relaxing Music</h4>
-              <p className="text-xs text-emotion-default lg:text-sm">Jelly Daisy</p>
+              <h4 className="text-base font-medium text-black lg:text-xl">
+                {currentTrack ? currentTrack.title : (musicService.hasSelectedGenres() ? 'Select a track' : 'Choose genres first')}
+              </h4>
+              <p className="text-xs text-emotion-default lg:text-sm">
+                {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` :
+                 (musicService.hasSelectedGenres() ? `${playlist.length} tracks available` : 'Go to Music Selection')}
+              </p>
             </div>
             <button className="p-1 lg:p-2" onClick={togglePlayPause}>
               {isPlaying ? (
