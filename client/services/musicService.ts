@@ -502,14 +502,21 @@ class MusicService {
   // Get a random track from API
   async getRandomTrackFromAPI(): Promise<Track | null> {
     try {
+      console.log('🎵 Getting tracks from API for selected genres:', this.selectedGenres);
       const tracks = await this.getFilteredTracksFromAPI();
-      if (tracks.length === 0) return null;
+
+      if (tracks.length === 0) {
+        console.log('⚠️ No tracks returned from API, using fallback');
+        return this.getRandomTrack();
+      }
 
       const randomIndex = Math.floor(Math.random() * tracks.length);
-      return tracks[randomIndex];
+      const selectedTrack = tracks[randomIndex];
+      console.log('✅ Selected random track from API:', selectedTrack.title, 'by', selectedTrack.artist);
+      return selectedTrack;
 
     } catch (error) {
-      console.error('Error getting random track from API:', error);
+      console.error('❌ Error getting random track from API:', error);
       return this.getRandomTrack(); // Fallback
     }
   }
