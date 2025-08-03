@@ -17,12 +17,27 @@ const EmoCopilotDashboard = () => {
     setIsMuted(!isMuted);
   };
 
+  // Text-to-speech function
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   const toggleCooling = () => {
-    setIsCoolingOn(!isCoolingOn);
+    const newState = !isCoolingOn;
+    setIsCoolingOn(newState);
+    speakText(newState ? "Cooling AC turned on" : "Cooling AC turned off");
   };
 
   const toggleLighting = () => {
-    setIsLightingOn(!isLightingOn);
+    const newState = !isLightingOn;
+    setIsLightingOn(newState);
+    speakText(newState ? "Lighting turned on" : "Lighting turned off");
   };
 
   return (
