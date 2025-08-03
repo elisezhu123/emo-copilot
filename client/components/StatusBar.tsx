@@ -117,7 +117,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
       {/* Center - Temperature */}
       {showTemperature && temperature && (
         <div className="flex items-center justify-center">
-          <span className="font-medium text-xs text-emotion-default">Temperature: {temperature}</span>
+          <span className="font-medium text-emotion-default">Temperature: {temperature}</span>
         </div>
       )}
 
