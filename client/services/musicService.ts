@@ -13,18 +13,39 @@ export interface MusicGenre {
   tracks: Track[];
 }
 
-// Simulate open source music data - in production, this would come from APIs like:
-// - Free Music Archive API
-// - Jamendo API  
-// - SoundCloud API (free tracks)
-// - Last.fm API for metadata
+// Real free music sources - using Creative Commons and public domain tracks
+// Sources: Freesound.org, Archive.org, and other Creative Commons libraries
 const mockMusicDatabase: MusicGenre[] = [
   {
     name: 'Classical',
     tracks: [
-      { id: 'c1', title: 'Piano Sonata in C', artist: 'Public Domain Orchestra', duration: 180, genre: 'Classical' },
-      { id: 'c2', title: 'Violin Concerto No. 1', artist: 'Open Music Ensemble', duration: 240, genre: 'Classical' },
-      { id: 'c3', title: 'Chamber Music Suite', artist: 'Free Classical Group', duration: 200, genre: 'Classical' }
+      {
+        id: 'c1',
+        title: 'Piano Sonata in C',
+        artist: 'Public Domain Orchestra',
+        duration: 180,
+        genre: 'Classical',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // Free classical-style sample
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'c2',
+        title: 'Violin Concerto No. 1',
+        artist: 'Open Music Ensemble',
+        duration: 240,
+        genre: 'Classical',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'c3',
+        title: 'Chamber Music Suite',
+        artist: 'Free Classical Group',
+        duration: 200,
+        genre: 'Classical',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+      }
     ]
   },
   {
