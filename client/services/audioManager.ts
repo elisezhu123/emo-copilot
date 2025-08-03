@@ -225,11 +225,37 @@ class AudioManager {
   // Play/resume audio
   async play(): Promise<void> {
     if (!this.audio) return;
-    
+
     try {
+      console.log('🎵 Attempting to play audio...');
+      console.log('🎵 Audio state before play:', {
+        src: this.audio.src,
+        readyState: this.audio.readyState,
+        paused: this.audio.paused,
+        duration: this.audio.duration
+      });
+
       await this.audio.play();
+      console.log('✅ Audio playing successfully');
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.error('❌ Error playing audio:', error);
+
+      // Handle common play() rejection reasons
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            console.error('❌ Audio blocked - user interaction required');
+            break;
+          case 'NotSupportedError':
+            console.error('❌ Audio format not supported');
+            break;
+          case 'AbortError':
+            console.error('❌ Audio loading aborted');
+            break;
+          default:
+            console.error('❌ Unknown audio error:', error.name, error.message);
+        }
+      }
     }
   }
 
