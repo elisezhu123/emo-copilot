@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
+import { musicService } from '../services/musicService';
 
 const MusicSelection = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+
+  // Load saved genres on component mount
+  useEffect(() => {
+    const savedGenres = musicService.loadSelectedGenres();
+    setSelectedGenres(savedGenres);
+  }, []);
 
   const musicGenres = [
     { name: 'Classical', color: 'bg-emotion-default' },
