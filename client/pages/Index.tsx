@@ -1,13 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import MusicProgressBar from '../components/MusicProgressBar';
 import StatusBar from '../components/StatusBar';
+import { musicService, Track } from '../services/musicService';
 
 const EmoCopilotDashboard = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isCoolingOn, setIsCoolingOn] = useState(false);
   const [isLightingOn, setIsLightingOn] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [playlist, setPlaylist] = useState<Track[]>([]);
+
+  // Load music based on selected genres
+  useEffect(() => {
+    musicService.loadSelectedGenres();
+    const filteredTracks = musicService.getFilteredTracks();
+    setPlaylist(filteredTracks);
+
+    if (filteredTracks.length > 0 && !currentTrack) {
+      setCurrentTrack(filteredTracks[0]);
+    }
+  }, []);
+
+  // Update playlist when returning from music selection
+  const refreshPlaylist = () => {
+    const filteredTracks = musicService.getFilteredTracks();
+    setPlaylist(filteredTracks);
+
+    if (filteredTracks.length > 0) {
+      setCurrentTrack(filteredTracks[0]);
+    }
+  };
 
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
