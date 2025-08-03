@@ -225,8 +225,8 @@ const EmoCopilotDashboard = () => {
           
           {/* Interactive Progress Bar */}
           <MusicProgressBar
-            currentTime={100}
-            duration={200}
+            currentTime={isPlaying ? 45 : 0}
+            duration={currentTrack ? currentTrack.duration : 180}
             onProgressChange={(progress) => {
               console.log('Progress changed:', progress);
               // Here you can add logic to update the music playback position
