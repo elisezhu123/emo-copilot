@@ -190,23 +190,24 @@ class AudioManager {
         return;
       }
 
-      if (this.audio.readyState >= 3) {
+      if (this.audio.readyState >= 2) { // Changed from 3 to 2 for faster loading
         resolve();
         return;
       }
 
-      // Set a timeout to avoid hanging indefinitely
+      // Set a shorter timeout to avoid hanging
       const timeout = setTimeout(() => {
         this.audio?.removeEventListener('canplay', onLoad);
-        this.audio?.removeEventListener('canplaythrough', onLoad);
+        this.audio?.removeEventListener('loadeddata', onLoad);
         this.audio?.removeEventListener('error', onError);
-        reject(new Error('Audio loading timeout'));
-      }, 10000); // 10 second timeout
+        console.log('⚠️ Audio loading timeout, proceeding anyway');
+        resolve(); // Resolve instead of reject to avoid blocking
+      }, 3000); // Reduced to 3 seconds
 
       const onLoad = () => {
         clearTimeout(timeout);
         this.audio?.removeEventListener('canplay', onLoad);
-        this.audio?.removeEventListener('canplaythrough', onLoad);
+        this.audio?.removeEventListener('loadeddata', onLoad);
         this.audio?.removeEventListener('error', onError);
         resolve();
       };
@@ -214,13 +215,13 @@ class AudioManager {
       const onError = (e: Event) => {
         clearTimeout(timeout);
         this.audio?.removeEventListener('canplay', onLoad);
-        this.audio?.removeEventListener('canplaythrough', onLoad);
+        this.audio?.removeEventListener('loadeddata', onLoad);
         this.audio?.removeEventListener('error', onError);
         reject(new Error('Failed to load audio'));
       };
 
       this.audio.addEventListener('canplay', onLoad);
-      this.audio.addEventListener('canplaythrough', onLoad);
+      this.audio.addEventListener('loadeddata', onLoad);
       this.audio.addEventListener('error', onError);
     });
   }
