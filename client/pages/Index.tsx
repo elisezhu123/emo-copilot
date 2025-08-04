@@ -377,16 +377,22 @@ const EmoCopilotDashboard = () => {
                 )}
               </button>
 
-              <button className="p-1 lg:p-2 transition-all duration-200 hover:scale-105">
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={playNextTrack}
+              >
                 {/* Next button from Figma design */}
                 <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.99976 4.75211C2.99976 3.75186 4.11618 3.15676 4.94659 3.71436L13.4458 9.42144C14.1803 9.91464 14.1841 10.9938 13.453 11.4921L4.95375 17.285C4.12398 17.8505 2.99976 17.2562 2.99976 16.2521V4.75211ZM17 4C17 3.72386 16.7761 3.5 16.5 3.5C16.2238 3.5 16 3.72386 16 4V17C16 17.2761 16.2238 17.5 16.5 17.5C16.7761 17.5 17 17.2761 17 17V4Z" fill="#FFA680"/>
                 </svg>
               </button>
 
-              <button className="p-1 lg:p-2 transition-all duration-200 hover:scale-105">
-                {/* Heart button from Figma design */}
-                {audioState.isPlaying ? (
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={toggleFavorite}
+              >
+                {/* Heart button from Figma design - shows filled when favorited */}
+                {isFavorited ? (
                   <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.38843 4.78963C7.69278 3.07693 4.94954 3.0686 3.26122 4.7739C1.5729 6.4792 1.58114 9.25004 3.27679 10.9627L9.55368 17.3028C9.81404 17.5657 10.2362 17.5657 10.4965 17.3028L16.7408 10.9994C18.4252 9.28856 18.4199 6.52549 16.7239 4.81249C15.0252 3.09671 12.2807 3.08838 10.5894 4.79673L9.99299 5.40026L9.38843 4.78963Z" fill="#FF8B7E"/>
                   </svg>
