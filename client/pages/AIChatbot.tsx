@@ -558,9 +558,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           if (transcript.split(' ').length > 1) {
             console.log('✅ Processing transcript:', transcript);
 
-            // Temporarily stop listening while processing
+            // Temporarily stop listening while processing, but keep user intent
             recognitionRef.current?.stop();
-            setIsListening(false);
+            setIsListening(false); // Just for UI state, don't change user intent
             setPendingTranscript(transcript);
 
             // Add user message immediately
