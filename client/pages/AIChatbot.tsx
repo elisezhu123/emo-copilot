@@ -11,7 +11,7 @@ interface Message {
 }
 
 const AIChatbot = () => {
-  const [isListening, setIsListening] = useState(true); // Always listening by default
+  const [isListening, setIsListening] = useState(false); // Start in default state, not listening
   const [pendingTranscript, setPendingTranscript] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
