@@ -616,14 +616,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     }
 
     if (isListening) {
-      console.log('Pausing continuous listening...');
-      recognitionRef.current.stop();
+      console.log('🔇 Stopping speech recognition...');
+      try {
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.log('Error stopping recognition:', error);
+      }
       setIsListening(false);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     } else {
-      console.log('Resuming continuous listening...');
+      console.log('🎤 Starting speech recognition...');
       startContinuousListening();
     }
   };
