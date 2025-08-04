@@ -620,8 +620,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       return;
     }
 
-    if (isListening) {
-      console.log('🔇 Stopping speech recognition...');
+    if (userWantsListening) {
+      console.log('🔇 User stopping speech recognition...');
+      setUserWantsListening(false); // User no longer wants listening
       try {
         recognitionRef.current.stop();
       } catch (error) {
@@ -632,7 +633,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         clearTimeout(timeoutRef.current);
       }
     } else {
-      console.log('🎤 Starting speech recognition...');
+      console.log('🎤 User starting speech recognition...');
+      setUserWantsListening(true); // User wants continuous listening
       startContinuousListening();
     }
   };
