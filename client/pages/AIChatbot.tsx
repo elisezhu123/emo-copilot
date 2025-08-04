@@ -19,22 +19,12 @@ const AIChatbot = () => {
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>(null);
-  // Load conversation history from localStorage or use default messages
+  // Clear any saved conversation and use clean Figma design
   const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('ai-chatbot-history');
-    if (savedMessages) {
-      try {
-        const parsed = JSON.parse(savedMessages);
-        // Convert timestamp strings back to Date objects
-        return parsed.map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
-      } catch (error) {
-        console.error('Failed to parse saved conversation history:', error);
-      }
-    }
-    // Default messages if no saved history - matching Figma design
+    // Clear any existing conversation history for fresh start
+    localStorage.removeItem('ai-chatbot-history');
+
+    // Return clean default conversation matching Figma design exactly
     return [
       {
         id: '1',
