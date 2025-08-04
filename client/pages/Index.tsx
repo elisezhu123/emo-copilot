@@ -223,12 +223,28 @@ const EmoCopilotDashboard = () => {
     const newState = !isCoolingOn;
     setIsCoolingOn(newState);
     speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
+
+    // Show emoji for 3 seconds when turned on
+    if (newState) {
+      setShowCoolingEmoji(true);
+      setTimeout(() => {
+        setShowCoolingEmoji(false);
+      }, 3000);
+    }
   };
 
   const toggleLighting = () => {
     const newState = !isLightingOn;
     setIsLightingOn(newState);
     speakText(newState ? "Lighting turned on" : "Lighting turned off");
+
+    // Show emoji for 3 seconds when turned on
+    if (newState) {
+      setShowLightingEmoji(true);
+      setTimeout(() => {
+        setShowLightingEmoji(false);
+      }, 3000);
+    }
   };
 
   return (
