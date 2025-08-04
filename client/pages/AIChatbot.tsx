@@ -34,12 +34,18 @@ const AIChatbot = () => {
         console.error('Failed to parse saved conversation history:', error);
       }
     }
-    // Default messages if no saved history - only bot welcome message
+    // Default messages if no saved history - matching Figma design
     return [
       {
         id: '1',
-        text: "Hi there! I'm Melo, your caring co-driver companion. I'm here to support you on this journey - whether you need directions, want to chat, or just need some encouragement. How are you feeling today?",
+        text: "Hello, I'm Melo,your co-driver assistant. How can I help make your drive better ?",
         type: 'bot',
+        timestamp: new Date()
+      },
+      {
+        id: '2',
+        text: "What's the traffic like ahead?",
+        type: 'user',
         timestamp: new Date()
       }
     ];
