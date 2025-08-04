@@ -58,6 +58,16 @@ const AIChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Save conversation history to localStorage whenever messages change
+  useEffect(() => {
+    try {
+      localStorage.setItem('ai-chatbot-history', JSON.stringify(messages));
+      console.log('💾 Conversation history saved to localStorage');
+    } catch (error) {
+      console.error('Failed to save conversation history:', error);
+    }
+  }, [messages]);
+
   // Real-time clock update
   useEffect(() => {
     const timer = setInterval(() => {
