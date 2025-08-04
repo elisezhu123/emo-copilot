@@ -79,22 +79,7 @@ const MusicSelection = () => {
         </div>
       </div>
 
-      {/* Music Player */}
-      {selectedGenres.length > 0 && (
-        <div className="mb-6 lg:mb-8 px-4 flex justify-center">
-          <MusicPlayer
-            title={currentTrack.title}
-            artist={currentTrack.artist}
-            isPlaying={isPlaying}
-            progress={currentTrack.progress}
-            timeRemaining={currentTrack.timeRemaining}
-            onPlayPause={handlePlayPause}
-            onNext={handleNext}
-            onFavorite={handleFavorite}
-            isFavorited={isFavorited}
-          />
-        </div>
-      )}
+
 
       {/* Music Genre Grid */}
       <div className="space-y-4 lg:space-y-6">
