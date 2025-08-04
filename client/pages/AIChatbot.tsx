@@ -550,9 +550,12 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           const lastResultIndex = event.results.length - 1;
           const transcript = event.results[lastResultIndex][0].transcript.trim();
 
+          console.log('🎤 Raw transcript:', transcript);
+          console.log('🎤 Word count:', transcript.split(' ').length);
+
           // Only process if transcript is meaningful (more than 2 words)
           if (transcript.split(' ').length > 1) {
-            console.log('Speech recognition result:', transcript);
+            console.log('✅ Processing transcript:', transcript);
 
             // Temporarily stop listening while processing
             recognitionRef.current?.stop();
