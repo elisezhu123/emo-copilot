@@ -11,7 +11,8 @@ interface Message {
 }
 
 const AIChatbot = () => {
-  const [isListening, setIsListening] = useState(true); // Always listening by default
+  const [isListening, setIsListening] = useState(false); // Start in default state, not listening
+  const [userWantsListening, setUserWantsListening] = useState(false); // Track user's intent to listen
   const [pendingTranscript, setPendingTranscript] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
@@ -341,16 +342,23 @@ const AIChatbot = () => {
 
   // Start continuous listening
   const startContinuousListening = () => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      console.log('❌ Speech recognition not available');
+      return;
+    }
 
     try {
-      if (!isListening) {
-        recognitionRef.current.start();
-        setIsListening(true);
-      }
+      console.log('🎤 Starting speech recognition...');
+      recognitionRef.current.start();
+      setIsListening(true);
     } catch (error) {
-      console.log('Recognition already running or failed to start:', error);
+      console.log('⚠️ Recognition start failed:', error);
       // If recognition is already running, that's fine
+      if (error.message && error.message.includes('already started')) {
+        setIsListening(true);
+      } else {
+        setIsListening(false);
+      }
     }
   };
 
@@ -543,13 +551,16 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           const lastResultIndex = event.results.length - 1;
           const transcript = event.results[lastResultIndex][0].transcript.trim();
 
+          console.log('🎤 Raw transcript:', transcript);
+          console.log('🎤 Word count:', transcript.split(' ').length);
+
           // Only process if transcript is meaningful (more than 2 words)
           if (transcript.split(' ').length > 1) {
-            console.log('Speech recognition result:', transcript);
+            console.log('✅ Processing transcript:', transcript);
 
-            // Temporarily stop listening while processing
+            // Temporarily stop listening while processing, but keep user intent
             recognitionRef.current?.stop();
-            setIsListening(false);
+            setIsListening(false); // Just for UI state, don't change user intent
             setPendingTranscript(transcript);
 
             // Add user message immediately
@@ -578,16 +589,21 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onend = () => {
-          // Restart listening if not manually stopped and not speaking
-          if (isListening && !isSpeaking) {
+          // Only restart listening if user has explicitly enabled it and not speaking
+          console.log('🎤 Recognition ended. User wants listening:', userWantsListening, 'Is speaking:', isSpeaking);
+          if (userWantsListening && !isSpeaking) {
             setTimeout(() => {
-              startContinuousListening();
+              try {
+                startContinuousListening();
+              } catch (error) {
+                console.log('Could not restart listening:', error);
+                setIsListening(false);
+              }
             }, 1000);
           }
         };
 
-        // Start listening immediately
-        startContinuousListening();
+        // Don't start listening immediately - wait for user to click button
       }
     }
 
@@ -604,15 +620,21 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       return;
     }
 
-    if (isListening) {
-      console.log('Pausing continuous listening...');
-      recognitionRef.current.stop();
+    if (userWantsListening) {
+      console.log('🔇 User stopping speech recognition...');
+      setUserWantsListening(false); // User no longer wants listening
+      try {
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.log('Error stopping recognition:', error);
+      }
       setIsListening(false);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     } else {
-      console.log('Resuming continuous listening...');
+      console.log('🎤 User starting speech recognition...');
+      setUserWantsListening(true); // User wants continuous listening
       startContinuousListening();
     }
   };
@@ -697,7 +719,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         {/* Left Sound Wave */}
         <div className="flex items-center gap-0.5">
           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={isListening ? "#3A2018" : "#FF8B7E"}/>
+            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
           </svg>
         </div>
 
@@ -705,11 +727,11 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         <button
           onClick={toggleListening}
           className={`w-16 h-16 lg:w-20 lg:h-20 rounded-full transition-all duration-300 ${
-            isListening
+            userWantsListening
               ? 'bg-emotion-default'
               : 'bg-emotion-mouth hover:scale-105'
           } ${isSpeaking ? 'ring-4 ring-emotion-orange ring-opacity-50' : ''} shadow-lg flex items-center justify-center`}
-          title={isListening ? 'Continuously listening... (Click to pause)' : 'Click to resume listening'}
+          title={userWantsListening ? 'Continuously listening... (Click to pause)' : 'Click to start listening'}
         >
           <svg className="w-12 h-12 lg:w-14 lg:h-14 text-white" fill="currentColor" viewBox="0 0 48 48">
             <path d="M16 12C16 7.58172 19.5817 4 24 4C28.4183 4 32 7.58172 32 12V24C32 28.4183 28.4183 32 24 32C19.5817 32 16 28.4183 16 24V12ZM24 6.5C20.9624 6.5 18.5 8.96243 18.5 12V24C18.5 27.0376 20.9624 29.5 24 29.5C27.0376 29.5 29.5 27.0376 29.5 24V12C29.5 8.96243 27.0376 6.5 24 6.5ZM25 37.7148C32.2653 37.2021 38 31.1458 38 23.75C38 23.0596 37.4404 22.5 36.75 22.5C36.0596 22.5 35.5 23.0596 35.5 23.75C35.5 30.1013 30.3513 35.25 24 35.25C17.6487 35.25 12.5 30.1013 12.5 23.75C12.5 23.0596 11.9404 22.5 11.25 22.5C10.5596 22.5 10 23.0596 10 23.75C10 30.9752 15.4734 36.9221 22.5 37.6706V42.75C22.5 43.4404 23.0596 44 23.75 44C24.4404 44 25 43.4404 25 42.75V37.7148Z" fill="white"/>
@@ -719,7 +741,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         {/* Right Sound Wave */}
         <div className="flex items-center gap-0.5">
           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={isListening ? "#3A2018" : "#FF8B7E"}/>
+            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
           </svg>
         </div>
       </div>

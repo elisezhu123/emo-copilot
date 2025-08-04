@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
+import MusicPlayer from '../components/MusicPlayer';
 import { musicService } from '../services/musicService';
 import { simpleMusicService } from '../services/simpleMusicService';
 
 const MusicSelection = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState({
+    title: "Relaxing Music",
+    artist: "Jelly Daisy",
+    progress: 74,
+    timeRemaining: "-1:40"
+  });
 
   // Load saved genres on component mount
   useEffect(() => {
@@ -48,6 +57,28 @@ const MusicSelection = () => {
 
   const isSelected = (genreName: string) => selectedGenres.includes(genreName);
 
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+    console.log('🎵 Music', isPlaying ? 'paused' : 'playing');
+  };
+
+  const handleNext = () => {
+    console.log('🎵 Next track');
+    // In a real app, this would change to the next track
+    setCurrentTrack(prev => ({
+      ...prev,
+      title: prev.title === "Relaxing Music" ? "Peaceful Sounds" : "Relaxing Music",
+      artist: prev.artist === "Jelly Daisy" ? "Calm Waves" : "Jelly Daisy",
+      progress: Math.floor(Math.random() * 100),
+      timeRemaining: `-${Math.floor(Math.random() * 3) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
+    }));
+  };
+
+  const handleFavorite = () => {
+    setIsFavorited(!isFavorited);
+    console.log('🎵 Track', isFavorited ? 'removed from' : 'added to', 'favorites');
+  };
+
   return (
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl">
       {/* Status Bar */}
@@ -76,6 +107,23 @@ const MusicSelection = () => {
           </p>
         </div>
       </div>
+
+      {/* Music Player */}
+      {selectedGenres.length > 0 && (
+        <div className="mb-6 lg:mb-8 px-4 flex justify-center">
+          <MusicPlayer
+            title={currentTrack.title}
+            artist={currentTrack.artist}
+            isPlaying={isPlaying}
+            progress={currentTrack.progress}
+            timeRemaining={currentTrack.timeRemaining}
+            onPlayPause={handlePlayPause}
+            onNext={handleNext}
+            onFavorite={handleFavorite}
+            isFavorited={isFavorited}
+          />
+        </div>
+      )}
 
       {/* Music Genre Grid */}
       <div className="space-y-4 lg:space-y-6">
