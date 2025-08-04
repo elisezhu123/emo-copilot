@@ -126,7 +126,7 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (!savedGenres || savedGenres.length === 0) {
-        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
+        alert('请先在音乐选择页面选择您喜欢的���乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
         return;
       }
       
@@ -256,8 +256,24 @@ const EmoCopilotDashboard = () => {
         showTemperature={true}
       />
       
-      {/* Main Content Container */}
-      <div className="space-y-3 lg:space-y-6">{/* Heart Rate Section */}
+      {/* Conditional Content - Show emoji dashboard or normal dashboard */}
+      {showCoolingEmoji ? (
+        <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
+          <div className="animate-bounce">
+            {/* Cooling fan emoji dashboard */}
+            <div className="text-9xl">❄️</div>
+          </div>
+        </div>
+      ) : showLightingEmoji ? (
+        <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
+          <div className="animate-bounce">
+            {/* Happy lighting emoji dashboard */}
+            <div className="text-9xl">😊</div>
+          </div>
+        </div>
+      ) : (
+        /* Normal Dashboard Content */
+        <div className="space-y-3 lg:space-y-6">{/* Heart Rate Section */}
         <div className="bg-white border border-emotion-face rounded-xl p-3 backdrop-blur-sm lg:p-6">
           <div className="flex items-end gap-4 lg:gap-8">
             {/* Heart Rate Monitor */}
@@ -491,7 +507,7 @@ const EmoCopilotDashboard = () => {
           </button>
         </div>
       </div>
-
+      )}
 
     </div>
   );
