@@ -48,27 +48,7 @@ const MusicSelection = () => {
 
   const isSelected = (genreName: string) => selectedGenres.includes(genreName);
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    console.log('🎵 Music', isPlaying ? 'paused' : 'playing');
-  };
 
-  const handleNext = () => {
-    console.log('🎵 Next track');
-    // In a real app, this would change to the next track
-    setCurrentTrack(prev => ({
-      ...prev,
-      title: prev.title === "Relaxing Music" ? "Peaceful Sounds" : "Relaxing Music",
-      artist: prev.artist === "Jelly Daisy" ? "Calm Waves" : "Jelly Daisy",
-      progress: Math.floor(Math.random() * 100),
-      timeRemaining: `-${Math.floor(Math.random() * 3) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
-    }));
-  };
-
-  const handleFavorite = () => {
-    setIsFavorited(!isFavorited);
-    console.log('🎵 Track', isFavorited ? 'removed from' : 'added to', 'favorites');
-  };
 
   return (
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl">
