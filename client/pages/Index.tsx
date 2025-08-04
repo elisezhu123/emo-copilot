@@ -23,6 +23,8 @@ const EmoCopilotDashboard = () => {
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showCoolingEmoji, setShowCoolingEmoji] = useState(false);
+  const [showLightingEmoji, setShowLightingEmoji] = useState(false);
 
   // Enable audio on first user interaction
   useEffect(() => {
