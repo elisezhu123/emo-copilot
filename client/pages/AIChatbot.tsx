@@ -12,6 +12,7 @@ interface Message {
 
 const AIChatbot = () => {
   const [isListening, setIsListening] = useState(false); // Start in default state, not listening
+  const [userWantsListening, setUserWantsListening] = useState(false); // Track user's intent to listen
   const [pendingTranscript, setPendingTranscript] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
