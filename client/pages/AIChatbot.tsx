@@ -578,10 +578,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onend = () => {
-          // Restart listening if not manually stopped and not speaking
+          // Only restart listening if user has explicitly enabled it and not speaking
           if (isListening && !isSpeaking) {
             setTimeout(() => {
-              startContinuousListening();
+              try {
+                startContinuousListening();
+              } catch (error) {
+                console.log('Could not restart listening:', error);
+                setIsListening(false);
+              }
             }, 1000);
           }
         };
