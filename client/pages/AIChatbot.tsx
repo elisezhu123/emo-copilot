@@ -34,7 +34,7 @@ const AIChatbot = () => {
         console.error('Failed to parse saved conversation history:', error);
       }
     }
-    // Default messages if no saved history
+    // Default messages if no saved history - only bot welcome message
     return [
       {
         id: '1',
