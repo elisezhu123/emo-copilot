@@ -161,16 +161,8 @@ const AIChatbot = () => {
                   },
                   (retryError) => {
                     console.error('❌ Location retry failed:', retryError.message);
-                    // Add a helpful message for the user
-                    setTimeout(() => {
-                      const locationMessage: Message = {
-                        id: Date.now().toString() + '_location_help',
-                        text: "I'm having trouble accessing your location for navigation features. You can still chat with me for emotional support and driving tips! If you'd like navigation help, please enable location access in your browser.",
-                        type: 'bot',
-                        timestamp: new Date()
-                      };
-                      setMessages(prev => [...prev, locationMessage]);
-                    }, 3000);
+                    // Don't add automatic location messages to keep UI clean
+                    console.log('Location retry failed, but keeping UI clean');
                   },
                   { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }
                 );
