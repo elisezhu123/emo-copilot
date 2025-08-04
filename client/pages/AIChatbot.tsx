@@ -341,16 +341,23 @@ const AIChatbot = () => {
 
   // Start continuous listening
   const startContinuousListening = () => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      console.log('❌ Speech recognition not available');
+      return;
+    }
 
     try {
-      if (!isListening) {
-        recognitionRef.current.start();
-        setIsListening(true);
-      }
+      console.log('🎤 Starting speech recognition...');
+      recognitionRef.current.start();
+      setIsListening(true);
     } catch (error) {
-      console.log('Recognition already running or failed to start:', error);
+      console.log('⚠️ Recognition start failed:', error);
       // If recognition is already running, that's fine
+      if (error.message && error.message.includes('already started')) {
+        setIsListening(true);
+      } else {
+        setIsListening(false);
+      }
     }
   };
 
