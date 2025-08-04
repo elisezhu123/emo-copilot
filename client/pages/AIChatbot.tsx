@@ -19,20 +19,31 @@ const AIChatbot = () => {
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hi there! I'm Melo, your caring co-driver companion. I'm here to support you on this journey - whether you need directions, want to chat, or just need some encouragement. How are you feeling today?",
-      type: 'bot',
-      timestamp: new Date()
-    },
-    {
-      id: '2',
-      text: "What's the traffic like ahead?",
-      type: 'user',
-      timestamp: new Date()
+  // Load conversation history from localStorage or use default messages
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const savedMessages = localStorage.getItem('ai-chatbot-history');
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        // Convert timestamp strings back to Date objects
+        return parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+      } catch (error) {
+        console.error('Failed to parse saved conversation history:', error);
+      }
     }
-  ]);
+    // Default messages if no saved history
+    return [
+      {
+        id: '1',
+        text: "Hi there! I'm Melo, your caring co-driver companion. I'm here to support you on this journey - whether you need directions, want to chat, or just need some encouragement. How are you feeling today?",
+        type: 'bot',
+        timestamp: new Date()
+      }
+    ];
+  });
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
