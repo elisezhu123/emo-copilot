@@ -22,6 +22,9 @@ const EmoCopilotDashboard = () => {
     error: null
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showCoolingEmoji, setShowCoolingEmoji] = useState(false);
+  const [showLightingEmoji, setShowLightingEmoji] = useState(false);
 
   // Enable audio on first user interaction
   useEffect(() => {
@@ -167,6 +170,44 @@ const EmoCopilotDashboard = () => {
     audioManager.toggleMute();
   };
 
+  const playNextTrack = async () => {
+    try {
+      if (playlist.length === 0) {
+        alert('No music available. Please select genres first!');
+        return;
+      }
+
+      // Find current track index
+      const currentIndex = currentTrack ? playlist.findIndex(track => track.id === currentTrack.id) : -1;
+
+      // Get next track (avoid repeating the same track)
+      let nextIndex;
+      if (currentIndex === -1 || currentIndex === playlist.length - 1) {
+        // If no current track or at end, start from beginning
+        nextIndex = 0;
+      } else {
+        // Go to next track
+        nextIndex = currentIndex + 1;
+      }
+
+      const nextTrack = playlist[nextIndex];
+
+      if (nextTrack && nextTrack.id !== currentTrack?.id) {
+        console.log('🎵 Playing next track:', nextTrack.title);
+        await audioManager.playTrack(nextTrack);
+        setCurrentTrack(nextTrack);
+      }
+    } catch (error) {
+      console.error('❌ Error playing next track:', error);
+      alert(`Error playing next track: ${error.message}`);
+    }
+  };
+
+  const toggleFavorite = () => {
+    setIsFavorited(!isFavorited);
+    console.log('🎵 Track', isFavorited ? 'removed from' : 'added to', 'favorites');
+  };
+
   // Text-to-speech function
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -182,12 +223,28 @@ const EmoCopilotDashboard = () => {
     const newState = !isCoolingOn;
     setIsCoolingOn(newState);
     speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
+
+    // Show emoji for 3 seconds when turned on
+    if (newState) {
+      setShowCoolingEmoji(true);
+      setTimeout(() => {
+        setShowCoolingEmoji(false);
+      }, 3000);
+    }
   };
 
   const toggleLighting = () => {
     const newState = !isLightingOn;
     setIsLightingOn(newState);
     speakText(newState ? "Lighting turned on" : "Lighting turned off");
+
+    // Show emoji for 3 seconds when turned on
+    if (newState) {
+      setShowLightingEmoji(true);
+      setTimeout(() => {
+        setShowLightingEmoji(false);
+      }, 3000);
+    }
   };
 
   return (
@@ -199,8 +256,65 @@ const EmoCopilotDashboard = () => {
         showTemperature={true}
       />
       
-      {/* Main Content Container */}
-      <div className="space-y-3 lg:space-y-6">{/* Heart Rate Section */}
+      {/* Conditional Content - Show emoji dashboard or normal dashboard */}
+      {showCoolingEmoji ? (
+        <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
+          <div className="animate-bounce">
+            {/* Cooling AC fan emoji from Figma design */}
+            <div className="flex justify-center items-center w-96 h-60 lg:w-[480px] lg:h-80">
+              <svg className="w-80 h-48 lg:w-96 lg:h-56" viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip0_17_194)">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M114.125 73.9234C118.45 69.4939 125.59 69.4418 129.967 73.8192C134.397 78.1445 134.449 85.2317 130.071 89.6612C121.004 98.8329 102.4 106.702 80.4087 108.786C63.0554 110.454 43.1487 108.682 23.8673 101.282C18.0828 99.0935 15.2167 92.5795 17.4054 86.8472C19.5941 81.0628 26.056 78.1966 31.8404 80.3853C47.5261 86.4303 63.8892 87.8373 78.2721 86.4824C94.9479 84.8669 108.289 79.76 114.021 73.9234H114.125Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M132.937 156.417C130.228 154.905 129.29 151.466 130.801 148.808C132.312 146.098 135.751 145.16 138.409 146.672C155.033 156.052 164.621 152.196 173.533 148.652C179.056 146.411 184.372 144.327 190.938 144.327C197.504 144.327 202.82 146.463 208.343 148.652C217.255 152.248 226.791 156.104 243.467 146.672C246.177 145.16 249.564 146.098 251.075 148.808C252.586 151.518 251.648 154.905 248.939 156.417C227.573 168.454 215.483 163.608 204.174 159.022C199.693 157.25 195.42 155.479 190.938 155.479C186.456 155.479 182.183 157.198 177.702 159.022C166.393 163.556 154.251 168.454 132.937 156.417Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M51.4345 132.654C-9.95336 134.79 -8.70268 181.639 52.6852 179.502C114.073 177.366 112.822 130.517 51.4345 132.654Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M7.34777 29.5762C4.4295 30.5663 1.25067 28.9508 0.260546 26.0325C-0.72958 23.1143 0.885889 19.9354 3.80416 18.9453L5.94074 18.2158C26.2644 11.4412 76.1876 -5.18249 111.155 2.32162C116.001 3.36386 120.639 4.71877 124.86 6.5948C129.29 8.47083 133.354 10.868 136.95 13.8905C139.347 15.8707 139.66 19.4143 137.628 21.8115C135.647 24.2086 132.104 24.5213 129.707 22.4889C126.997 20.196 123.87 18.3721 120.378 16.913C116.783 15.3496 112.874 14.2031 108.758 13.3172C76.8129 6.38635 28.9742 22.3326 9.53647 28.8466L7.34777 29.5762Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M249.877 89.6613C245.551 85.2317 245.603 78.1445 249.981 73.8192C254.41 69.4939 261.498 69.5461 265.823 73.9235C271.555 79.76 284.896 84.867 301.572 86.4824C315.902 87.8895 332.265 86.4824 348.003 80.3853C353.788 78.1966 360.25 81.0628 362.438 86.8472C364.627 92.6316 361.761 99.0935 355.976 101.282C336.747 108.682 316.84 110.454 299.435 108.786C277.496 106.65 258.84 98.8329 249.772 89.6613H249.877Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M328.566 132.654C389.953 134.79 388.703 181.639 327.315 179.502C265.927 177.366 267.178 130.517 328.566 132.654Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M376.144 18.9454C379.062 19.9355 380.678 23.0622 379.687 26.0326C378.697 28.9509 375.571 30.5663 372.6 29.5762L370.411 28.8466C350.974 22.3848 303.187 6.43853 271.138 13.3173C267.021 14.2032 263.113 15.3497 259.517 16.913C256.078 18.4243 252.899 20.2482 250.189 22.489C247.792 24.4692 244.249 24.1566 242.268 21.8115C240.288 19.4144 240.601 15.8708 242.998 13.8905C246.594 10.868 250.658 8.47089 255.088 6.59486C259.361 4.77095 263.999 3.36392 268.793 2.32169C303.76 -5.18243 353.631 11.4413 373.903 18.2158L376.04 18.9454H376.144Z" fill="#3A2018"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_17_194">
+                    <rect width="380" height="179.213" fill="white" transform="translate(0 0.393555)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+      ) : showLightingEmoji ? (
+        <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
+          <div className="animate-bounce">
+            {/* Happy lighting face emoji from Figma design */}
+            <div className="flex justify-center items-center w-96 h-60 lg:w-[480px] lg:h-80">
+              <svg className="w-80 h-48 lg:w-96 lg:h-56" viewBox="0 0 400 226" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip0_17_236)">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M65.3537 220.002C6.09044 220.27 6.5191 183.351 65.7823 183.083C125.046 182.815 124.617 219.734 65.3537 220.002Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M350.203 220.002C409.466 220.27 409.037 183.351 349.774 183.083C290.511 182.815 290.94 219.734 350.203 220.002Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M205.599 165.083C173.128 165.083 159.786 225.364 205.599 225.364C251.413 225.364 238.071 165.083 205.599 165.083Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M226.872 202.859C222.317 195.411 214.869 189.946 205.653 189.946C196.437 189.946 188.667 195.679 184.112 203.342C171.735 224.346 240.321 224.721 226.872 202.859Z" fill="#FF8B7E"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M14.0389 63.1139C11.3061 66.4896 6.32286 67.079 2.89353 64.2927C-0.482226 61.56 -1.01806 56.5767 1.71469 53.1474C10.7703 41.9484 21.4334 29.8386 36.0081 19.9792C50.7971 10.0663 69.3905 2.51106 94.0925 0.689224C98.4327 0.367723 102.237 3.68989 102.559 8.03015C102.88 12.3704 99.558 16.1748 95.2177 16.4963C73.7308 18.0502 57.6022 24.5874 44.9029 33.1608C31.9893 41.8948 22.3443 52.8794 14.0925 63.1139H14.0389Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M302.05 37.501C298.513 40.073 293.583 39.2693 291.011 35.7863C288.439 32.2498 289.243 27.3202 292.726 24.8017C301.675 18.3182 322.894 6.63698 348.078 8.99465C363.938 10.495 381.246 17.5144 397.75 34.7147C400.75 37.8761 400.697 42.8593 397.535 45.9136C394.374 48.9143 389.391 48.8607 386.336 45.6993C372.833 31.6604 359.062 25.9806 346.577 24.7482C326.43 22.8192 309.23 32.3034 301.996 37.5546L302.05 37.501Z" fill="#3A2018"/>
+                  <path d="M98.3004 162.38C124.138 151.603 136.348 121.921 125.572 96.0835C114.795 70.2455 85.1132 58.0357 59.2753 68.8122C33.4373 79.5887 21.2275 109.271 32.004 135.109C42.7805 160.947 72.4624 173.156 98.3004 162.38Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M95.0904 77.9029C108.486 77.9029 119.31 88.7268 119.31 102.123C119.31 115.518 108.486 126.342 95.0904 126.342C81.6946 126.342 70.8707 115.518 70.8707 102.123C70.8707 88.7268 81.6946 77.9029 95.0904 77.9029Z" fill="white"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M55.2244 144.507C45.5258 144.507 37.7026 136.684 37.7026 126.985C37.7026 117.287 45.5258 109.464 55.2244 109.464C64.923 109.464 72.7462 117.287 72.7462 126.985C72.7462 136.684 64.923 144.507 55.2244 144.507Z" fill="white"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M87.5887 156.992C80.6765 156.992 75.0502 151.366 75.0502 144.453C75.0502 137.541 80.6765 131.915 87.5887 131.915C94.501 131.915 100.127 137.541 100.127 144.453C100.127 151.366 94.501 156.992 87.5887 156.992Z" fill="white"/>
+                  <path d="M332.023 166.315C360.018 166.315 382.713 143.621 382.713 115.626C382.713 87.6303 360.018 64.9357 332.023 64.9357C304.028 64.9357 281.333 87.6303 281.333 115.626C281.333 143.621 304.028 166.315 332.023 166.315Z" fill="#3A2018"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M346.723 77.9029C360.119 77.9029 370.942 88.7268 370.942 102.123C370.942 115.518 360.119 126.342 346.723 126.342C333.327 126.342 322.503 115.518 322.503 102.123C322.503 88.7268 333.38 77.9029 346.723 77.9029Z" fill="white"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M306.857 144.507C297.158 144.507 289.335 136.684 289.335 126.985C289.335 117.287 297.158 109.464 306.857 109.464C316.555 109.464 324.379 117.287 324.379 126.985C324.379 136.684 316.555 144.507 306.857 144.507Z" fill="white"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M339.221 156.992C332.309 156.992 326.682 151.366 326.682 144.453C326.682 137.541 332.309 131.915 339.221 131.915C346.133 131.915 351.76 137.541 351.76 144.453C351.76 151.366 346.133 156.992 339.221 156.992Z" fill="white"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_17_236">
+                    <rect width="400" height="224.622" fill="white" transform="translate(0 0.689224)"/>
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Normal Dashboard Content */
+        <div className="space-y-3 lg:space-y-6">{/* Heart Rate Section */}
         <div className="bg-white border border-emotion-face rounded-xl p-3 backdrop-blur-sm lg:p-6">
           <div className="flex items-end gap-4 lg:gap-8">
             {/* Heart Rate Monitor */}
@@ -312,43 +426,58 @@ const EmoCopilotDashboard = () => {
                 {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` : 'Simple audio test - click play button'}
               </p>
             </div>
-            <button
-              className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
-              onClick={togglePlayPause}
-              disabled={audioState.isLoading}
-              style={{ 
-                opacity: audioState.isLoading ? 0.5 : 1,
-                filter: audioState.isLoading ? 'blur(1px)' : 'none'
-              }}
-            >
-              {audioState.isLoading ? (
-                // Loading spinner
-                <div className="w-5 h-5 lg:w-6 lg:h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
-              ) : audioState.isPlaying ? (
-                // Pause icon
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
-                  <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
+            <div className="flex items-center gap-2 lg:gap-3">
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={togglePlayPause}
+                disabled={audioState.isLoading}
+                style={{
+                  opacity: audioState.isLoading ? 0.5 : 1,
+                  filter: audioState.isLoading ? 'blur(1px)' : 'none'
+                }}
+              >
+                {audioState.isLoading ? (
+                  // Loading spinner
+                  <div className="w-5 h-5 lg:w-6 lg:h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+                ) : audioState.isPlaying ? (
+                  // Pause icon from Figma design
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
+                  </svg>
+                ) : (
+                  // Play icon from Figma design
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.2221 9.18458C18.2586 9.75438 18.2586 11.2437 17.2221 11.8135L7.22259 17.3105C6.22292 17.86 5 17.1367 5 15.996L5 5.00214C5 3.86137 6.22292 3.13812 7.22259 3.68766L17.2221 9.18458Z" fill="#FF8B7E"/>
+                  </svg>
+                )}
+              </button>
+
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={playNextTrack}
+              >
+                {/* Next button from Figma design */}
+                <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.99976 4.75211C2.99976 3.75186 4.11618 3.15676 4.94659 3.71436L13.4458 9.42144C14.1803 9.91464 14.1841 10.9938 13.453 11.4921L4.95375 17.285C4.12398 17.8505 2.99976 17.2562 2.99976 16.2521V4.75211ZM17 4C17 3.72386 16.7761 3.5 16.5 3.5C16.2238 3.5 16 3.72386 16 4V17C16 17.2761 16.2238 17.5 16.5 17.5C16.7761 17.5 17 17.2761 17 17V4Z" fill="#FFA680"/>
                 </svg>
-              ) : (
-                // Play icon from Figma design
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
-                  <path d="M17.2221 9.18458C18.2586 9.75438 18.2586 11.2437 17.2221 11.8135L7.22259 17.3105C6.22292 17.86 5 17.1367 5 15.996L5 5.00214C5 3.86137 6.22292 3.13812 7.22259 3.68766L17.2221 9.18458Z" fill="#FF8B7E"/>
-                </svg>
-              )}
-            </button>
-            <button className="p-1 lg:p-2" onClick={toggleMute}>
-              {audioState.isMuted ? (
-                // Muted volume icon from Figma design
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" viewBox="0 0 24 25" fill="none">
-                  <path d="M15 4.75C15 3.67138 13.7255 3.09915 12.9195 3.81583L8.42794 7.80909C8.29065 7.93116 8.11333 7.99859 7.92961 7.99859H4.25C3.00736 7.99859 2 9.00595 2 10.2486V14.7465C2 15.9891 3.00736 16.9965 4.25 16.9965H7.92956C8.11329 16.9965 8.29063 17.0639 8.42793 17.186L12.9194 21.1797C13.7255 21.8965 15 21.3243 15 20.2456V4.75ZM16.2197 9.71967C16.5126 9.42678 16.9874 9.42678 17.2803 9.71967L19 11.4393L20.7197 9.71967C21.0126 9.42678 21.4874 9.42678 21.7803 9.71967C22.0732 10.0126 22.0732 10.4874 21.7803 10.7803L20.0607 12.5L21.7803 14.2197C22.0732 14.5126 22.0732 14.9874 21.7803 15.2803C21.4874 15.5732 21.0126 15.5732 20.7197 15.2803L19 13.5607L17.2803 15.2803C16.9874 15.5732 16.5126 15.5732 16.2197 15.2803C15.9268 14.9874 15.9268 14.5126 16.2197 14.2197L17.9393 12.5L16.2197 10.7803C15.9268 10.4874 15.9268 10.0126 16.2197 9.71967Z" fill="#FFA680"/>
-                </svg>
-              ) : (
-                // Normal volume icon
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" viewBox="0 0 24 25" fill="none">
-                  <path d="M15 4.75V20.2456C15 21.3243 13.7255 21.8965 12.9194 21.1797L8.42793 17.186C8.29063 17.0639 8.11329 16.9965 7.92956 16.9965H4.25C3.00736 16.9965 2 15.9891 2 14.7465V10.2486C2 9.00595 3.00736 7.99859 4.25 7.99859H7.92961C8.11333 7.99859 8.29065 7.93116 8.42794 7.80909L12.9195 3.81583C13.7255 3.09915 15 3.67138 15 4.75ZM18.9916 6.39733C19.3244 6.15079 19.7941 6.22077 20.0407 6.55362C21.2717 8.2157 22 10.2739 22 12.5C22 14.7261 21.2717 16.7843 20.0407 18.4464C19.7941 18.7793 19.3244 18.8492 18.9916 18.6027C18.6587 18.3562 18.5888 17.8865 18.8353 17.5536C19.8815 16.1411 20.5 14.3939 20.5 12.5C20.5 10.6062 19.8815 8.85896 18.8353 7.44641C18.5888 7.11356 18.6587 6.64387 18.9916 6.39733ZM17.143 8.86933C17.5072 8.67214 17.9624 8.80757 18.1596 9.17184C18.6958 10.1624 19 11.2968 19 12.5C19 13.7032 18.6958 14.8376 18.1596 15.8282C17.9624 16.1924 17.5072 16.3279 17.143 16.1307C16.7787 15.9335 16.6432 15.4783 16.8404 15.1141C17.2609 14.3373 17.5 13.4477 17.5 12.5C17.5 11.5523 17.2609 10.6627 16.8404 9.88593C16.6432 9.52167 16.7787 9.06652 17.143 8.86933Z" fill="#FFA680"/>
-                </svg>
-              )}
-            </button>
+              </button>
+
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={toggleFavorite}
+              >
+                {/* Heart button from Figma design - shows filled when favorited */}
+                {isFavorited ? (
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.38843 4.78963C7.69278 3.07693 4.94954 3.0686 3.26122 4.7739C1.5729 6.4792 1.58114 9.25004 3.27679 10.9627L9.55368 17.3028C9.81404 17.5657 10.2362 17.5657 10.4965 17.3028L16.7408 10.9994C18.4252 9.28856 18.4199 6.52549 16.7239 4.81249C15.0252 3.09671 12.2807 3.08838 10.5894 4.79673L9.99299 5.40026L9.38843 4.78963Z" fill="#FF8B7E"/>
+                  </svg>
+                ) : (
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.38843 4.78963C7.69278 3.07693 4.94954 3.0686 3.26122 4.7739C1.5729 6.4792 1.58114 9.25004 3.27679 10.9627L9.55368 17.3028C9.81404 17.5657 10.2362 17.5657 10.4965 17.3028L16.7408 10.9994C18.4252 9.28856 18.4199 6.52549 16.7239 4.81249C15.0252 3.09671 12.2807 3.08838 10.5894 4.79673L9.99299 5.40026L9.38843 4.78963Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Music Progress Bar */}
@@ -419,6 +548,8 @@ const EmoCopilotDashboard = () => {
           </button>
         </div>
       </div>
+      )}
+
     </div>
   );
 };

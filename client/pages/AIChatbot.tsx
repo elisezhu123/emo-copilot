@@ -19,20 +19,27 @@ const AIChatbot = () => {
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hi there! I'm Melo, your caring co-driver companion. I'm here to support you on this journey - whether you need directions, want to chat, or just need some encouragement. How are you feeling today?",
-      type: 'bot',
-      timestamp: new Date()
-    },
-    {
-      id: '2',
-      text: "What's the traffic like ahead?",
-      type: 'user',
-      timestamp: new Date()
-    }
-  ]);
+  // Clear any saved conversation and use clean Figma design
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Clear any existing conversation history for fresh start
+    localStorage.removeItem('ai-chatbot-history');
+
+    // Return clean default conversation matching Figma design exactly
+    return [
+      {
+        id: '1',
+        text: "Hello, I'm Melo,your co-driver assistant. How can I help make your drive better ?",
+        type: 'bot',
+        timestamp: new Date()
+      },
+      {
+        id: '2',
+        text: "What's the traffic like ahead?",
+        type: 'user',
+        timestamp: new Date()
+      }
+    ];
+  });
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,6 +52,16 @@ const AIChatbot = () => {
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  // Save conversation history to localStorage whenever messages change
+  useEffect(() => {
+    try {
+      localStorage.setItem('ai-chatbot-history', JSON.stringify(messages));
+      console.log('💾 Conversation history saved to localStorage');
+    } catch (error) {
+      console.error('Failed to save conversation history:', error);
+    }
   }, [messages]);
 
   // Real-time clock update
@@ -144,16 +161,8 @@ const AIChatbot = () => {
                   },
                   (retryError) => {
                     console.error('❌ Location retry failed:', retryError.message);
-                    // Add a helpful message for the user
-                    setTimeout(() => {
-                      const locationMessage: Message = {
-                        id: Date.now().toString() + '_location_help',
-                        text: "I'm having trouble accessing your location for navigation features. You can still chat with me for emotional support and driving tips! If you'd like navigation help, please enable location access in your browser.",
-                        type: 'bot',
-                        timestamp: new Date()
-                      };
-                      setMessages(prev => [...prev, locationMessage]);
-                    }, 3000);
+                    // Don't add automatic location messages to keep UI clean
+                    console.log('Location retry failed, but keeping UI clean');
                   },
                   { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }
                 );
@@ -173,18 +182,8 @@ const AIChatbot = () => {
             userAgent: navigator.userAgent
           });
 
-          // Show user-friendly message for critical errors
-          if (error.code === error.PERMISSION_DENIED) {
-            setTimeout(() => {
-              const helpMessage: Message = {
-                id: Date.now().toString() + '_location_denied',
-                text: "I noticed location access was denied. That's okay! I can still provide emotional support and general driving advice. If you change your mind about navigation features, just allow location access in your browser settings.",
-                type: 'bot',
-                timestamp: new Date()
-              };
-              setMessages(prev => [...prev, helpMessage]);
-            }, 2000);
-          }
+          // Don't show automatic location messages to keep UI clean
+          console.log('Location permission denied, but keeping UI clean');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );
@@ -654,15 +653,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           {messages.map((message) => (
             <div key={message.id}>
               {message.type === 'bot' ? (
-                // Bot Message
+                // Bot Message - styled to match Figma design
                 <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 bg-emotion-mouth rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-9 h-9 bg-emotion-mouth rounded-full flex items-center justify-center flex-shrink-0 p-1">
+                    <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M17.753 13.9999C18.9957 13.9999 20.003 15.0073 20.003 16.2499V17.155C20.003 18.2487 19.5256 19.2879 18.6958 20.0003C17.1303 21.3442 14.89 22.0011 12 22.0011C9.1105 22.0011 6.87168 21.3445 5.30882 20.0008C4.48019 19.2884 4.00354 18.25 4.00354 17.1572V16.2499C4.00354 15.0073 5.0109 13.9999 6.25354 13.9999H17.753ZM17.753 15.4999H6.25354C5.83933 15.4999 5.50354 15.8357 5.50354 16.2499V17.1572C5.50354 17.8129 5.78953 18.4359 6.28671 18.8634C7.54479 19.945 9.4408 20.5011 12 20.5011C14.56 20.5011 16.4578 19.9447 17.7187 18.8622C18.2166 18.4347 18.503 17.8112 18.503 17.155V16.2499C18.503 15.8357 18.1673 15.4999 17.753 15.4999ZM11.8986 2.00733L12.0003 2.00049C12.38 2.00049 12.6938 2.28264 12.7435 2.64872L12.7503 2.75049L12.7495 3.49949L16.25 3.49999C17.4926 3.49999 18.5 4.50735 18.5 5.74999V10.2546C18.5 11.4972 17.4926 12.5046 16.25 12.5046H7.75C6.50736 12.5046 5.5 11.4972 5.5 10.2546V5.74999C5.5 4.50735 6.50736 3.49999 7.75 3.49999L11.2495 3.49949L11.2503 2.75049C11.2503 2.37079 11.5325 2.057 11.8986 2.00733L12.0003 2.00049L11.8986 2.00733ZM16.25 4.99999H7.75C7.33579 4.99999 7 5.33578 7 5.74999V10.2546C7 10.6688 7.33579 11.0046 7.75 11.0046H16.25C16.6642 11.0046 17 10.6688 17 10.2546V5.74999C17 5.33578 16.6642 4.99999 16.25 4.99999ZM9.74929 6.49999C10.4393 6.49999 10.9986 7.05932 10.9986 7.74928C10.9986 8.43925 10.4393 8.99857 9.74929 8.99857C9.05932 8.99857 8.5 8.43925 8.5 7.74928C8.5 7.05932 9.05932 6.49999 9.74929 6.49999ZM14.242 6.49999C14.932 6.49999 15.4913 7.05932 15.4913 7.74928C15.4913 8.43925 14.932 8.99857 14.242 8.99857C13.5521 8.99857 12.9927 8.43925 12.9927 7.74928C12.9927 7.05932 13.5521 6.49999 14.242 6.49999Z" fill="white"/>
                     </svg>
                   </div>
-                  <div className="bg-emotion-orange border border-emotion-mouth rounded-xl p-3 max-w-xs lg:max-w-sm">
-                    <p className="text-white text-base font-medium">
+                  <div className="bg-emotion-orange border border-emotion-mouth rounded-[10px] p-2.5 flex justify-center items-center max-w-xs lg:max-w-sm">
+                    <p className="text-white text-base font-medium leading-normal">
                       {message.text}
                       {message.isTyping && (
                         <span className="inline-block ml-1 animate-pulse">
@@ -675,15 +674,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
                   </div>
                 </div>
               ) : (
-                // User Message
+                // User Message - styled to match Figma design
                 <div className="flex items-start gap-4 justify-end">
-                  <div className="bg-emotion-default border border-emotion-face rounded-xl p-3 max-w-xs lg:max-w-sm">
-                    <p className="text-white text-base font-medium">
+                  <div className="bg-emotion-default border border-emotion-face rounded-[10px] p-2.5 flex justify-center items-center max-w-xs lg:max-w-sm">
+                    <p className="text-white text-base font-medium leading-normal">
                       {message.text}
                     </p>
                   </div>
-                  <div className="w-9 h-9 bg-emotion-default rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-9 h-9 bg-emotion-default rounded-full flex items-center justify-center flex-shrink-0 p-1">
+                    <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M17.7542 13.9999C18.9962 13.9999 20.003 15.0068 20.003 16.2488V16.8242C20.003 17.7185 19.6835 18.5833 19.1019 19.2627C17.5326 21.0962 15.1454 22.0011 12 22.0011C8.85414 22.0011 6.46812 21.0959 4.90182 19.2617C4.32206 18.5828 4.00354 17.7193 4.00354 16.8265V16.2488C4.00354 15.0068 5.0104 13.9999 6.25242 13.9999H17.7542ZM17.7542 15.4999H6.25242C5.83882 15.4999 5.50354 15.8352 5.50354 16.2488V16.8265C5.50354 17.3622 5.69465 17.8802 6.04251 18.2876C7.29582 19.7553 9.2617 20.5011 12 20.5011C14.7383 20.5011 16.7059 19.7553 17.9624 18.2873C18.3113 17.8797 18.503 17.3608 18.503 16.8242V16.2488C18.503 15.8352 18.1678 15.4999 17.7542 15.4999ZM12 2.00464C14.7614 2.00464 17 4.24321 17 7.00464C17 9.76606 14.7614 12.0046 12 12.0046C9.23857 12.0046 7 9.76606 7 7.00464C7 4.24321 9.23857 2.00464 12 2.00464ZM12 3.50464C10.067 3.50464 8.5 5.07164 8.5 7.00464C8.5 8.93764 10.067 10.5046 12 10.5046C13.933 10.5046 15.5 8.93764 15.5 7.00464C15.5 5.07164 13.933 3.50464 12 3.50464Z" fill="white"/>
                     </svg>
                   </div>
