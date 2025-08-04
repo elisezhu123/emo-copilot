@@ -312,43 +312,52 @@ const EmoCopilotDashboard = () => {
                 {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` : 'Simple audio test - click play button'}
               </p>
             </div>
-            <button
-              className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
-              onClick={togglePlayPause}
-              disabled={audioState.isLoading}
-              style={{ 
-                opacity: audioState.isLoading ? 0.5 : 1,
-                filter: audioState.isLoading ? 'blur(1px)' : 'none'
-              }}
-            >
-              {audioState.isLoading ? (
-                // Loading spinner
-                <div className="w-5 h-5 lg:w-6 lg:h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
-              ) : audioState.isPlaying ? (
-                // Pause icon
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
-                  <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
+            <div className="flex items-center gap-2 lg:gap-3">
+              <button
+                className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
+                onClick={togglePlayPause}
+                disabled={audioState.isLoading}
+                style={{
+                  opacity: audioState.isLoading ? 0.5 : 1,
+                  filter: audioState.isLoading ? 'blur(1px)' : 'none'
+                }}
+              >
+                {audioState.isLoading ? (
+                  // Loading spinner
+                  <div className="w-5 h-5 lg:w-6 lg:h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+                ) : audioState.isPlaying ? (
+                  // Pause icon from Figma design
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
+                  </svg>
+                ) : (
+                  // Play icon from Figma design
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.2221 9.18458C18.2586 9.75438 18.2586 11.2437 17.2221 11.8135L7.22259 17.3105C6.22292 17.86 5 17.1367 5 15.996L5 5.00214C5 3.86137 6.22292 3.13812 7.22259 3.68766L17.2221 9.18458Z" fill="#FF8B7E"/>
+                  </svg>
+                )}
+              </button>
+
+              <button className="p-1 lg:p-2 transition-all duration-200 hover:scale-105">
+                {/* Next button from Figma design */}
+                <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.99976 4.75211C2.99976 3.75186 4.11618 3.15676 4.94659 3.71436L13.4458 9.42144C14.1803 9.91464 14.1841 10.9938 13.453 11.4921L4.95375 17.285C4.12398 17.8505 2.99976 17.2562 2.99976 16.2521V4.75211ZM17 4C17 3.72386 16.7761 3.5 16.5 3.5C16.2238 3.5 16 3.72386 16 4V17C16 17.2761 16.2238 17.5 16.5 17.5C16.7761 17.5 17 17.2761 17 17V4Z" fill="#FFA680"/>
                 </svg>
-              ) : (
-                // Play icon from Figma design
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
-                  <path d="M17.2221 9.18458C18.2586 9.75438 18.2586 11.2437 17.2221 11.8135L7.22259 17.3105C6.22292 17.86 5 17.1367 5 15.996L5 5.00214C5 3.86137 6.22292 3.13812 7.22259 3.68766L17.2221 9.18458Z" fill="#FF8B7E"/>
-                </svg>
-              )}
-            </button>
-            <button className="p-1 lg:p-2" onClick={toggleMute}>
-              {audioState.isMuted ? (
-                // Muted volume icon from Figma design
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" viewBox="0 0 24 25" fill="none">
-                  <path d="M15 4.75C15 3.67138 13.7255 3.09915 12.9195 3.81583L8.42794 7.80909C8.29065 7.93116 8.11333 7.99859 7.92961 7.99859H4.25C3.00736 7.99859 2 9.00595 2 10.2486V14.7465C2 15.9891 3.00736 16.9965 4.25 16.9965H7.92956C8.11329 16.9965 8.29063 17.0639 8.42793 17.186L12.9194 21.1797C13.7255 21.8965 15 21.3243 15 20.2456V4.75ZM16.2197 9.71967C16.5126 9.42678 16.9874 9.42678 17.2803 9.71967L19 11.4393L20.7197 9.71967C21.0126 9.42678 21.4874 9.42678 21.7803 9.71967C22.0732 10.0126 22.0732 10.4874 21.7803 10.7803L20.0607 12.5L21.7803 14.2197C22.0732 14.5126 22.0732 14.9874 21.7803 15.2803C21.4874 15.5732 21.0126 15.5732 20.7197 15.2803L19 13.5607L17.2803 15.2803C16.9874 15.5732 16.5126 15.5732 16.2197 15.2803C15.9268 14.9874 15.9268 14.5126 16.2197 14.2197L17.9393 12.5L16.2197 10.7803C15.9268 10.4874 15.9268 10.0126 16.2197 9.71967Z" fill="#FFA680"/>
-                </svg>
-              ) : (
-                // Normal volume icon
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" viewBox="0 0 24 25" fill="none">
-                  <path d="M15 4.75V20.2456C15 21.3243 13.7255 21.8965 12.9194 21.1797L8.42793 17.186C8.29063 17.0639 8.11329 16.9965 7.92956 16.9965H4.25C3.00736 16.9965 2 15.9891 2 14.7465V10.2486C2 9.00595 3.00736 7.99859 4.25 7.99859H7.92961C8.11333 7.99859 8.29065 7.93116 8.42794 7.80909L12.9195 3.81583C13.7255 3.09915 15 3.67138 15 4.75ZM18.9916 6.39733C19.3244 6.15079 19.7941 6.22077 20.0407 6.55362C21.2717 8.2157 22 10.2739 22 12.5C22 14.7261 21.2717 16.7843 20.0407 18.4464C19.7941 18.7793 19.3244 18.8492 18.9916 18.6027C18.6587 18.3562 18.5888 17.8865 18.8353 17.5536C19.8815 16.1411 20.5 14.3939 20.5 12.5C20.5 10.6062 19.8815 8.85896 18.8353 7.44641C18.5888 7.11356 18.6587 6.64387 18.9916 6.39733ZM17.143 8.86933C17.5072 8.67214 17.9624 8.80757 18.1596 9.17184C18.6958 10.1624 19 11.2968 19 12.5C19 13.7032 18.6958 14.8376 18.1596 15.8282C17.9624 16.1924 17.5072 16.3279 17.143 16.1307C16.7787 15.9335 16.6432 15.4783 16.8404 15.1141C17.2609 14.3373 17.5 13.4477 17.5 12.5C17.5 11.5523 17.2609 10.6627 16.8404 9.88593C16.6432 9.52167 16.7787 9.06652 17.143 8.86933Z" fill="#FFA680"/>
-                </svg>
-              )}
-            </button>
+              </button>
+
+              <button className="p-1 lg:p-2 transition-all duration-200 hover:scale-105">
+                {/* Heart button from Figma design */}
+                {audioState.isPlaying ? (
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.38843 4.78963C7.69278 3.07693 4.94954 3.0686 3.26122 4.7739C1.5729 6.4792 1.58114 9.25004 3.27679 10.9627L9.55368 17.3028C9.81404 17.5657 10.2362 17.5657 10.4965 17.3028L16.7408 10.9994C18.4252 9.28856 18.4199 6.52549 16.7239 4.81249C15.0252 3.09671 12.2807 3.08838 10.5894 4.79673L9.99299 5.40026L9.38843 4.78963Z" fill="#FF8B7E"/>
+                  </svg>
+                ) : (
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.38843 4.78963C7.69278 3.07693 4.94954 3.0686 3.26122 4.7739C1.5729 6.4792 1.58114 9.25004 3.27679 10.9627L9.55368 17.3028C9.81404 17.5657 10.2362 17.5657 10.4965 17.3028L16.7408 10.9994C18.4252 9.28856 18.4199 6.52549 16.7239 4.81249C15.0252 3.09671 12.2807 3.08838 10.5894 4.79673L9.99299 5.40026L9.38843 4.78963Z" fill="#FFDCDC" fillOpacity="0.8"/>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Music Progress Bar */}
