@@ -590,7 +590,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
         recognitionRef.current.onend = () => {
           // Only restart listening if user has explicitly enabled it and not speaking
-          if (isListening && !isSpeaking) {
+          console.log('🎤 Recognition ended. User wants listening:', userWantsListening, 'Is speaking:', isSpeaking);
+          if (userWantsListening && !isSpeaking) {
             setTimeout(() => {
               try {
                 startContinuousListening();
