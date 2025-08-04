@@ -586,8 +586,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           }
         };
 
-        // Start listening immediately
-        startContinuousListening();
+        // Don't start listening immediately - wait for user to click button
       }
     }
 
