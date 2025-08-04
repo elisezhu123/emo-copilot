@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
-import MusicPlayer from '../components/MusicPlayer';
 import { musicService } from '../services/musicService';
 import { simpleMusicService } from '../services/simpleMusicService';
 
