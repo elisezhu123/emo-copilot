@@ -22,6 +22,7 @@ const EmoCopilotDashboard = () => {
     error: null
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Enable audio on first user interaction
   useEffect(() => {
