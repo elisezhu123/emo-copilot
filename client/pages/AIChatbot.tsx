@@ -182,18 +182,8 @@ const AIChatbot = () => {
             userAgent: navigator.userAgent
           });
 
-          // Show user-friendly message for critical errors
-          if (error.code === error.PERMISSION_DENIED) {
-            setTimeout(() => {
-              const helpMessage: Message = {
-                id: Date.now().toString() + '_location_denied',
-                text: "I noticed location access was denied. That's okay! I can still provide emotional support and general driving advice. If you change your mind about navigation features, just allow location access in your browser settings.",
-                type: 'bot',
-                timestamp: new Date()
-              };
-              setMessages(prev => [...prev, helpMessage]);
-            }, 2000);
-          }
+          // Don't show automatic location messages to keep UI clean
+          console.log('Location permission denied, but keeping UI clean');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );
