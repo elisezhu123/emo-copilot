@@ -16,6 +16,9 @@ class AudioManager {
   private audio: HTMLAudioElement | null = null;
   private currentTrack: Track | null = null;
   private listeners: Array<(state: AudioState) => void> = [];
+  private playlist: Track[] = [];
+  private currentTrackIndex: number = 0;
+  private autoPlay: boolean = true;
 
   static getInstance(): AudioManager {
     if (!AudioManager.instance) {
@@ -68,8 +71,13 @@ class AudioManager {
 
   private onTrackEnded() {
     console.log('Track ended:', this.currentTrack?.title);
+    
+    // Auto-play next track if available
+    if (this.autoPlay && this.playlist.length > 1) {
+      this.playNextTrack();
+    }
+    
     this.notifyListeners();
-    // You can implement auto-next functionality here
   }
 
   private onError(error: Event) {
@@ -127,6 +135,13 @@ class AudioManager {
 
     try {
       this.currentTrack = track;
+      
+      // Update current track index if this track is in the playlist
+      const trackIndex = this.playlist.findIndex(t => t.id === track.id);
+      if (trackIndex >= 0) {
+        this.currentTrackIndex = trackIndex;
+      }
+      
       const audioUrl = track.url;
       
       if (!audioUrl) {
@@ -370,6 +385,88 @@ class AudioManager {
   // Get current track
   getCurrentTrack(): Track | null {
     return this.currentTrack;
+  }
+
+  // Set playlist for continuous playback
+  setPlaylist(tracks: Track[], startIndex: number = 0): void {
+    this.playlist = tracks;
+    this.currentTrackIndex = startIndex;
+    console.log('🎵 Playlist set with', tracks.length, 'tracks, starting at index', startIndex);
+  }
+
+  // Play next track in playlist
+  async playNextTrack(): Promise<void> {
+    if (this.playlist.length === 0) {
+      console.log('🎵 No playlist available for auto-play');
+      return;
+    }
+
+    // Check if we're at the last track
+    if (this.currentTrackIndex >= this.playlist.length - 1) {
+      console.log('🎵 Reached end of playlist, stopping playback');
+      this.stop();
+      return;
+    }
+
+    // Move to next track
+    this.currentTrackIndex = this.currentTrackIndex + 1;
+    const nextTrack = this.playlist[this.currentTrackIndex];
+    
+    if (nextTrack) {
+      console.log('🎵 Playing next track:', nextTrack.title, `(${this.currentTrackIndex + 1}/${this.playlist.length})`);
+      try {
+        await this.playTrack(nextTrack);
+      } catch (error) {
+        console.error('❌ Error playing next track:', error);
+        // Try the next track if this one fails and we're not at the end
+        if (this.currentTrackIndex < this.playlist.length - 1) {
+          await this.playNextTrack();
+        }
+      }
+    }
+  }
+
+  // Play previous track in playlist
+  async playPreviousTrack(): Promise<void> {
+    if (this.playlist.length === 0) {
+      console.log('🎵 No playlist available');
+      return;
+    }
+
+    // Check if we're at the first track
+    if (this.currentTrackIndex <= 0) {
+      console.log('🎵 Already at the first track');
+      return;
+    }
+
+    // Move to previous track
+    this.currentTrackIndex = this.currentTrackIndex - 1;
+    
+    const prevTrack = this.playlist[this.currentTrackIndex];
+    
+    if (prevTrack) {
+      console.log('🎵 Playing previous track:', prevTrack.title, `(${this.currentTrackIndex + 1}/${this.playlist.length})`);
+      try {
+        await this.playTrack(prevTrack);
+      } catch (error) {
+        console.error('❌ Error playing previous track:', error);
+      }
+    }
+  }
+
+  // Enable/disable auto-play
+  setAutoPlay(enabled: boolean): void {
+    this.autoPlay = enabled;
+    console.log('🎵 Auto-play', enabled ? 'enabled' : 'disabled');
+  }
+
+  // Get current playlist info
+  getPlaylistInfo(): { total: number; current: number; track: Track | null } {
+    return {
+      total: this.playlist.length,
+      current: this.currentTrackIndex,
+      track: this.currentTrack
+    };
   }
 
   // Stop and reset audio
