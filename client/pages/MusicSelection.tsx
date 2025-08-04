@@ -7,6 +7,14 @@ import { simpleMusicService } from '../services/simpleMusicService';
 
 const MusicSelection = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState({
+    title: "Relaxing Music",
+    artist: "Jelly Daisy",
+    progress: 74,
+    timeRemaining: "-1:40"
+  });
 
   // Load saved genres on component mount
   useEffect(() => {
