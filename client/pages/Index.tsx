@@ -168,6 +168,44 @@ const EmoCopilotDashboard = () => {
     audioManager.toggleMute();
   };
 
+  const playNextTrack = async () => {
+    try {
+      if (playlist.length === 0) {
+        alert('No music available. Please select genres first!');
+        return;
+      }
+
+      // Find current track index
+      const currentIndex = currentTrack ? playlist.findIndex(track => track.id === currentTrack.id) : -1;
+
+      // Get next track (avoid repeating the same track)
+      let nextIndex;
+      if (currentIndex === -1 || currentIndex === playlist.length - 1) {
+        // If no current track or at end, start from beginning
+        nextIndex = 0;
+      } else {
+        // Go to next track
+        nextIndex = currentIndex + 1;
+      }
+
+      const nextTrack = playlist[nextIndex];
+
+      if (nextTrack && nextTrack.id !== currentTrack?.id) {
+        console.log('🎵 Playing next track:', nextTrack.title);
+        await audioManager.playTrack(nextTrack);
+        setCurrentTrack(nextTrack);
+      }
+    } catch (error) {
+      console.error('❌ Error playing next track:', error);
+      alert(`Error playing next track: ${error.message}`);
+    }
+  };
+
+  const toggleFavorite = () => {
+    setIsFavorited(!isFavorited);
+    console.log('🎵 Track', isFavorited ? 'removed from' : 'added to', 'favorites');
+  };
+
   // Text-to-speech function
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
