@@ -354,6 +354,39 @@ const AIChatbot = () => {
     }
   };
 
+  // Fallback responses when API is not available
+  const getFallbackResponse = (userMessage: string): string => {
+    const message = userMessage.toLowerCase();
+
+    // Emotional support responses
+    if (message.includes('stress') || message.includes('anxious') || message.includes('worried')) {
+      return "I understand you're feeling stressed. Take a deep breath with me. Remember, you're a capable driver and you've got this! Would you like me to suggest some calming music?";
+    }
+
+    if (message.includes('tired') || message.includes('sleepy') || message.includes('fatigue')) {
+      return "Safety first! If you're feeling tired, please consider pulling over for a short break. Your wellbeing is more important than any destination. How are you feeling right now?";
+    }
+
+    if (message.includes('traffic') || message.includes('jam') || message.includes('slow')) {
+      return "Traffic can be frustrating, but this gives us more time to chat! Try to see it as a moment to relax. How has your day been so far?";
+    }
+
+    // Navigation fallbacks
+    if (message.includes('directions') || message.includes('navigate') || message.includes('route')) {
+      return "I'd love to help with directions! For now, you can use your phone's GPS app, and I'll be here to keep you company during the drive. How are you feeling about the journey?";
+    }
+
+    // General supportive responses
+    const supportiveResponses = [
+      "I'm here to support you on this journey! How are you feeling today?",
+      "That sounds interesting! Tell me more about how you're doing right now.",
+      "I'm listening and I care about your experience. What's on your mind?",
+      "You're doing great! I'm here to chat and keep you company. How can I help?"
+    ];
+
+    return supportiveResponses[Math.floor(Math.random() * supportiveResponses.length)];
+  };
+
   // Enhanced DeepSeek API integration with emotional co-driver personality
   const callDeepSeekAPI = async (userMessage: string): Promise<string> => {
     // Check if message is navigation-related
@@ -377,6 +410,15 @@ const AIChatbot = () => {
     }
 
     try {
+      // Check API key availability first
+      const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+      console.log('DeepSeek API Key available:', apiKey ? `${apiKey.substring(0, 10)}...` : 'No key found');
+      
+      if (!apiKey || apiKey === 'your-deepseek-api-key') {
+        console.warn('⚠️ DeepSeek API key not configured - using fallback responses');
+        return getFallbackResponse(userMessage);
+      }
+
       const locationContext = currentLocation
         ? `User's current location: ${currentLocation.lat}, ${currentLocation.lng}. `
         : 'User location not available. ';
@@ -385,7 +427,7 @@ const AIChatbot = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-your-api-key-here'}`
+          'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
           model: 'deepseek-chat',
@@ -434,7 +476,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       });
 
       if (!response.ok) {
-        throw new Error(`DeepSeek API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('DeepSeek API response:', response.status, errorText);
+        throw new Error(`DeepSeek API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();

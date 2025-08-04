@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import MusicProgressBar from '../components/MusicProgressBar';
 import StatusBar from '../components/StatusBar';
-import { musicService, Track } from '../services/musicService';
+import MusicProgressBar from '../components/MusicProgressBar';
+import { Track, musicService } from '../services/musicService';
 import { audioManager, AudioState } from '../services/audioManager';
-import { freesoundService } from '../services/freesoundService';
+import { simpleMusicService } from '../services/simpleMusicService';
 
 const EmoCopilotDashboard = () => {
   const [isCoolingOn, setIsCoolingOn] = useState(false);
@@ -21,16 +21,49 @@ const EmoCopilotDashboard = () => {
     isLoading: false,
     error: null
   });
+  const [audioEnabled, setAudioEnabled] = useState(false);
 
-  // Load music based on selected genres and subscribe to audio manager
+  // Enable audio on first user interaction
   useEffect(() => {
-    const loadMusic = () => {
-      musicService.loadSelectedGenres();
-      const filteredTracks = musicService.getFilteredTracks();
-      setPlaylist(filteredTracks);
+    const enableAudio = () => {
+      setAudioEnabled(true);
+      console.log('🎵 Audio enabled by user interaction');
+      document.removeEventListener('click', enableAudio);
+      document.removeEventListener('touchstart', enableAudio);
+    };
 
-      if (filteredTracks.length > 0 && !currentTrack) {
-        setCurrentTrack(filteredTracks[0]);
+    document.addEventListener('click', enableAudio);
+    document.addEventListener('touchstart', enableAudio);
+
+    return () => {
+      document.removeEventListener('click', enableAudio);
+      document.removeEventListener('touchstart', enableAudio);
+    };
+  }, []);
+
+  // Load music from Freesound with CORS handling
+  useEffect(() => {
+    const loadMusic = async () => {
+      // Check if there are selected genres
+      const savedGenres = musicService.loadSelectedGenres();
+      
+      if (savedGenres && savedGenres.length > 0) {
+        console.log('🎵 Loading music for selected genres:', savedGenres);
+        await simpleMusicService.updateGenres(savedGenres);
+        
+        // Get tracks from service
+        const allTracks = await simpleMusicService.getAllTracks();
+        setPlaylist(allTracks);
+
+        if (allTracks.length > 0 && !currentTrack) {
+          setCurrentTrack(allTracks[0]);
+        }
+        
+        console.log('🎵 Loaded playlist with', allTracks.length, 'tracks from Freesound');
+      } else {
+        console.log('🎵 No genres selected, no music will be loaded');
+        setPlaylist([]);
+        setCurrentTrack(null);
       }
     };
 
@@ -61,27 +94,72 @@ const EmoCopilotDashboard = () => {
   }, [currentTrack]);
 
   // Update playlist when returning from music selection
-  const refreshPlaylist = () => {
-    const filteredTracks = musicService.getFilteredTracks();
-    setPlaylist(filteredTracks);
+  const refreshPlaylist = async () => {
+    // Reload music based on newly selected genres
+    const savedGenres = musicService.loadSelectedGenres();
+    
+    if (savedGenres && savedGenres.length > 0) {
+      console.log('🎵 Refreshing playlist for genres:', savedGenres);
+      await simpleMusicService.updateGenres(savedGenres);
+      
+      const allTracks = await simpleMusicService.getAllTracks();
+      setPlaylist(allTracks);
 
-    if (filteredTracks.length > 0) {
-      setCurrentTrack(filteredTracks[0]);
+      if (allTracks.length > 0) {
+        setCurrentTrack(allTracks[0]);
+      }
+      
+      console.log('🎵 Playlist refreshed with', allTracks.length, 'tracks');
+    } else {
+      console.log('🎵 No genres selected, clearing playlist');
+      setPlaylist([]);
+      setCurrentTrack(null);
     }
   };
 
   const togglePlayPause = async () => {
-    if (!audioState.isPlaying && !currentTrack && playlist.length > 0) {
-      // Starting fresh - use local tracks directly for reliability
-      const randomTrack = musicService.getRandomTrack();
-      if (randomTrack) {
-        console.log('🎵 Playing local track:', randomTrack.title);
-        await audioManager.playTrack(randomTrack);
-        setCurrentTrack(randomTrack);
+    try {
+      // Check if user has selected any genres
+      const savedGenres = musicService.loadSelectedGenres();
+      
+      if (!savedGenres || savedGenres.length === 0) {
+        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
+        return;
       }
-    } else if (currentTrack) {
-      // Toggle play/pause for current track
-      await audioManager.togglePlay();
+      
+      if (!audioState.isPlaying && !currentTrack) {
+        console.log('🎵 Getting random track...');
+        
+        // Get a random track from Freesound with proper CORS handling
+        const randomTrack = await simpleMusicService.getRandomTrack();
+        console.log('🎵 Selected track:', randomTrack);
+
+        if (!randomTrack.url) {
+          throw new Error('No valid audio URL found');
+        }
+
+        try {
+          console.log('🎵 Attempting to play:', randomTrack.url);
+          await audioManager.playTrack(randomTrack);
+          setCurrentTrack(randomTrack);
+          console.log('✅ Playback started successfully');
+        } catch (audioError) {
+          console.error('❌ Track playback failed:', audioError);
+          
+          // Show specific error message to user
+          const errorMsg = audioError.message || 'Unknown audio error';
+          alert(`Audio playback failed: ${errorMsg}\n\nTry clicking anywhere on the page first to enable audio.`);
+        }
+      } else if (currentTrack) {
+        // Toggle play/pause for current track
+        console.log('🎵 Toggling playback for:', currentTrack.title);
+        await audioManager.togglePlay();
+      } else {
+        alert('Please wait for music to load...');
+      }
+    } catch (error) {
+      console.error('❌ Error in togglePlayPause:', error);
+      alert(`Error: ${error.message || 'Unknown error'}\n\nPlease check the browser console for details.`);
     }
   };
 
@@ -115,15 +193,14 @@ const EmoCopilotDashboard = () => {
   return (
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl">
       {/* Status Bar */}
-      <StatusBar
-        title="Emo-Copilot Active"
-        isDraggable={true}
+      <StatusBar 
+        title="Emo Copilot" 
+        showHomeButton={false}
         showTemperature={true}
       />
-
+      
       {/* Main Content Container */}
-      <div className="space-y-3 lg:space-y-6">
-        {/* Heart Rate Section */}
+      <div className="space-y-3 lg:space-y-6">{/* Heart Rate Section */}
         <div className="bg-white border border-emotion-face rounded-xl p-3 backdrop-blur-sm lg:p-6">
           <div className="flex items-end gap-4 lg:gap-8">
             {/* Heart Rate Monitor */}
@@ -229,20 +306,25 @@ const EmoCopilotDashboard = () => {
             </div>
             <div className="flex-1">
               <h4 className="text-base font-medium text-black lg:text-xl">
-                {currentTrack ? currentTrack.title : (musicService.hasSelectedGenres() ? 'Select a track' : 'Choose genres first')}
+                {currentTrack ? currentTrack.title : 'Click play to start music'}
               </h4>
               <p className="text-xs text-emotion-default lg:text-sm">
-                {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` :
-                 (musicService.hasSelectedGenres() ? `${playlist.length} tracks available` : 'Go to Music Selection')}
+                {currentTrack ? `${currentTrack.artist} • ${currentTrack.genre}` : 'Simple audio test - click play button'}
               </p>
             </div>
             <button
-              className="p-1 lg:p-2 transition-opacity duration-200"
+              className="p-1 lg:p-2 transition-all duration-200 hover:scale-105"
               onClick={togglePlayPause}
               disabled={audioState.isLoading}
-              style={{ opacity: audioState.isLoading ? 0.5 : 1 }}
+              style={{ 
+                opacity: audioState.isLoading ? 0.5 : 1,
+                filter: audioState.isLoading ? 'blur(1px)' : 'none'
+              }}
             >
-              {audioState.isPlaying ? (
+              {audioState.isLoading ? (
+                // Loading spinner
+                <div className="w-5 h-5 lg:w-6 lg:h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+              ) : audioState.isPlaying ? (
                 // Pause icon
                 <svg className="w-5 h-5 lg:w-6 lg:h-6" viewBox="0 0 20 21" fill="none">
                   <path d="M5 2.5C3.89543 2.5 3 3.39543 3 4.5V16.5C3 17.6046 3.89543 18.5 5 18.5H7C8.10457 18.5 9 17.6046 9 16.5V4.5C9 3.39543 8.10457 2.5 7 2.5H5ZM13 2.5C11.8954 2.5 11 3.39543 11 4.5V16.5C11 17.6046 11.8954 18.5 13 18.5H15C16.1046 18.5 17 17.6046 17 16.5V4.5C17 3.39543 16.1046 2.5 15 2.5H13Z" fill="#FF8B7E"/>
@@ -268,8 +350,8 @@ const EmoCopilotDashboard = () => {
               )}
             </button>
           </div>
-          
-          {/* Interactive Progress Bar */}
+
+          {/* Music Progress Bar */}
           <MusicProgressBar
             currentTime={audioState.currentTime}
             duration={audioState.duration || (currentTrack ? currentTrack.duration : 180)}
@@ -281,9 +363,6 @@ const EmoCopilotDashboard = () => {
 
           {/* Audio Source Status */}
           <div className="mt-2 text-center">
-            <p className="text-xs text-emotion-default opacity-75">
-              {freesoundService.isConfigured() ? '🎵 Using Freesound.org API' : '🎵 Demo tracks - configure API for real audio'}
-            </p>
             {audioState.error && (
               <p className="text-xs text-flowkit-red mt-1">
                 Audio Error: {audioState.error}

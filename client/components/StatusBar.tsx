@@ -82,7 +82,23 @@ const StatusBar: React.FC<StatusBarProps> = ({
           fetchWeather(location.lat, location.lng);
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          let errorMessage = '';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'Location access denied by user';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Location information unavailable';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'Location request timed out';
+              break;
+            default:
+              errorMessage = `Location error: ${error.message || 'Unknown error'}`;
+              break;
+          }
+          console.error('❌ Geolocation error:', errorMessage);
+
           // Set fallback temperature even without location
           const hour = new Date().getHours();
           const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;

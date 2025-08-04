@@ -7,13 +7,25 @@ interface MusicProgressBarProps {
 }
 
 const MusicProgressBar: React.FC<MusicProgressBarProps> = ({
-  currentTime = 100, // seconds (1:40 remaining means 100 seconds elapsed)
-  duration = 200, // total duration in seconds
+  currentTime = 0,
+  duration = 0,
   onProgressChange
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [progress, setProgress] = useState(currentTime / duration);
   const progressBarRef = useRef<HTMLDivElement>(null);
+  
+  // Calculate real progress from current time and duration
+  const realProgress = duration > 0 ? currentTime / duration : 0;
+  const [localProgress, setLocalProgress] = useState(realProgress);
+  
+  // Update local progress when not dragging
+  React.useEffect(() => {
+    if (!isDragging) {
+      setLocalProgress(realProgress);
+    }
+  }, [realProgress, isDragging]);
+  
+  const progress = isDragging ? localProgress : realProgress;
 
   const updateProgress = useCallback((clientX: number) => {
     if (!progressBarRef.current) return;
@@ -21,7 +33,7 @@ const MusicProgressBar: React.FC<MusicProgressBarProps> = ({
     const rect = progressBarRef.current.getBoundingClientRect();
     const newProgress = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     
-    setProgress(newProgress);
+    setLocalProgress(newProgress);
     onProgressChange?.(newProgress);
   }, [onProgressChange]);
 

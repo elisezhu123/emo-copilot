@@ -441,10 +441,9 @@ class MusicService {
   // Get tracks filtered by selected genres
   getFilteredTracks(): Track[] {
     if (this.selectedGenres.length === 0) {
-      // If no genres selected, set some default genres for testing
-      console.log('⚠️ No genres selected, setting default genres for testing');
-      this.selectedGenres = ['Ambient', 'Classical'];
-      this.saveSelectedGenres(this.selectedGenres);
+      // If no genres selected, return empty array
+      console.log('⚠️ No genres selected, returning empty tracks');
+      return [];
     }
 
     const filteredTracks: Track[] = [];

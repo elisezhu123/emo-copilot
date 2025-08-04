@@ -10,6 +10,16 @@ import Index from "./pages/Index";
 import MusicSelection from "./pages/MusicSelection";
 import AIChatbot from "./pages/AIChatbot";
 import NotFound from "./pages/NotFound";
+import { audioManager } from "./services/audioManager";
+
+// Expose audioManager to window for debugging
+declare global {
+  interface Window {
+    audioManager: typeof audioManager;
+  }
+}
+
+window.audioManager = audioManager;
 
 const queryClient = new QueryClient();
 

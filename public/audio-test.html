@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Test</title>
+</head>
+<body>
+    <h1>Audio Test</h1>
+    <button id="testBtn">Test Audio</button>
+    <div id="log"></div>
+    
+    <script>
+        const log = document.getElementById('log');
+        function addLog(message) {
+            log.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+        
+        document.getElementById('testBtn').onclick = async function() {
+            addLog('🎵 Starting audio test...');
+            
+            try {
+                // Test 1: Basic audio element
+                const audio = new Audio();
+                addLog('✅ Audio element created');
+                
+                // Test 2: Set source
+                audio.src = 'https://cdn.freesound.org/previews/557/557455_12396743-hq.mp3';
+                audio.volume = 0.5;
+                addLog('✅ Audio source set');
+                
+                // Test 3: Load audio
+                audio.load();
+                addLog('🔄 Loading audio...');
+                
+                // Test 4: Wait for load
+                await new Promise((resolve, reject) => {
+                    audio.oncanplay = () => {
+                        addLog('✅ Audio can play');
+                        resolve();
+                    };
+                    audio.onerror = (e) => {
+                        addLog('❌ Audio load error: ' + e.message);
+                        reject(e);
+                    };
+                    setTimeout(() => reject(new Error('Timeout')), 5000);
+                });
+                
+                // Test 5: Play audio
+                await audio.play();
+                addLog('✅ Audio playing!');
+                
+                setTimeout(() => {
+                    audio.pause();
+                    addLog('⏸️ Audio paused');
+                }, 2000);
+                
+            } catch (error) {
+                addLog('❌ Test failed: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>

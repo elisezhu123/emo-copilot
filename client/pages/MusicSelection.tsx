@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
 import { musicService } from '../services/musicService';
+import { simpleMusicService } from '../services/simpleMusicService';
 
 const MusicSelection = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -9,31 +10,40 @@ const MusicSelection = () => {
   // Load saved genres on component mount
   useEffect(() => {
     const savedGenres = musicService.loadSelectedGenres();
-    setSelectedGenres(savedGenres);
+    console.log('🎵 Loaded saved genres:', savedGenres);
+    setSelectedGenres(savedGenres || []);
   }, []);
 
   const musicGenres = [
     { name: 'Classical', color: 'bg-emotion-default' },
     { name: 'Ambient', color: 'bg-emotion-mouth' },
-    { name: 'Hip-Pop', color: 'bg-emotion-blue' },
-    { name: 'Chillout', color: 'bg-emotion-orange' },
-    { name: 'Country', color: 'bg-emotion-mouth' },
-    { name: 'Blues', color: 'bg-emotion-blue' },
-    { name: 'Electro Pop', color: 'bg-emotion-orange' },
-    { name: 'Downbeat', color: 'bg-emotion-default' },
-    { name: 'Rock', color: 'bg-emotion-blue' },
-    { name: 'Folk', color: 'bg-emotion-orange' },
-    { name: 'New Age', color: 'bg-emotion-default' },
+    { name: 'Piano', color: 'bg-emotion-blue' },
+    { name: 'Peaceful', color: 'bg-emotion-orange' },
     { name: 'Jazz', color: 'bg-emotion-mouth' },
+    { name: 'Electronic', color: 'bg-emotion-blue' },
+    { name: 'Folk', color: 'bg-emotion-orange' },
+    { name: 'Meditation', color: 'bg-emotion-default' },
+    { name: 'Natural', color: 'bg-emotion-blue' },
+    { name: 'Chill', color: 'bg-emotion-orange' },
+    { name: 'Instrumental', color: 'bg-emotion-default' },
+    { name: 'Relaxing', color: 'bg-emotion-mouth' },
   ];
 
-  const toggleGenre = (genreName: string) => {
+  const toggleGenre = async (genreName: string) => {
     const newGenres = selectedGenres.includes(genreName)
       ? selectedGenres.filter(genre => genre !== genreName)
       : [...selectedGenres, genreName];
 
     setSelectedGenres(newGenres);
+    
+    // Save to both services
     musicService.saveSelectedGenres(newGenres);
+    
+    // Update simple music service with new genres
+    if (newGenres.length > 0) {
+      console.log('🎵 Updating music selection with genres:', newGenres);
+      await simpleMusicService.updateGenres(newGenres);
+    }
   };
 
   const isSelected = (genreName: string) => selectedGenres.includes(genreName);
@@ -55,6 +65,16 @@ const MusicSelection = () => {
         <p className="text-xs lg:text-sm text-emotion-default mt-1">
           (You can choose <span className="text-emotion-mouth">more than one</span> !!!)
         </p>
+        
+        {/* Current Selection Status */}
+        <div className="mt-3 p-2 bg-emotion-face/10 rounded-lg">
+          <p className="text-xs text-emotion-default">
+            {selectedGenres.length > 0 
+              ? `Selected: ${selectedGenres.join(', ')} (${selectedGenres.length} genres)`
+              : 'No genres selected - please select genres to enable music'
+            }
+          </p>
+        </div>
       </div>
 
       {/* Music Genre Grid */}

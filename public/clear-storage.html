@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Storage</title>
+</head>
+<body>
+    <h1>Clearing Music Selection Storage</h1>
+    <p id="status">Clearing...</p>
+    
+    <script>
+        // Clear all music-related data from localStorage
+        localStorage.removeItem('selectedMusicGenres');
+        localStorage.removeItem('musicGenres');
+        localStorage.removeItem('currentTrack');
+        localStorage.removeItem('playlist');
+        
+        // Also clear sessionStorage
+        sessionStorage.clear();
+        
+        console.log('All music storage cleared');
+        
+        // Update status
+        document.getElementById('status').textContent = 'All storage cleared! Redirecting to music selection...';
+        
+        // Automatically redirect after 1 second
+        setTimeout(() => {
+            window.location.href = '/music-selection';
+        }, 1000);
+    </script>
+</body>
+</html>

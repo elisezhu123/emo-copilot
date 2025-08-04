@@ -30,11 +30,11 @@ class AudioManager {
 
   private initializeAudio() {
     this.audio = new Audio();
-    // Remove CORS restriction to allow Freesound URLs
-    // this.audio.crossOrigin = 'anonymous';
+    // Enable CORS for cross-origin audio resources
+    this.audio.crossOrigin = 'anonymous';
     this.audio.preload = 'metadata';
 
-    console.log('🎵 Audio element initialized');
+    console.log('🎵 Audio element initialized with CORS support');
 
     // Add event listeners
     this.audio.addEventListener('loadstart', () => this.notifyListeners());
@@ -107,7 +107,7 @@ class AudioManager {
       duration: this.audio.duration || 0,
       volume: this.audio.volume,
       isMuted: this.audio.muted,
-      isLoading: this.audio.readyState < 3,
+      isLoading: false, // Force loading to false - we'll manage this manually
       error: this.audio.error ? this.audio.error.message : null
     };
 
@@ -119,31 +119,93 @@ class AudioManager {
     return state;
   }
 
-  // Load and play a track
+  // Load and play a track with improved error handling
   async playTrack(track: Track): Promise<void> {
-    if (!this.audio) return;
+    if (!this.audio) {
+      throw new Error('Audio manager not initialized');
+    }
 
     try {
       this.currentTrack = track;
+      const audioUrl = track.url;
+      
+      if (!audioUrl) {
+        throw new Error('No audio URL provided for this track');
+      }
 
-      // Set audio source with fallback URLs
-      const audioUrl = track.url || this.getFallbackAudioUrl();
+      console.log('🎵 Loading track:', track.title);
+      console.log('🔗 Audio URL:', audioUrl);
+
+      // Stop any current playback
+      if (!this.audio.paused) {
+        this.audio.pause();
+      }
+
+      // Reset audio element
+      this.audio.currentTime = 0;
+      
+      // Set the source
       this.audio.src = audioUrl;
+      this.audio.volume = 0.8;
+      this.audio.muted = false;
 
-      console.log('Loading track:', track.title, 'from URL:', audioUrl);
+      // Wait for the audio to be ready
+      await new Promise((resolve, reject) => {
+        const handleCanPlay = () => {
+          console.log('✅ Audio ready to play');
+          this.audio?.removeEventListener('canplay', handleCanPlay);
+          this.audio?.removeEventListener('error', handleError);
+          resolve(true);
+        };
 
-      // Wait for audio to load
-      await this.waitForLoad();
+        const handleError = (event: Event) => {
+          console.error('❌ Audio load error:', event);
+          this.audio?.removeEventListener('canplay', handleCanPlay);
+          this.audio?.removeEventListener('error', handleError);
+          reject(new Error('Failed to load audio'));
+        };
 
-      // Start playing
+        this.audio?.addEventListener('canplay', handleCanPlay);
+        this.audio?.addEventListener('error', handleError);
+
+        // Start loading
+        this.audio?.load();
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          this.audio?.removeEventListener('canplay', handleCanPlay);
+          this.audio?.removeEventListener('error', handleError);
+          reject(new Error('Audio loading timeout'));
+        }, 10000);
+      });
+
+      // Now try to play
+      console.log('🎵 Starting playback...');
       await this.audio.play();
-
+      
       console.log('✅ Now playing:', track.title, 'by', track.artist);
+      this.notifyListeners();
 
     } catch (error) {
       console.error('❌ Error playing track:', error);
-      // Try with fallback URL if main URL fails
-      await this.tryFallbackAudio(track);
+      
+      // Handle specific browser errors
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            throw new Error('Browser blocked autoplay. Please interact with the page first, then try again.');
+          case 'AbortError':
+            throw new Error('Audio loading was interrupted. Please try again.');
+          case 'NotSupportedError':
+            throw new Error('Audio format not supported by your browser.');
+          case 'NetworkError':
+            throw new Error('Network error loading audio. Check your internet connection.');
+          default:
+            throw new Error(`Audio error: ${error.message || error.name || 'Unknown error'}`);
+        }
+      }
+      
+      throw new Error(`Playback failed: ${error.message || 'Unknown error'}`);
     }
   }
 
