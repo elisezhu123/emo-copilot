@@ -15,7 +15,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   showTemperature = true
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [temperature, setTemperature] = useState<string | null>(null);
+  const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
 
   // Real-time clock update
@@ -36,20 +36,24 @@ const StatusBar: React.FC<StatusBarProps> = ({
     });
   };
 
-  // Fetch weather data
+  // Fetch weather data for Limerick, Ireland
   const fetchWeather = async (lat: number, lng: number) => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
-        // Fallback to simulated temperature based on time of day
-        const hour = new Date().getHours();
-        const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
-        setTemperature(`${simulatedTemp}°C`);
+        console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
+        setTemperature('15°C');
         return;
       }
 
+      // Use Limerick coordinates if not provided or fetch for current location
+      const limerickLat = 52.6638;
+      const limerickLng = -8.6267;
+      const weatherLat = lat || limerickLat;
+      const weatherLng = lng || limerickLng;
+
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${weatherLat}&lon=${weatherLng}&appid=${apiKey}&units=metric`
       );
 
       if (!response.ok) {
@@ -59,13 +63,13 @@ const StatusBar: React.FC<StatusBarProps> = ({
       const data = await response.json();
       const temp = Math.round(data.main.temp);
       setTemperature(`${temp}°C`);
+      console.log('🌡️ StatusBar temperature updated for Limerick area:', `${temp}°C`);
       
     } catch (error) {
-      console.error('Weather API error:', error);
-      // Fallback to simulated temperature
-      const hour = new Date().getHours();
-      const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
-      setTemperature(`${simulatedTemp}°C`);
+      console.error('❌ StatusBar weather API error:', error);
+      // Fallback to current Limerick temperature
+      setTemperature('15°C');
+      console.log('🌡️ StatusBar using fallback Limerick temperature: 15°C');
     }
   };
 
@@ -82,30 +86,31 @@ const StatusBar: React.FC<StatusBarProps> = ({
           fetchWeather(location.lat, location.lng);
         },
         (error) => {
-          let errorMessage = '';
+          // Handle geolocation errors gracefully - this is normal behavior
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = 'Location access denied by user';
+              console.log('🌡️ StatusBar: Location access denied, using Limerick weather');
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Location information unavailable';
+              console.log('🌡️ StatusBar: Location unavailable, using Limerick weather');
               break;
             case error.TIMEOUT:
-              errorMessage = 'Location request timed out';
+              console.log('🌡️ StatusBar: Location request timed out, using Limerick weather');
               break;
             default:
-              errorMessage = `Location error: ${error.message || 'Unknown error'}`;
+              console.log('🌡️ StatusBar: Location service unavailable, using Limerick weather');
               break;
           }
-          console.error('❌ Geolocation error:', errorMessage);
 
-          // Set fallback temperature even without location
-          const hour = new Date().getHours();
-          const simulatedTemp = hour < 6 ? 18 : hour < 12 ? 22 : hour < 18 ? 26 : 21;
-          setTemperature(`${simulatedTemp}°C`);
+          // Fallback to Limerick weather when location is not available
+          fetchWeather(52.6638, -8.6267); // Limerick coordinates
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );
+    } else if (showTemperature) {
+      // Fallback to Limerick weather when geolocation is not supported
+      console.log('🌡️ StatusBar: Geolocation not supported, using Limerick weather');
+      fetchWeather(52.6638, -8.6267); // Limerick coordinates
     }
   }, [showTemperature]);
 
@@ -115,10 +120,10 @@ const StatusBar: React.FC<StatusBarProps> = ({
     draggable: true,
     onDragStart: (e: React.DragEvent) => {
       e.dataTransfer.setData('text/plain', '');
-      e.currentTarget.style.opacity = '0.5';
+      (e.currentTarget as HTMLElement).style.opacity = '0.5';
     },
     onDragEnd: (e: React.DragEvent) => {
-      e.currentTarget.style.opacity = '1';
+      (e.currentTarget as HTMLElement).style.opacity = '1';
     }
   } : {};
 
@@ -157,7 +162,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         {/* Home Button */}
         {showHomeButton && (
           <Link
-            to="/"
+            to="/dashboard"
             className="hover:scale-110 transition-transform duration-200"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
