@@ -438,6 +438,18 @@ const AIChatbot = () => {
     return unsubscribe;
   }, []);
 
+  // Periodic driving condition monitoring for time-based alerts
+  useEffect(() => {
+    const monitoringInterval = setInterval(() => {
+      monitorDrivingConditions();
+    }, 60000); // Check every minute
+
+    // Initial check
+    monitorDrivingConditions();
+
+    return () => clearInterval(monitoringInterval);
+  }, [alertTriggered]);
+
   // Breathing exercise and meditation functions - REMOVED
   // These wellness features have been removed as requested
 
