@@ -1066,7 +1066,7 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n���� SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
@@ -3133,26 +3133,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 User wants listening:', userWantsListening);
     console.log('🔍 Microphone status:', microphoneStatus);
 
-    // Add a simple test message to verify the system works
-    if (userWantsListening) {
-      // When stopping, add a test message to show the flow works
-      const testMessage: Message = {
-        id: Date.now().toString(),
-        text: "Microphone stopped",
-        type: 'user',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, testMessage]);
-    } else {
-      // When starting, add a test message to show the flow works
-      const testMessage: Message = {
-        id: Date.now().toString(),
-        text: "Microphone activated - say something!",
-        type: 'user',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, testMessage]);
-    }
+    // Add visual feedback that microphone button was clicked
+    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
