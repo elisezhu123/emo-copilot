@@ -290,41 +290,63 @@ class ArduinoService {
     }
   }
 
-  // Mock data for testing when Arduino is not connected - realistic HRV patterns
+  // Mock data for testing when Arduino is not connected - realistic driving patterns
   private startMockData() {
     if (this.isConnected) return; // Don't mock if real connection exists
 
-    console.log('🧪 Starting mock Arduino data with realistic HRV patterns');
+    console.log('🧪 Starting mock Arduino data with realistic driving patterns');
 
-    const mockValues = [72, 78, 75, 95, 85, 70, 82, 76];
+    // More realistic driving heart rates (slightly elevated from rest)
+    const mockValues = [78, 82, 85, 88, 91, 76, 84, 89, 86, 80, 87, 83];
     let index = 0;
+    let heartRateBaseline = 80; // Typical driving baseline
+    let trafficStressLevel = 0; // 0-3 (normal, light traffic, heavy traffic, road rage)
+    let focusLevel = 1; // 0-2 (distracted, normal, focused)
+    let fatigueLevel = 0; // 0-3 (alert, slight fatigue, tired, very tired)
 
-    // HRV state management
+    // HRV state management for driving scenarios
     let currentHRVState = 'neutral'; // neutral, stressed, focused, calm, relaxed, anxious
     let stateStartTime = Date.now();
-    let stateChangeInterval = 5 + Math.random() * 5; // 5-10 minutes in minutes
-    let currentBaseHRV = 173; // Start at neutral 173
+    let stateChangeInterval = 2 + Math.random() * 4; // 2-6 minutes (shorter for driving scenarios)
+    let currentBaseHRV = 155; // Start at driving baseline (lower than resting)
     let trendDirection = 'stable'; // stable, improving, declining
+    let drivingScenario = 'highway'; // highway, city, traffic, parking
 
-    // Define HRV ranges for each state
-    const hrvStates = {
-      anxious: { base: 75, variation: 15 },    // 60-90
-      stressed: { base: 85, variation: 5 },     // 80-90
-      neutral: { base: 173, variation: 7 },     // 166-180
-      focused: { base: 140, variation: 20 },    // 120-160
-      calm: { base: 200, variation: 20 },       // 180-220
-      relaxed: { base: 235, variation: 15 }     // 220-250
+    // Define HRV ranges for each driving state (lower overall due to driving stress)
+    const drivingHRVStates = {
+      anxious: { base: 45, variation: 10 },     // 35-55 (road rage, emergency situations)
+      stressed: { base: 65, variation: 10 },    // 55-75 (heavy traffic, aggressive drivers)
+      neutral: { base: 155, variation: 15 },    // 140-170 (normal driving)
+      focused: { base: 130, variation: 15 },    // 115-145 (attentive driving, navigation)
+      calm: { base: 175, variation: 20 },       // 155-195 (easy highway driving)
+      relaxed: { base: 190, variation: 15 }     // 175-205 (cruise control, scenic drive)
     };
 
     setInterval(() => {
       if (!this.isConnected) { // Only send mock data if not connected
-        // Add some randomness to mock values
-        const baseValue = mockValues[index % mockValues.length];
-        const randomValue = baseValue + Math.floor(Math.random() * 10 - 5);
-        this.addHeartRateValue(Math.max(60, Math.min(100, randomValue)));
+        // Simulate driving scenarios affecting heart rate
+        let baseValue = mockValues[index % mockValues.length];
+
+        // Adjust based on driving conditions
+        if (drivingScenario === 'traffic') {
+          baseValue += 8 + trafficStressLevel * 3; // Traffic increases HR
+        } else if (drivingScenario === 'parking') {
+          baseValue += 5 + Math.random() * 8; // Parking stress
+        } else if (drivingScenario === 'highway') {
+          baseValue += 2; // Slight elevation from highway driving
+        } else if (drivingScenario === 'city') {
+          baseValue += 4 + Math.random() * 6; // City driving variability
+        }
+
+        // Add fatigue effect (increases HR but decreases variability)
+        baseValue += fatigueLevel * 3;
+
+        // Add some driving-realistic randomness
+        const randomValue = baseValue + Math.floor(Math.random() * 8 - 4);
+        this.addHeartRateValue(Math.max(65, Math.min(120, randomValue)));
         index++;
       }
-    }, 2000); // New value every 2 seconds
+    }, 1800); // New value every 1.8 seconds (more frequent for driving)
 
     // Mock HRV data with realistic state changes
     setInterval(() => {
@@ -332,99 +354,156 @@ class ArduinoService {
         const currentTime = Date.now();
         const timeInState = (currentTime - stateStartTime) / (1000 * 60); // minutes
 
-        // Check if it's time to change state (5-10 minutes)
+        // Check if it's time to change state (2-6 minutes for driving scenarios)
         if (timeInState >= stateChangeInterval) {
           const previousState = currentHRVState;
+          const previousScenario = drivingScenario;
 
-          // Determine trend based on current state
-          if (currentHRVState === 'stressed' || currentHRVState === 'anxious') {
-            // From stress/anxiety, trend toward improvement
-            const improvementChance = Math.random();
-            if (improvementChance < 0.4) {
-              currentHRVState = 'neutral';
-              trendDirection = 'improving';
-            } else if (improvementChance < 0.7) {
-              currentHRVState = 'calm';
-              trendDirection = 'improving';
+          // Change driving scenario occasionally
+          const scenarioChange = Math.random();
+          if (scenarioChange < 0.2) {
+            const scenarios = ['highway', 'city', 'traffic', 'parking'];
+            drivingScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+
+            // Update stress factors based on scenario
+            if (drivingScenario === 'traffic') {
+              trafficStressLevel = 1 + Math.floor(Math.random() * 3);
+            } else if (drivingScenario === 'parking') {
+              trafficStressLevel = 2;
             } else {
-              currentHRVState = 'relaxed';
-              trendDirection = 'improving';
+              trafficStressLevel = 0;
             }
-          } else if (currentHRVState === 'neutral') {
-            // From neutral, can go anywhere
-            const stateOptions = ['stressed', 'focused', 'calm', 'anxious'];
-            const randomChoice = Math.random();
 
-            if (randomChoice < 0.3) {
+            console.log(`🚗 Driving scenario: ${previousScenario} → ${drivingScenario} (stress: ${trafficStressLevel})`);
+          }
+
+          // Determine emotional state based on driving conditions
+          if (drivingScenario === 'traffic' && trafficStressLevel >= 2) {
+            // Heavy traffic tends toward stress/anxiety
+            const trafficChoice = Math.random();
+            if (trafficChoice < 0.4) {
               currentHRVState = 'stressed';
               trendDirection = 'declining';
-            } else if (randomChoice < 0.5) {
-              currentHRVState = 'focused';
-              trendDirection = 'stable';
-            } else if (randomChoice < 0.7) {
-              currentHRVState = 'calm';
-              trendDirection = 'improving';
-            } else if (randomChoice < 0.85) {
+            } else if (trafficChoice < 0.7) {
               currentHRVState = 'anxious';
               trendDirection = 'declining';
             } else {
-              currentHRVState = 'relaxed';
-              trendDirection = 'improving';
-            }
-          } else if (currentHRVState === 'focused') {
-            // From focused, usually return to neutral or improve
-            const focusedChoice = Math.random();
-            if (focusedChoice < 0.5) {
-              currentHRVState = 'neutral';
+              currentHRVState = 'focused'; // Some drivers stay focused in traffic
               trendDirection = 'stable';
-            } else if (focusedChoice < 0.8) {
+            }
+          } else if (drivingScenario === 'highway') {
+            // Highway driving tends toward calm/relaxed
+            const highwayChoice = Math.random();
+            if (highwayChoice < 0.5) {
               currentHRVState = 'calm';
               trendDirection = 'improving';
+            } else if (highwayChoice < 0.7) {
+              currentHRVState = 'relaxed';
+              trendDirection = 'improving';
             } else {
-              currentHRVState = 'stressed'; // Focus can lead to stress
-              trendDirection = 'declining';
-            }
-          } else if (currentHRVState === 'calm' || currentHRVState === 'relaxed') {
-            // From calm/relaxed, usually return to neutral or stay positive
-            const calmChoice = Math.random();
-            if (calmChoice < 0.6) {
               currentHRVState = 'neutral';
               trendDirection = 'stable';
-            } else if (calmChoice < 0.8) {
+            }
+          } else if (drivingScenario === 'city') {
+            // City driving is more variable
+            const cityChoice = Math.random();
+            if (cityChoice < 0.3) {
               currentHRVState = 'focused';
               trendDirection = 'stable';
-            } else {
-              // Small chance of stress even from calm state
+            } else if (cityChoice < 0.5) {
               currentHRVState = 'stressed';
               trendDirection = 'declining';
+            } else if (cityChoice < 0.8) {
+              currentHRVState = 'neutral';
+              trendDirection = 'stable';
+            } else {
+              currentHRVState = 'calm';
+              trendDirection = 'improving';
+            }
+          } else if (drivingScenario === 'parking') {
+            // Parking can be stressful
+            const parkingChoice = Math.random();
+            if (parkingChoice < 0.6) {
+              currentHRVState = 'stressed';
+              trendDirection = 'declining';
+            } else {
+              currentHRVState = 'focused';
+              trendDirection = 'stable';
+            }
+          } else {
+            // General state transitions based on current state
+            if (currentHRVState === 'stressed' || currentHRVState === 'anxious') {
+              const improvementChance = Math.random();
+              if (improvementChance < 0.6) {
+                currentHRVState = 'neutral';
+                trendDirection = 'improving';
+              } else {
+                currentHRVState = 'focused';
+                trendDirection = 'improving';
+              }
+            } else if (currentHRVState === 'neutral') {
+              const neutralChoice = Math.random();
+              if (neutralChoice < 0.4) {
+                currentHRVState = 'focused';
+                trendDirection = 'stable';
+              } else if (neutralChoice < 0.7) {
+                currentHRVState = 'calm';
+                trendDirection = 'improving';
+              } else {
+                currentHRVState = 'stressed';
+                trendDirection = 'declining';
+              }
+            } else {
+              // From positive states, mostly return to neutral or stay positive
+              const positiveChoice = Math.random();
+              if (positiveChoice < 0.7) {
+                currentHRVState = 'neutral';
+                trendDirection = 'stable';
+              } else {
+                currentHRVState = 'focused';
+                trendDirection = 'stable';
+              }
             }
           }
 
           // Reset timing for next state change
           stateStartTime = currentTime;
-          stateChangeInterval = 5 + Math.random() * 5; // 5-10 minutes
+          stateChangeInterval = 1.5 + Math.random() * 3; // 1.5-4.5 minutes (more dynamic for driving)
 
-          console.log(`🧠 HRV State Change: ${previousState} → ${currentHRVState} (trend: ${trendDirection})`);
+          console.log(`🧠 Driver State: ${previousState} → ${currentHRVState} (${drivingScenario}, trend: ${trendDirection})`);
           console.log(`⏱️ Next state change in ${stateChangeInterval.toFixed(1)} minutes`);
         }
 
-        // Generate HRV value based on current state
-        const stateConfig = hrvStates[currentHRVState];
+        // Generate HRV value based on current driving state
+        const stateConfig = drivingHRVStates[currentHRVState];
         const baseHRV = stateConfig.base;
         const variation = stateConfig.variation;
 
+        // Add driving-specific variations
+        let hrvModifier = 0;
+        if (drivingScenario === 'traffic') {
+          hrvModifier = -10 - (trafficStressLevel * 8); // Traffic reduces HRV
+        } else if (drivingScenario === 'highway') {
+          hrvModifier = +5; // Highway slightly improves HRV
+        } else if (drivingScenario === 'parking') {
+          hrvModifier = -15; // Parking stress reduces HRV
+        }
+
+        // Add fatigue effect (reduces HRV)
+        hrvModifier -= fatigueLevel * 8;
+
         // Add some variation within the state range
         const randomVariation = Math.floor(Math.random() * (variation * 2 + 1)) - variation;
-        const newHRV = Math.max(30, Math.min(300, baseHRV + randomVariation));
+        const newHRV = Math.max(25, Math.min(250, baseHRV + hrvModifier + randomVariation));
 
         this.updateHRV(newHRV);
 
-        // Log current state info every 30 seconds
-        if (Math.floor(timeInState * 2) % 60 === 0) { // Every 30 seconds
-          console.log(`📊 HRV: ${newHRV} | State: ${currentHRVState} | Time in state: ${timeInState.toFixed(1)}min | Trend: ${trendDirection}`);
+        // Log current state info every 20 seconds
+        if (Math.floor(timeInState * 3) % 60 === 0) { // Every 20 seconds
+          console.log(`📊 HRV: ${newHRV} | State: ${currentHRVState} | Scenario: ${drivingScenario} | Stress: ${trafficStressLevel} | Time: ${timeInState.toFixed(1)}min`);
         }
       }
-    }, 3000); // Check every 3 seconds for more realistic updates
+    }, 2500); // Check every 2.5 seconds for more dynamic driving updates
   }
 
   // Start mock data for development/testing
