@@ -320,7 +320,7 @@ const AIChatbot = () => {
         // Add message to chat
         const acMessage = {
           id: Date.now().toString() + '_ac',
-          text: `��️ Air conditioner turned on at ${newState.acTemperature}°C from dashboard. Staying cool!`,
+          text: `���� Air conditioner turned on at ${newState.acTemperature}°C from dashboard. Staying cool!`,
           type: 'bot' as const,
           timestamp: new Date()
         };
@@ -1083,6 +1083,19 @@ const AIChatbot = () => {
         });
       }, 1000);
       return "Testing fog weather! Simulating dense fog conditions...";
+    }
+
+    if (message.includes('test storm') || message.includes('simulate storm')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'thunderstorm',
+          visibility: 5000,
+          windSpeed: 22,
+          temp: 18,
+          description: 'Severe thunderstorm'
+        });
+      }, 1000);
+      return "Testing storm weather! Simulating severe thunderstorm conditions...";
     }
 
     // Voice control help system
