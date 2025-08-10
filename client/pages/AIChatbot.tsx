@@ -257,11 +257,14 @@ const AIChatbot = () => {
       setTemperature(`${temp}°C`);
       console.log('🌡️ Temperature updated for Limerick area:', `${temp}°C`);
 
+      // Check for weather-based alerts
+      checkWeatherAlerts(data);
+
     } catch (error) {
       console.error('❌ Weather API error:', error);
       // Fallback to current Limerick temperature
       setTemperature('15°C');
-      console.log('🌡️ Using fallback Limerick temperature: 15°C');
+      console.log('��️ Using fallback Limerick temperature: 15°C');
     }
   };
 
@@ -752,7 +755,7 @@ const AIChatbot = () => {
   // Specific alert triggers
   const triggerIceRiskAlert = () => {
     triggerAlert('iceRisk',
-      '🧊 ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
+      '�� ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
       5000
     );
   };
@@ -991,7 +994,7 @@ const AIChatbot = () => {
     try {
       // Note: Direct API calls from browser may have CORS issues
       // In production, this should go through a backend proxy
-      console.log(`🔍 Searching for ${query} near location:`, currentLocation);
+      console.log(`���� Searching for ${query} near location:`, currentLocation);
 
       // Simulate location-based response for now
       const responses = {
