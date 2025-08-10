@@ -126,13 +126,14 @@ const AIChatbot = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const isStressNavigation = urlParams.get('stress') === 'true';
-    
+    const isWeatherNavigation = urlParams.get('weather') === 'extreme';
+
     if (isStressNavigation) {
       console.log('🚨 Arrived at AI chatbot due to stress detection');
-      
+
       // Clear the stress parameter from URL
       window.history.replaceState({}, '', window.location.pathname);
-      
+
       // Wait a bit for initial greeting, then add stress support message
       setTimeout(() => {
         const stressMessage = {
@@ -142,13 +143,38 @@ const AIChatbot = () => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, stressMessage]);
-        
+
         // Show comfort emoji for stress support
         setShowComfortEmoji(true);
         setTimeout(() => setShowComfortEmoji(false), 3000);
-        
+
         // Speak the stress support message
         speakText("I noticed your stress levels are elevated. Would you like me to play some calming music to help you relax?");
+      }, 3000); // Wait for initial greeting to finish
+    }
+
+    if (isWeatherNavigation) {
+      console.log('⚠️ Arrived at AI chatbot due to extreme weather detection');
+
+      // Clear the weather parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Wait a bit for initial greeting, then add weather alert message
+      setTimeout(() => {
+        const weatherMessage = {
+          id: Date.now().toString() + '_weather_alert_nav',
+          text: "I detected extreme weather conditions that require immediate attention for your safety. I'm here to help you navigate these dangerous conditions safely.",
+          type: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, weatherMessage]);
+
+        // Show shock emoji for weather alert
+        setShowShockEmoji(true);
+        setTimeout(() => setShowShockEmoji(false), 4000);
+
+        // Speak the weather alert message
+        speakText("I detected extreme weather conditions that require immediate attention for your safety. I'm here to help you navigate these dangerous conditions safely.");
       }, 3000); // Wait for initial greeting to finish
     }
   }, []); // Only run once on mount
