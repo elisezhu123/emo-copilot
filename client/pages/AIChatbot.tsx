@@ -2860,12 +2860,17 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         recognitionRef.current.lang = 'en-US';
 
         recognitionRef.current.onresult = (event: any) => {
+          console.log('🎤 Speech recognition result event triggered');
+          console.log('🎤 Results count:', event.results.length);
+
           // Get the latest result
           const lastResultIndex = event.results.length - 1;
           const transcript = event.results[lastResultIndex][0].transcript.trim();
+          const confidence = event.results[lastResultIndex][0].confidence;
 
           console.log('🎤 Raw transcript:', transcript);
-          console.log('🎤 Word count:', transcript.split(' ').length);
+          console.log('🎤 Confidence:', confidence);
+          console.log('🎤 Length:', transcript.length);
 
           // Only process if transcript is meaningful (more than 1 word or single important words)
           if (transcript.length > 2) {
@@ -3027,7 +3032,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   const toggleListening = () => {
     console.log('🎤 Toggle listening clicked');
     console.log('🔍 Recognition ref:', recognitionRef.current);
-    console.log('��� User wants listening:', userWantsListening);
+    console.log('🔍 User wants listening:', userWantsListening);
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
