@@ -3144,6 +3144,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
     // Add visual feedback that microphone button was clicked
     console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
+    console.log('🔍 Browser info:', navigator.userAgent);
+    console.log('🔍 Speech recognition support:', 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+    console.log('🔍 Microphone status:', microphoneStatus);
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
