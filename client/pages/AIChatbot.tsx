@@ -1053,7 +1053,7 @@ const AIChatbot = () => {
         safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n💡 SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
-        safetyAdvice += "�� Share your route with someone\n";
+        safetyAdvice += "��� Share your route with someone\n";
         safetyAdvice += "• Take breaks every 2 hours for long trips\n";
         safetyAdvice += "• Keep phone charged for navigation";
       }
@@ -2800,13 +2800,25 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     // Request microphone permissions automatically
     const requestMicrophonePermission = async () => {
       try {
+        console.log('🎤 Requesting microphone permission...');
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('getUserMedia not supported');
+        }
+
         // Request microphone access to get permission
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         console.log('✅ Microphone permission granted automatically');
         // Immediately stop the stream since we just needed permission
         stream.getTracks().forEach(track => track.stop());
-      } catch (error) {
-        console.log('��� Microphone permission denied or not available:', error);
+      } catch (error: any) {
+        console.error('❌ Microphone permission error:', error);
+        if (error.name === 'NotAllowedError') {
+          console.log('💡 User denied microphone permission. Please allow it in browser settings.');
+        } else if (error.name === 'NotFoundError') {
+          console.log('💡 No microphone found. Please connect a microphone.');
+        } else {
+          console.log('💡 Microphone error:', error.message);
+        }
       }
     };
 
