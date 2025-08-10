@@ -422,7 +422,7 @@ const AIChatbot = () => {
           // Check if focus mode has been active for 5 minutes
           const focusDuration = (Date.now() - focusModeStartTime) / (1000 * 60); // minutes
           if (focusDuration >= 5 && !focusTriggered) {
-            console.log('🧘 Focus mode active for 5 minutes - triggering breathing exercise offer');
+            console.log('���� Focus mode active for 5 minutes - triggering breathing exercise offer');
             handleFocusMode();
           }
         }
@@ -1045,7 +1045,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠️ Google Maps API key not configured');
+      console.warn('⚠��� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -3064,21 +3064,6 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     } else {
       console.log('🎤 User starting speech recognition...');
       setUserWantsListening(true); // User wants continuous listening
-
-      // Add a test message to verify the system is working
-      const testMessage: Message = {
-        id: Date.now().toString(),
-        text: "Microphone activated - testing system...",
-        type: 'user',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, testMessage]);
-
-      // Test AI response
-      setTimeout(() => {
-        addBotResponse("test");
-      }, 1000);
-
       // Stop wake word listening when main listening starts
       stopWakeWordListening();
       startContinuousListening();
