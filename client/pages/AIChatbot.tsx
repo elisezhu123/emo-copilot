@@ -458,6 +458,108 @@ const AIChatbot = () => {
     speakText(`Weather alert! ${message} ${recommendation}`);
   };
 
+  // Handle focus mode detection (5 minutes)
+  const handleFocusMode = () => {
+    if (focusTriggered) return; // Prevent multiple triggers
+
+    setFocusTriggered(true);
+    setAwaitingBreathingPermission(true);
+
+    // Navigate to AI chatbot if not already there
+    if (window.location.pathname !== '/ai-chatbot') {
+      console.log('🧘 Navigating to AI chatbot due to prolonged focus mode');
+      window.location.href = '/ai-chatbot?focus=true';
+      return;
+    }
+
+    // Show focus emoji
+    setShowComfortEmoji(true);
+    setTimeout(() => setShowComfortEmoji(false), 4000);
+
+    // Add AI message asking about breathing exercise
+    const focusMessage: Message = {
+      id: Date.now().toString() + '_focus_trigger',
+      text: "I notice you've been in focused driving mode for 5 minutes. Prolonged concentration can be tiring. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?",
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, focusMessage]);
+
+    // Speak the message
+    speakText("I notice you've been in focused driving mode for 5 minutes. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?");
+  };
+
+  // Voice-guided breathing exercise
+  const startBreathingExercise = () => {
+    setIsBreathingExercise(true);
+    setBreathingStep('inhale');
+    setBreathingCount(0);
+
+    const breathingMessage: Message = {
+      id: Date.now().toString() + '_breathing_start',
+      text: "Perfect! Let's do a simple 4-7-8 breathing exercise. I'll guide you through it with voice commands. Stay focused on the road while you breathe.",
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, breathingMessage]);
+
+    speakText("Perfect! Let's do a simple 4-7-8 breathing exercise. I'll guide you through it with voice commands. Stay focused on the road while you breathe.");
+
+    // Start the breathing cycle after a short delay
+    setTimeout(() => {
+      performBreathingCycle();
+    }, 3000);
+  };
+
+  // Perform breathing exercise cycle
+  const performBreathingCycle = () => {
+    if (breathingCount >= 4) { // 4 complete cycles
+      setIsBreathingExercise(false);
+      setBreathingCount(0);
+
+      const completionMessage: Message = {
+        id: Date.now().toString() + '_breathing_complete',
+        text: "Excellent work! You've completed the breathing exercise. You should feel more relaxed and alert now. Keep driving safely!",
+        type: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, completionMessage]);
+
+      speakText("Excellent work! You've completed the breathing exercise. You should feel more relaxed and alert now. Keep driving safely!");
+      return;
+    }
+
+    const cycleNumber = breathingCount + 1;
+
+    // Inhale phase (4 seconds)
+    setBreathingStep('inhale');
+    speakText(`Cycle ${cycleNumber}. Breathe in slowly through your nose for 4 seconds. Inhale... 2... 3... 4.`);
+
+    setTimeout(() => {
+      // Hold phase (7 seconds)
+      setBreathingStep('hold');
+      speakText("Now hold your breath for 7 seconds. Hold... 2... 3... 4... 5... 6... 7.");
+
+      setTimeout(() => {
+        // Exhale phase (8 seconds)
+        setBreathingStep('exhale');
+        speakText("Now exhale slowly through your mouth for 8 seconds. Exhale... 2... 3... 4... 5... 6... 7... 8.");
+
+        setTimeout(() => {
+          setBreathingCount(prev => prev + 1);
+
+          if (breathingCount + 1 < 4) {
+            setTimeout(() => {
+              performBreathingCycle();
+            }, 2000); // Pause between cycles
+          } else {
+            performBreathingCycle(); // Complete the exercise
+          }
+        }, 9000); // 8 seconds exhale + 1 second buffer
+      }, 8000); // 7 seconds hold + 1 second buffer
+    }, 5000); // 4 seconds inhale + 1 second buffer
+  };
+
   // Car control functions with global state
   const setAirConditioner = (temp: number, turnOn: boolean = true) => {
     // Update local state
@@ -758,7 +860,7 @@ const AIChatbot = () => {
         safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n💡 SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
-        safetyAdvice += "• Share your route with someone\n";
+        safetyAdvice += "�� Share your route with someone\n";
         safetyAdvice += "• Take breaks every 2 hours for long trips\n";
         safetyAdvice += "• Keep phone charged for navigation";
       }
@@ -2437,7 +2539,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     }
 
     if (userWantsListening) {
-      console.log('🔇 User stopping speech recognition...');
+      console.log('��� User stopping speech recognition...');
       setUserWantsListening(false); // User no longer wants listening
       try {
         recognitionRef.current.stop();
