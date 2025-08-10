@@ -2987,8 +2987,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   }, []);
 
   const toggleListening = () => {
+    console.log('🎤 Toggle listening clicked');
+    console.log('🔍 Recognition ref:', recognitionRef.current);
+    console.log('🔍 User wants listening:', userWantsListening);
+
     if (!recognitionRef.current) {
-      alert('Speech recognition is not supported in your browser. Please use Chrome, Safari, or Edge.');
+      console.error('❌ Recognition ref is null');
+      alert('Speech recognition is not available. Please check:\n1. Are you using Chrome, Safari, or Edge?\n2. Did you allow microphone permissions?\n3. Are you on HTTPS or localhost?');
       return;
     }
 
