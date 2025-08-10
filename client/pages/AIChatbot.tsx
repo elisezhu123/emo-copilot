@@ -3118,6 +3118,28 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🎤 Toggle listening clicked');
     console.log('🔍 Recognition ref:', recognitionRef.current);
     console.log('🔍 User wants listening:', userWantsListening);
+    console.log('🔍 Microphone status:', microphoneStatus);
+
+    // Add a simple test message to verify the system works
+    if (userWantsListening) {
+      // When stopping, add a test message to show the flow works
+      const testMessage: Message = {
+        id: Date.now().toString(),
+        text: "Microphone stopped",
+        type: 'user',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, testMessage]);
+    } else {
+      // When starting, add a test message to show the flow works
+      const testMessage: Message = {
+        id: Date.now().toString(),
+        text: "Microphone activated - say something!",
+        type: 'user',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, testMessage]);
+    }
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
