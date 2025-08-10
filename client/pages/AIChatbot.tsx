@@ -720,6 +720,127 @@ const AIChatbot = () => {
     speakText(turnOn ? `Lights on` : `Lights off`);
   };
 
+  // Comprehensive Alert System for Driving Risks
+  const triggerAlert = (alertType: string, message: string, emojiDuration: number = 4000) => {
+    if (alertTriggered[alertType]) return; // Prevent multiple triggers
+
+    setAlertTriggered(prev => ({ ...prev, [alertType]: true }));
+    setActiveAlert(alertType);
+
+    // Show appropriate emoji based on alert type
+    setShowShockEmoji(true);
+    setTimeout(() => setShowShockEmoji(false), emojiDuration);
+
+    // Add alert message
+    const alertMessage: Message = {
+      id: Date.now().toString() + `_${alertType}_alert`,
+      text: message,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, alertMessage]);
+
+    // Speak the alert
+    speakText(message);
+
+    // Clear active alert after speaking
+    setTimeout(() => {
+      setActiveAlert(null);
+    }, emojiDuration + 2000);
+  };
+
+  // Specific alert triggers
+  const triggerIceRiskAlert = () => {
+    triggerAlert('iceRisk',
+      '🧊 ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
+      5000
+    );
+  };
+
+  const triggerHighWindAlert = (windSpeed: number) => {
+    triggerAlert('highWind',
+      `💨 HIGH WIND WARNING: Strong crosswinds detected at ${windSpeed} m/s! Grip steering wheel firmly, especially when passing trucks.`,
+      5000
+    );
+  };
+
+  const triggerFogAlert = (visibility: number) => {
+    triggerAlert('fogAlert',
+      `🌫️ FOG ALERT: Low visibility at ${visibility}m! Use fog lights, reduce speed significantly, and avoid lane changes.`,
+      5000
+    );
+  };
+
+  const triggerRainAlert = () => {
+    triggerAlert('rainAlert',
+      '🌧️ RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
+      4000
+    );
+  };
+
+  const triggerFatigueRiskAlert = () => {
+    triggerAlert('fatigueRisk',
+      '😴 FATIGUE RISK: Peak drowsiness hours! Consider rest stops every hour. Don\'t fight sleepiness - pull over safely.',
+      5000
+    );
+  };
+
+  const triggerRushHourAlert = () => {
+    triggerAlert('rushHour',
+      '🚗 RUSH HOUR: Heavy traffic expected! Allow extra time and stay calm. Consider alternate routes.',
+      4000
+    );
+  };
+
+  // Enhanced alert monitoring system
+  const monitorDrivingConditions = () => {
+    const currentHour = new Date().getHours();
+
+    // Check for fatigue risk during peak drowsiness hours (2-6 AM, 2-4 PM)
+    if ((currentHour >= 2 && currentHour <= 6) || (currentHour >= 14 && currentHour <= 16)) {
+      if (!alertTriggered.fatigueRisk) {
+        triggerFatigueRiskAlert();
+      }
+    }
+
+    // Check for rush hour alerts (7-9 AM, 5-7 PM)
+    if ((currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 19)) {
+      if (!alertTriggered.rushHour) {
+        triggerRushHourAlert();
+      }
+    }
+  };
+
+  // Weather-based alert integration
+  const checkWeatherAlerts = (weatherData: any) => {
+    if (!weatherData) return;
+
+    const condition = weatherData.weather[0].main.toLowerCase();
+    const temperature = weatherData.main.temp;
+    const visibility = weatherData.visibility;
+    const windSpeed = weatherData.wind?.speed || 0;
+
+    // Ice risk alert
+    if (temperature <= 2 && !alertTriggered.iceRisk) {
+      triggerIceRiskAlert();
+    }
+
+    // High wind alert
+    if (windSpeed > 10 && !alertTriggered.highWind) {
+      triggerHighWindAlert(windSpeed);
+    }
+
+    // Fog alert
+    if (visibility < 1000 && !alertTriggered.fogAlert) {
+      triggerFogAlert(visibility);
+    }
+
+    // Rain alert
+    if (condition.includes('rain') && !alertTriggered.rainAlert) {
+      triggerRainAlert();
+    }
+  };
+
   // Enhanced navigation with real-time safety and danger warnings
   const checkRoadSafety = async (lat: number, lng: number): Promise<string[]> => {
     const warnings: string[] = [];
