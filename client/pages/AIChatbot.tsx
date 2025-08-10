@@ -878,13 +878,35 @@ const AIChatbot = () => {
   const getFallbackResponse = async (userMessage: string): Promise<string> => {
     const message = userMessage.toLowerCase();
 
+    // Handle AC permission responses when awaiting permission
+    if (awaitingACPermission && (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+        message.includes('okay') || message.includes('please') || message.includes('turn on') ||
+        message.includes('cool') || message.includes('ac'))) {
+
+      setAwaitingACPermission(false);
+
+      // Turn on AC at cooling temperature
+      setTimeout(() => {
+        setAirConditioner(20, true);
+        setShowACEmoji(true);
+        setTimeout(() => setShowACEmoji(false), 3000);
+      }, 1000);
+
+      return "Perfect! I've turned on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+    }
+
+    if (awaitingACPermission && (message.includes('no') || message.includes('not') || message.includes('don\'t'))) {
+      setAwaitingACPermission(false);
+      return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
+    }
+
     // Voice control help system
     if (message.includes('help') || message.includes('commands') || message.includes('what can you do') || 
         message.includes('voice commands') || message.includes('how to use')) {
       return `I can understand many voice commands! Try saying:
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-🚗 Navigation: "go to dashboard", "open playlists", "navigate to music page"  
+�� Navigation: "go to dashboard", "open playlists", "navigate to music page"  
 ❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 
