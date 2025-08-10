@@ -1549,6 +1549,15 @@ const AIChatbot = () => {
       return "All alert triggers have been reset! You can test the alerts again.";
     }
 
+    // Simple test commands
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+      return "Hello! I'm Melo, your AI co-driver assistant. I'm here to help with navigation, music, and keeping you safe on the road. How can I assist you today?";
+    }
+
+    if (message.includes('test') && message.includes('speech')) {
+      return "Speech recognition test successful! I can hear you clearly. Try asking me about music, navigation, or car controls.";
+    }
+
     // Voice control help system
     if (message.includes('help') || message.includes('commands') || message.includes('what can you do') ||
         message.includes('voice commands') || message.includes('how to use')) {
