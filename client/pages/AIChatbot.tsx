@@ -900,13 +900,21 @@ const AIChatbot = () => {
       return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
     }
 
+    // Test command for temperature trigger
+    if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
+      setTimeout(() => {
+        handleTemperatureExceed(37);
+      }, 1000);
+      return "Testing temperature trigger! Simulating 37°C temperature...";
+    }
+
     // Voice control help system
-    if (message.includes('help') || message.includes('commands') || message.includes('what can you do') || 
+    if (message.includes('help') || message.includes('commands') || message.includes('what can you do') ||
         message.includes('voice commands') || message.includes('how to use')) {
       return `I can understand many voice commands! Try saying:
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-�� Navigation: "go to dashboard", "open playlists", "navigate to music page"  
+🚗 Navigation: "go to dashboard", "open playlists", "navigate to music page"  
 ❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 
