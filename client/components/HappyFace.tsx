@@ -2,24 +2,23 @@ import React from 'react';
 
 const HappyFace: React.FC = () => {
   return (
-    <div className="flex justify-center items-center w-full h-full">
+    <div className="flex items-center justify-center w-full h-full">
       <svg 
-        className="w-full h-full min-h-[90vh]" 
+        className="w-full h-full max-w-[400px] max-h-[249px]" 
         viewBox="0 0 400 250" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
       >
         <g clipPath="url(#clip0_17_14)">
-          {/* Left happy eye */}
+          {/* Left eyebrow */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
-            d="M29.4283 143.969C29.251 150.351 23.9326 155.433 17.4915 155.256C11.1095 155.078 6.02748 149.76 6.20476 143.319C7.09115 114.422 15.4823 93.208 27.7737 80.2666C35.633 71.9936 45.0879 66.9707 55.2519 65.257C65.2977 63.6024 75.9344 65.257 86.2166 70.3981C103.413 78.9075 119.959 97.1672 131.541 125.532C133.964 131.5 131.068 138.296 125.159 140.66C119.19 143.082 112.395 140.187 110.031 134.218C100.753 111.527 88.403 97.3445 75.9935 91.1988C70.1433 88.3033 64.3522 87.2987 59.0338 88.1851C53.8927 89.0124 48.9289 91.7306 44.6743 96.2808C36.0467 105.381 30.1374 121.277 29.4283 143.969Z" 
+            d="M29.4283 143.969C29.251 150.351 23.9326 155.433 17.4915 155.256C11.1095 155.078 6.02746 149.76 6.20474 143.319C7.09114 114.422 15.4823 93.208 27.7737 80.2666C35.633 71.9936 45.0879 66.9707 55.2519 65.257C65.2977 63.6024 75.9344 65.257 86.2166 70.3981C103.413 78.9075 119.959 97.1672 131.541 125.532C133.964 131.5 131.068 138.296 125.159 140.66C119.19 143.082 112.395 140.187 110.031 134.218C100.753 111.527 88.403 97.3445 75.9935 91.1988C70.1433 88.3033 64.3522 87.2987 59.0338 88.1851C53.8927 89.0124 48.9289 91.7306 44.6742 96.2808C36.0467 105.381 30.1374 121.277 29.4283 143.969Z" 
             fill="#3A2018"
           />
           
-          {/* Right happy eye */}
+          {/* Right eyebrow */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -27,7 +26,7 @@ const HappyFace: React.FC = () => {
             fill="#3A2018"
           />
           
-          {/* Happy mouth outer */}
+          {/* Happy mouth */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -35,7 +34,7 @@ const HappyFace: React.FC = () => {
             fill="#3A2018"
           />
           
-          {/* Left cheek/blush */}
+          {/* Left blush/cheek */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -44,7 +43,7 @@ const HappyFace: React.FC = () => {
             fillOpacity="0.8"
           />
           
-          {/* Right cheek/blush */}
+          {/* Right blush/cheek */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -53,15 +52,15 @@ const HappyFace: React.FC = () => {
             fillOpacity="0.8"
           />
           
-          {/* Left eyebrow */}
+          {/* Left eye */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
-            d="M16.8415 37.0105C13.0005 39.9061 7.50481 39.1379 4.60926 35.2968C1.7137 31.4558 2.48191 25.9602 6.32295 23.0646C18.6734 13.8461 32.2647 5.57311 49.1653 2.20481C66.0659 -1.10439 85.8029 0.727486 110.031 11.6006C114.404 13.5507 116.413 18.7508 114.404 23.1237C112.454 27.4966 107.254 29.4466 102.881 27.4966C82.4346 18.2781 66.1841 16.7417 52.5336 19.4008C38.8832 22.06 27.4191 29.1512 16.9006 37.0696L16.8415 37.0105Z" 
+            d="M16.8415 37.0105C13.0004 39.9061 7.50479 39.1379 4.60923 35.2968C1.71368 31.4558 2.48189 25.9602 6.32293 23.0646C18.6733 13.8461 32.2647 5.57311 49.1653 2.20481C66.0659 -1.10439 85.8029 0.727486 110.031 11.6006C114.404 13.5507 116.413 18.7508 114.404 23.1237C112.454 27.4966 107.254 29.4466 102.881 27.4966C82.4346 18.2781 66.1841 16.7417 52.5336 19.4008C38.8831 22.06 27.4191 29.1512 16.9006 37.0696L16.8415 37.0105Z" 
             fill="#3A2018"
           />
           
-          {/* Right eyebrow */}
+          {/* Right eye */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -69,7 +68,7 @@ const HappyFace: React.FC = () => {
             fill="#3A2018"
           />
           
-          {/* Happy mouth interior */}
+          {/* Tongue/inner mouth */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -79,7 +78,7 @@ const HappyFace: React.FC = () => {
         </g>
         <defs>
           <clipPath id="clip0_17_14">
-            <rect width="400" height="248.545" fill="white" transform="translate(0 0.727539)"/>
+            <rect width="400" height="248.545" fill="white" transform="translate(-1.52588e-05 0.727539)"/>
           </clipPath>
         </defs>
       </svg>
