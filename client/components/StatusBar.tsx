@@ -320,3 +320,4 @@ const StatusBar: React.FC<StatusBarProps> = ({
 };
 
 export default StatusBar;
+export type { WeatherCondition };
