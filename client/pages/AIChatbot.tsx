@@ -3178,6 +3178,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Stop wake word listening when main listening starts
       stopWakeWordListening();
 
+      // Add a test message to verify the system works
+      const testMessage: Message = {
+        id: Date.now().toString(),
+        text: "🎤 Microphone activated! Try saying 'hello' clearly into your microphone.",
+        type: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, testMessage]);
+
       // Small delay to prevent conflicts
       setTimeout(() => {
         if (userWantsListening) { // Double check user still wants it started
