@@ -183,6 +183,36 @@ const AIChatbot = () => {
         speakText("I detected extreme weather conditions that require immediate attention for your safety. I'm here to help you navigate these dangerous conditions safely.");
       }, 3000); // Wait for initial greeting to finish
     }
+
+    const isFocusNavigation = urlParams.get('focus') === 'true';
+    if (isFocusNavigation) {
+      console.log('🧘 Arrived at AI chatbot due to focus mode detection');
+
+      // Clear the focus parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Wait a bit for initial greeting, then add focus message
+      setTimeout(() => {
+        const focusMessage = {
+          id: Date.now().toString() + '_focus_alert_nav',
+          text: "I noticed you've been in focused driving mode for 5 minutes. Prolonged concentration can be tiring. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?",
+          type: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, focusMessage]);
+
+        // Set state for breathing permission
+        setAwaitingBreathingPermission(true);
+        setFocusTriggered(true);
+
+        // Show comfort emoji for focus support
+        setShowComfortEmoji(true);
+        setTimeout(() => setShowComfortEmoji(false), 4000);
+
+        // Speak the focus message
+        speakText("I noticed you've been in focused driving mode for 5 minutes. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?");
+      }, 3000); // Wait for initial greeting to finish
+    }
   }, []); // Only run once on mount
 
   // Format time for display
