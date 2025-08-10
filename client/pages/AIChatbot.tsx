@@ -2806,7 +2806,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         // Immediately stop the stream since we just needed permission
         stream.getTracks().forEach(track => track.stop());
       } catch (error) {
-        console.log('❌ Microphone permission denied or not available:', error);
+        console.log('��� Microphone permission denied or not available:', error);
       }
     };
 
@@ -2982,6 +2982,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
 
       // Don't start listening immediately - wait for user to click button
+    } else {
+      console.error('❌ Speech recognition not available in this browser');
+      console.log('💡 Please use Chrome, Safari, or Edge with HTTPS/localhost');
     }
 
     return () => {
