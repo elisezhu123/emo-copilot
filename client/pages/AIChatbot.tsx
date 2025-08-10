@@ -1125,6 +1125,60 @@ const AIChatbot = () => {
   const getFallbackResponse = async (userMessage: string): Promise<string> => {
     const message = userMessage.toLowerCase();
 
+    // Check for child story suggestions when driver mentions having children
+    if ((message.includes('child') || message.includes('kid') || message.includes('children') ||
+         message.includes('son') || message.includes('daughter') || message.includes('my boy') ||
+         message.includes('my girl') || message.includes('little one')) &&
+        (message.includes('have') || message.includes('got') || message.includes('with me') ||
+         message.includes('back seat') || message.includes('car') || message.includes('bored') ||
+         message.includes('crying') || message.includes('restless') || message.includes('tired') ||
+         message.includes('entertain') || message.includes('story') || message.includes('book'))) {
+
+      // Show happy emoji for child-friendly suggestion
+      setTimeout(() => {
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+      }, 1000);
+
+      const childStoryResponse = "I'd love to help entertain your little passenger! I can tell some wonderful short stories - would you like me to share a quick adventure tale about a brave little explorer, a magical forest story, or maybe a funny animal adventure? These stories are perfect for car rides and will keep your child engaged and happy!";
+
+      // Add comfort words after emoji
+      setTimeout(() => {
+        const comfortMsg: Message = {
+          id: Date.now().toString() + '_child_comfort_fallback',
+          text: "Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.",
+          type: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, comfortMsg]);
+        speakText("Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.");
+      }, 3000);
+
+      return childStoryResponse;
+    }
+
+    // Handle story selection when user responds to child story offer
+    if ((message.includes('adventure') || message.includes('explorer')) &&
+        messages.some(msg => msg.text.includes('brave little explorer'))) {
+      const adventureStory = "Once upon a time, there was a curious little explorer named Sam who discovered a magical compass in their backyard. The compass pointed to different colors instead of directions! When Sam followed the red arrow, they found a garden full of singing flowers. The blue arrow led to a pond where friendly frogs told jokes. And the golden arrow? Well, that led to the most wonderful treasure of all - a picnic blanket where Sam's family was waiting with their favorite snacks! The End. What an adventure!";
+      speakText(adventureStory);
+      return adventureStory;
+    }
+
+    if ((message.includes('forest') || message.includes('magical')) &&
+        messages.some(msg => msg.text.includes('magical forest story'))) {
+      const forestStory = "In a gentle, magical forest lived a little bunny named Luna who could make flowers glow with her tiny paws. One day, Luna met a sad owl who had lost his way home. Luna touched the trees one by one, making them sparkle like stars to light the path. Together, they followed the glowing trail through the forest. When they found Owl's cozy tree house, all the forest animals cheered! From that day on, Luna became known as the Forest Light Keeper, helping anyone who needed to find their way. The End. What a kind little bunny!";
+      speakText(forestStory);
+      return forestStory;
+    }
+
+    if ((message.includes('animal') || message.includes('funny')) &&
+        messages.some(msg => msg.text.includes('funny animal adventure'))) {
+      const animalStory = "There once was a little penguin named Pip who wanted to learn how to fly. Pip watched the birds and flapped their wings, but just slid on their belly instead! Then Pip met a wise old turtle who said, 'Everyone has their own special talent.' So Pip tried swimming and - whoosh! - became the fastest swimmer in the whole arctic! All the other animals cheered as Pip zoomed through the water like a feathered rocket. Pip learned that being different made them extra special! The End. What a fantastic discovery!";
+      speakText(animalStory);
+      return animalStory;
+    }
+
     // Handle AC permission responses when awaiting permission
     if (awaitingACPermission && (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
         message.includes('okay') || message.includes('please') || message.includes('turn on') ||
