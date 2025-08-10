@@ -767,7 +767,7 @@ const AIChatbot = () => {
   // Specific alert triggers
   const triggerIceRiskAlert = () => {
     triggerAlert('iceRisk',
-      '�� ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
+      '���� ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
       5000
     );
   };
@@ -2811,14 +2811,26 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     };
 
     // Initialize Speech Recognition for continuous listening
+    console.log('🔍 Checking speech recognition availability...');
+    console.log('🔍 webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
+    console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
+
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      console.log('✅ Speech recognition available, requesting microphone permission...');
       // Request microphone permission first
       requestMicrophonePermission();
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      
-      // Main speech recognition for conversations
-      recognitionRef.current = new SpeechRecognition();
+      console.log('🔍 SpeechRecognition constructor:', SpeechRecognition);
+
+      try {
+        // Main speech recognition for conversations
+        recognitionRef.current = new SpeechRecognition();
+        console.log('✅ Main recognition instance created:', recognitionRef.current);
+      } catch (error) {
+        console.error('❌ Failed to create speech recognition:', error);
+        return;
+      }
 
       if (recognitionRef.current) {
         recognitionRef.current.continuous = true; // Continuous listening
