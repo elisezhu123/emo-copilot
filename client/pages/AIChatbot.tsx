@@ -1045,7 +1045,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠��� Google Maps API key not configured');
+      console.warn('⚠️ Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -1053,7 +1053,7 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n💡 SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
@@ -2902,11 +2902,28 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-          if (event.error !== 'aborted') {
+          console.error('🚨 Speech recognition error:', event.error);
+          console.error('🚨 Error details:', event);
+
+          if (event.error === 'not-allowed') {
+            console.error('❌ Microphone permission denied!');
+            setMicrophoneStatus('permission-denied');
+            alert('Please allow microphone access in your browser settings and refresh the page.');
+          } else if (event.error === 'no-speech') {
+            console.log('⚠️ No speech detected, continuing to listen...');
+            // Restart listening for no-speech error
+            setTimeout(() => {
+              if (userWantsListening) {
+                startContinuousListening();
+              }
+            }, 500);
+          } else if (event.error !== 'aborted') {
+            console.log(`⚠️ Recognition error (${event.error}), restarting...`);
             // Restart listening after error (except if manually aborted)
             setTimeout(() => {
-              startContinuousListening();
+              if (userWantsListening) {
+                startContinuousListening();
+              }
             }, 2000);
           }
         };
