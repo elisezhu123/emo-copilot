@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import StatusBar from '../components/StatusBar';
+import StatusBar, { WeatherCondition } from '../components/StatusBar';
 import ComfortFace from '../components/ComfortFace';
 import ShockFace from '../components/ShockFace';
 import CuteFace from '../components/CuteFace';
@@ -8,6 +8,8 @@ import CryFace from '../components/CryFace';
 import EnjoyFace from '../components/EnjoyFace';
 import ACFace from '../components/ACFace';
 import LightingFace from '../components/LightingFace';
+import HappyFace from '../components/HappyFace';
+import SadFace from '../components/SadFace';
 import { carStateManager } from '../services/carStateManager';
 
 interface Message {
@@ -31,6 +33,9 @@ const AIChatbot = () => {
   const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
   const [temperatureTriggered, setTemperatureTriggered] = useState<boolean>(false);
   const [awaitingACPermission, setAwaitingACPermission] = useState<boolean>(false);
+  const [currentWeatherCondition, setCurrentWeatherCondition] = useState<WeatherCondition | null>(null);
+  const [awaitingWeatherPermission, setAwaitingWeatherPermission] = useState<boolean>(false);
+  const [weatherTriggered, setWeatherTriggered] = useState<boolean>(false);
 
   // Emotional emoji states
   const [showComfortEmoji, setShowComfortEmoji] = useState(false);
@@ -40,6 +45,8 @@ const AIChatbot = () => {
   const [showEnjoyEmoji, setShowEnjoyEmoji] = useState(false);
   const [showACEmoji, setShowACEmoji] = useState(false);
   const [showLightingEmoji, setShowLightingEmoji] = useState(false);
+  const [showHappyEmoji, setShowHappyEmoji] = useState(false);
+  const [showSadEmoji, setShowSadEmoji] = useState(false);
 
   // Wellness features - REMOVED
   // const [isBreathingActive, setIsBreathingActive] = useState(false);
@@ -364,6 +371,59 @@ const AIChatbot = () => {
 
     // Speak the message
     speakText(`It's ${temp} degrees outside - quite hot! Should I turn on the air conditioner to cool things down for you?`);
+  };
+
+  // Handle extreme weather conditions
+  const handleExtremeWeather = (weather: WeatherCondition) => {
+    if (weatherTriggered) return; // Prevent multiple triggers
+
+    setWeatherTriggered(true);
+    setCurrentWeatherCondition(weather);
+    setAwaitingWeatherPermission(true);
+
+    // Navigate to AI chatbot if not already there
+    if (window.location.pathname !== '/ai-chatbot') {
+      console.log('⚠️ Navigating to AI chatbot due to extreme weather');
+      window.location.href = '/ai-chatbot?weather=extreme';
+      return;
+    }
+
+    // Generate weather-specific message and recommendation
+    let message = '';
+    let recommendation = '';
+
+    if (weather.condition.includes('snow') || weather.condition.includes('blizzard')) {
+      message = `I've detected ${weather.description} with ${weather.temp}°C temperature. Driving conditions are dangerous!`;
+      recommendation = 'Should I reduce your vehicle speed by 6-7 km/h for safer driving in these snowy conditions?';
+    } else if (weather.condition.includes('fog') || weather.condition.includes('mist') || weather.visibility < 1000) {
+      message = `I've detected ${weather.description} with visibility at ${weather.visibility}m. This is very dangerous for driving!`;
+      recommendation = 'Should I activate autodrive assistance to help navigate safely through this low visibility?';
+    } else if (weather.condition.includes('thunderstorm') || weather.windSpeed > 15) {
+      message = `I've detected ${weather.description} with ${weather.windSpeed}m/s winds. Severe weather conditions ahead!`;
+      recommendation = 'Should I suggest finding a safe place to pull over until this storm passes?';
+    } else if (weather.temp <= -5) {
+      message = `I've detected extremely cold conditions at ${weather.temp}°C. Road ice is likely!`;
+      recommendation = 'Should I reduce speed and increase following distance for icy road conditions?';
+    } else {
+      message = `I've detected extreme weather: ${weather.description}. Please drive with extra caution!`;
+      recommendation = 'Should I provide enhanced safety monitoring for these conditions?';
+    }
+
+    // Show warning emoji
+    setShowShockEmoji(true);
+    setTimeout(() => setShowShockEmoji(false), 4000);
+
+    // Add AI message with warning and recommendation
+    const weatherMessage: Message = {
+      id: Date.now().toString() + '_weather_alert',
+      text: `⚠️ WEATHER ALERT: ${message} ${recommendation}`,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, weatherMessage]);
+
+    // Speak the warning
+    speakText(`Weather alert! ${message} ${recommendation}`);
   };
 
   // Car control functions with global state
@@ -900,12 +960,103 @@ const AIChatbot = () => {
       return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
     }
 
-    // Test command for temperature trigger
+    // Handle weather permission responses in fallback
+    if (awaitingWeatherPermission && currentWeatherCondition) {
+      if (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+          message.includes('okay') || message.includes('please') || message.includes('activate') ||
+          message.includes('reduce') || message.includes('help')) {
+
+        setAwaitingWeatherPermission(false);
+
+        // Show happy emoji for acceptance
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+
+        let actionMessage = '';
+        let comfortWords = '';
+
+        if (currentWeatherCondition.condition.includes('snow')) {
+          actionMessage = 'Perfect! Speed reduced by 7 km/h for snowy conditions. Winter driving mode activated.';
+          comfortWords = 'Smart choice! I\'ll help you navigate these snowy roads safely.';
+        } else if (currentWeatherCondition.condition.includes('fog')) {
+          actionMessage = 'Excellent! Autodrive assistance activated for low visibility conditions.';
+          comfortWords = 'Great decision! I\'ll be your guide through this fog.';
+        } else {
+          actionMessage = 'Perfect! Enhanced safety monitoring activated for extreme weather.';
+          comfortWords = 'You\'re being very responsible. I\'ll help you stay safe.';
+        }
+
+        // Add comfort message after delay
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 2000);
+
+        return actionMessage;
+      }
+
+      if (message.includes('no') || message.includes('not') || message.includes('don\'t')) {
+        setAwaitingWeatherPermission(false);
+
+        // Show sad emoji for rejection
+        setShowSadEmoji(true);
+        setTimeout(() => setShowSadEmoji(false), 3000);
+
+        const comfortWords = 'I understand. Please drive very carefully in these conditions. I\'m still here to help if you need me.';
+
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_sad_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 3000);
+
+        return 'I understand you want to handle this yourself.';
+      }
+    }
+
+    // Test commands for various triggers
     if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
       setTimeout(() => {
         handleTemperatureExceed(37);
       }, 1000);
       return "Testing temperature trigger! Simulating 37°C temperature...";
+    }
+
+    if (message.includes('test snow') || message.includes('simulate snow')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'snow',
+          visibility: 10000,
+          windSpeed: 5,
+          temp: -2,
+          description: 'Heavy snow'
+        });
+      }, 1000);
+      return "Testing snow weather! Simulating heavy snow conditions...";
+    }
+
+    if (message.includes('test fog') || message.includes('simulate fog')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'fog',
+          visibility: 200,
+          windSpeed: 2,
+          temp: 8,
+          description: 'Dense fog'
+        });
+      }, 1000);
+      return "Testing fog weather! Simulating dense fog conditions...";
     }
 
     // Voice control help system
@@ -1744,6 +1895,88 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
       }
 
+      // Handle weather permission responses
+      if (awaitingWeatherPermission && currentWeatherCondition) {
+        if (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+            userLower.includes('okay') || userLower.includes('please') || userLower.includes('activate') ||
+            userLower.includes('reduce') || userLower.includes('help')) {
+
+          setAwaitingWeatherPermission(false);
+
+          // Show happy emoji for acceptance
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+
+          // Provide specific action based on weather condition
+          let actionMessage = '';
+          let comfortWords = '';
+
+          if (currentWeatherCondition.condition.includes('snow') || currentWeatherCondition.condition.includes('blizzard')) {
+            actionMessage = 'Perfect! I\'ve reduced your speed by 7 km/h and activated winter driving mode. Your vehicle will now maintain safer speeds and distances.';
+            comfortWords = 'You\'re making the right choice for safety. I\'ll keep monitoring conditions and help you get to your destination safely.';
+          } else if (currentWeatherCondition.condition.includes('fog')) {
+            actionMessage = 'Excellent! I\'ve activated autodrive assistance with enhanced sensors. The vehicle will now help guide you safely through low visibility.';
+            comfortWords = 'This was a smart decision. I\'ll be your extra eyes in this fog and ensure you stay on the right path safely.';
+          } else if (currentWeatherCondition.condition.includes('thunderstorm')) {
+            actionMessage = 'Great choice! I\'ve found the nearest safe rest area 2.3 km ahead. I\'ll guide you there to wait out the storm.';
+            comfortWords = 'You\'re prioritizing safety, which is always the right call. Better to arrive safely than risk danger in severe weather.';
+          } else {
+            actionMessage = 'Perfect! I\'ve activated enhanced safety monitoring and adjusted driving parameters for current conditions.';
+            comfortWords = 'You\'re being very responsible. I\'ll help you navigate these challenging conditions safely.';
+          }
+
+          // Add action confirmation message
+          setTimeout(() => {
+            const actionMsg: Message = {
+              id: Date.now().toString() + '_weather_action',
+              text: actionMessage,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, actionMsg]);
+
+            // Add comfort words after a delay
+            setTimeout(() => {
+              const comfortMsg: Message = {
+                id: Date.now().toString() + '_comfort',
+                text: comfortWords,
+                type: 'bot',
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, comfortMsg]);
+              speakText(comfortWords);
+            }, 2000);
+          }, 1000);
+
+          return actionMessage;
+        }
+
+        if (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t')) {
+          setAwaitingWeatherPermission(false);
+
+          // Show sad emoji for rejection
+          setShowSadEmoji(true);
+          setTimeout(() => setShowSadEmoji(false), 3000);
+
+          let sadResponse = 'I understand you want to handle this yourself.';
+          let comfortWords = 'Please drive very carefully in these conditions. I\'m still here monitoring the weather and ready to help if you change your mind. Your safety is my top priority.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort_sad',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 3000);
+
+          return sadResponse;
+        }
+      }
+
       // Music and entertainment requests (enhanced for stress support)
       if (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
           userLower.includes('play') || userLower.includes('listen') || userLower.includes('song')) ||
@@ -2228,6 +2461,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
             <LightingFace />
           </div>
         </div>
+      ) : showHappyEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-2">
+          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+            <HappyFace />
+          </div>
+        </div>
+      ) : showSadEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-2">
+          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+            <SadFace />
+          </div>
+        </div>
       ) : (
         <>
           {/* Status Bar */}
@@ -2236,6 +2481,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
             showHomeButton={true}
             showTemperature={true}
             onTemperatureExceed={handleTemperatureExceed}
+            onExtremeWeather={handleExtremeWeather}
           />
 
       {/* Conversation Container */}
