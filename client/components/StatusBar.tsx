@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+interface WeatherCondition {
+  condition: string;
+  visibility?: number;
+  windSpeed?: number;
+  temp: number;
+  description: string;
+}
+
 interface StatusBarProps {
   title: string;
   showHomeButton?: boolean;
   isDraggable?: boolean;
   showTemperature?: boolean;
   onTemperatureExceed?: (temp: number) => void;
+  onExtremeWeather?: (weather: WeatherCondition) => void;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({
@@ -14,7 +23,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
   showHomeButton = false,
   isDraggable = false,
   showTemperature = true,
-  onTemperatureExceed
+  onTemperatureExceed,
+  onExtremeWeather
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
@@ -67,25 +77,77 @@ const StatusBar: React.FC<StatusBarProps> = ({
       setTemperature(`${temp}°C`);
       console.log('🌡️ StatusBar temperature updated for Limerick area:', `${temp}°C`);
 
+      // Check for extreme weather conditions
+      const weatherCondition = data.weather[0].main.toLowerCase();
+      const visibility = data.visibility || 10000;
+      const windSpeed = data.wind?.speed || 0;
+      const description = data.weather[0].description;
+
       // Check if temperature exceeds 35°C and trigger callback
       if (temp >= 35 && onTemperatureExceed) {
         console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
         onTemperatureExceed(temp);
       }
+
+      // Check for extreme weather conditions
+      const extremeConditions = [
+        'snow', 'blizzard', 'thunderstorm', 'fog', 'mist',
+        'haze', 'dust', 'sand', 'ash', 'squall', 'tornado'
+      ];
+
+      const isExtremeWeather = extremeConditions.some(condition =>
+        weatherCondition.includes(condition)
+      ) || visibility < 1000 || windSpeed > 15 || temp <= -5;
+
+      if (isExtremeWeather && onExtremeWeather) {
+        console.log('⚠️ Extreme weather detected:', weatherCondition, 'Visibility:', visibility, 'Wind:', windSpeed);
+        onExtremeWeather({
+          condition: weatherCondition,
+          visibility,
+          windSpeed,
+          temp,
+          description
+        });
+      }
       
     } catch (error) {
       console.error('❌ StatusBar weather API error:', error);
-      // For testing: simulate high temperature occasionally
-      const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
-      const fallbackTemp = shouldSimulateHighTemp ? 37 : 15;
-      setTemperature(`${fallbackTemp}°C`);
-      console.log(`🌡️ StatusBar using ${shouldSimulateHighTemp ? 'simulated high' : 'fallback Limerick'} temperature: ${fallbackTemp}°C`);
+      // For testing: simulate various weather conditions
+      const randomValue = Math.random();
+      let fallbackTemp = 15;
+      let simulatedWeather = null;
 
-      // Check if simulated temperature exceeds 35°C
-      if (fallbackTemp >= 35 && onTemperatureExceed) {
-        console.log('🔥 Simulated temperature exceeds 35°C, triggering AC permission dialog');
-        onTemperatureExceed(fallbackTemp);
+      if (randomValue < 0.15) { // 15% chance of extreme weather
+        const extremeWeatherTypes = [
+          { condition: 'snow', temp: -2, description: 'Heavy snow' },
+          { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200 },
+          { condition: 'thunderstorm', temp: 18, description: 'Severe thunderstorm', windSpeed: 20 },
+          { condition: 'blizzard', temp: -8, description: 'Blizzard conditions', windSpeed: 25 }
+        ];
+
+        simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
+        fallbackTemp = simulatedWeather.temp;
+
+        console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
+
+        if (onExtremeWeather) {
+          onExtremeWeather({
+            condition: simulatedWeather.condition,
+            visibility: simulatedWeather.visibility || 10000,
+            windSpeed: simulatedWeather.windSpeed || 0,
+            temp: fallbackTemp,
+            description: simulatedWeather.description
+          });
+        }
+      } else if (randomValue < 0.25) { // 10% chance of high temp
+        fallbackTemp = 37;
+        if (onTemperatureExceed) {
+          onTemperatureExceed(fallbackTemp);
+        }
       }
+
+      setTemperature(`${fallbackTemp}°C`);
+      console.log(`🌡️ StatusBar using simulated temperature: ${fallbackTemp}°C`);
     }
   };
 
@@ -119,14 +181,36 @@ const StatusBar: React.FC<StatusBarProps> = ({
           }
 
           // Fallback to Limerick weather when location is not available
-          // For testing: occasionally simulate high temperature
-          const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
-          if (shouldSimulateHighTemp) {
-            const simulatedTemp = 36 + Math.floor(Math.random() * 4); // 36-39°C
-            setTemperature(`${simulatedTemp}°C`);
-            console.log(`🔥 Simulated high temperature: ${simulatedTemp}°C`);
-            if (onTemperatureExceed) {
-              onTemperatureExceed(simulatedTemp);
+          // For testing: occasionally simulate weather conditions
+          const randomValue = Math.random();
+          if (randomValue < 0.2) { // 20% chance of simulation
+            if (randomValue < 0.1) {
+              // Simulate extreme weather
+              const extremeWeatherTypes = [
+                { condition: 'snow', temp: -2, description: 'Heavy snow' },
+                { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200 }
+              ];
+
+              const simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
+              setTemperature(`${simulatedWeather.temp}°C`);
+              console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
+
+              if (onExtremeWeather) {
+                onExtremeWeather({
+                  condition: simulatedWeather.condition,
+                  visibility: simulatedWeather.visibility || 10000,
+                  windSpeed: simulatedWeather.windSpeed || 0,
+                  temp: simulatedWeather.temp,
+                  description: simulatedWeather.description
+                });
+              }
+            } else {
+              // Simulate high temperature
+              const simulatedTemp = 36 + Math.floor(Math.random() * 4);
+              setTemperature(`${simulatedTemp}°C`);
+              if (onTemperatureExceed) {
+                onTemperatureExceed(simulatedTemp);
+              }
             }
           } else {
             fetchWeather(52.6638, -8.6267); // Limerick coordinates
@@ -137,14 +221,36 @@ const StatusBar: React.FC<StatusBarProps> = ({
     } else if (showTemperature) {
       // Fallback to Limerick weather when geolocation is not supported
       console.log('🌡️ StatusBar: Geolocation not supported, using Limerick weather');
-      // For testing: occasionally simulate high temperature
-      const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
-      if (shouldSimulateHighTemp) {
-        const simulatedTemp = 36 + Math.floor(Math.random() * 4); // 36-39°C
-        setTemperature(`${simulatedTemp}°C`);
-        console.log(`🔥 Simulated high temperature: ${simulatedTemp}°C`);
-        if (onTemperatureExceed) {
-          onTemperatureExceed(simulatedTemp);
+      // For testing: occasionally simulate weather conditions
+      const randomValue = Math.random();
+      if (randomValue < 0.2) { // 20% chance of simulation
+        if (randomValue < 0.1) {
+          // Simulate extreme weather
+          const extremeWeatherTypes = [
+            { condition: 'snow', temp: -2, description: 'Heavy snow' },
+            { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200 }
+          ];
+
+          const simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
+          setTemperature(`${simulatedWeather.temp}°C`);
+          console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
+
+          if (onExtremeWeather) {
+            onExtremeWeather({
+              condition: simulatedWeather.condition,
+              visibility: simulatedWeather.visibility || 10000,
+              windSpeed: simulatedWeather.windSpeed || 0,
+              temp: simulatedWeather.temp,
+              description: simulatedWeather.description
+            });
+          }
+        } else {
+          // Simulate high temperature
+          const simulatedTemp = 36 + Math.floor(Math.random() * 4);
+          setTemperature(`${simulatedTemp}°C`);
+          if (onTemperatureExceed) {
+            onTemperatureExceed(simulatedTemp);
+          }
         }
       } else {
         fetchWeather(52.6638, -8.6267); // Limerick coordinates
