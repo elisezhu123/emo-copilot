@@ -2263,7 +2263,10 @@ ${response}
       
       if (!apiKey || apiKey === 'your-deepseek-api-key') {
         console.warn('⚠️ DeepSeek API key not configured - using fallback responses');
-        return await getFallbackResponse(userMessage);
+        console.log('🔄 Calling fallback response for:', userMessage);
+        const fallbackResult = await getFallbackResponse(userMessage);
+        console.log('✅ Fallback response generated:', fallbackResult);
+        return fallbackResult;
       }
 
       const locationContext = currentLocation
@@ -3024,7 +3027,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   const toggleListening = () => {
     console.log('🎤 Toggle listening clicked');
     console.log('🔍 Recognition ref:', recognitionRef.current);
-    console.log('🔍 User wants listening:', userWantsListening);
+    console.log('��� User wants listening:', userWantsListening);
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
