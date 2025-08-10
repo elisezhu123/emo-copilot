@@ -959,7 +959,7 @@ const AIChatbot = () => {
       let fullResponse = baseResponse;
       
       if (safetyWarnings.length > 0) {
-        fullResponse += `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+        fullResponse += `\n\n�� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
       }
       
       if (routeDangers.length > 0) {
@@ -1301,6 +1301,13 @@ const AIChatbot = () => {
         });
       }, 1000);
       return "Testing storm weather! Simulating severe thunderstorm conditions...";
+    }
+
+    if (message.includes('test focus') || message.includes('simulate focus')) {
+      setTimeout(() => {
+        handleFocusMode();
+      }, 1000);
+      return "Testing focus mode trigger! Simulating 5 minutes of focused driving...";
     }
 
     // Voice control help system
