@@ -2874,7 +2874,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
     // Initialize Speech Recognition for continuous listening
     console.log('🔍 Checking speech recognition availability...');
-    console.log('🔍 webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
+    console.log('��� webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
     console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -3179,6 +3179,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 Browser info:', navigator.userAgent);
     console.log('🔍 Speech recognition support:', 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
     console.log('🔍 Microphone status:', microphoneStatus);
+
+    // If stopping, add a manual test to check if the system works
+    if (userWantsListening) {
+      // Add a manual test message to verify message system works
+      const testMessage: Message = {
+        id: Date.now().toString(),
+        text: "Manual test: Type 'hello test' to verify the AI response system works",
+        type: 'user',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, testMessage]);
+    }
 
     if (!recognitionRef.current) {
       console.error('❌ Recognition ref is null');
