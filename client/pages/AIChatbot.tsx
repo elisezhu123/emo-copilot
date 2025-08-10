@@ -2811,6 +2811,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         // Request microphone access to get permission
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         console.log('✅ Microphone permission granted automatically');
+        setMicrophoneStatus('available');
         // Immediately stop the stream since we just needed permission
         stream.getTracks().forEach(track => track.stop());
       } catch (error: any) {
