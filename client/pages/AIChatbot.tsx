@@ -1874,7 +1874,7 @@ ${response}
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
 • Trusted mechanic or tow service
-• Family/friends for pickup
+�� Family/friends for pickup
 
 🗺️ I can help you find nearby auto repair shops or describe your location to assistance services. Stay safe and don't attempt repairs in dangerous locations!`;
     }
@@ -3031,11 +3031,25 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         wakeWordRecognitionRef.current.onerror = (event: any) => {
-          console.error('Wake word recognition error:', event.error);
-          if (event.error !== 'aborted') {
+          console.log('⚠️ Wake word recognition error:', event.error);
+
+          // Don't treat "aborted" as an error - it's normal when stopping manually
+          if (event.error === 'aborted') {
+            console.log('👂 Wake word recognition was stopped (normal operation)');
+            return;
+          }
+
+          // For other errors, try to restart after a delay
+          if (event.error === 'not-allowed') {
+            console.log('❌ Microphone permission denied for wake word');
+            setMicrophoneStatus('permission-denied');
+          } else {
+            console.log('🔄 Restarting wake word recognition after error:', event.error);
             setTimeout(() => {
-              startWakeWordListening();
-            }, 2000);
+              if (!userWantsListening) {
+                startWakeWordListening();
+              }
+            }, 3000);
           }
         };
 
