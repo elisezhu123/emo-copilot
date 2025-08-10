@@ -6,13 +6,15 @@ interface StatusBarProps {
   showHomeButton?: boolean;
   isDraggable?: boolean;
   showTemperature?: boolean;
+  onTemperatureExceed?: (temp: number) => void;
 }
 
-const StatusBar: React.FC<StatusBarProps> = ({ 
-  title, 
-  showHomeButton = false, 
+const StatusBar: React.FC<StatusBarProps> = ({
+  title,
+  showHomeButton = false,
   isDraggable = false,
-  showTemperature = true
+  showTemperature = true,
+  onTemperatureExceed
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
@@ -64,6 +66,12 @@ const StatusBar: React.FC<StatusBarProps> = ({
       const temp = Math.round(data.main.temp);
       setTemperature(`${temp}°C`);
       console.log('🌡️ StatusBar temperature updated for Limerick area:', `${temp}°C`);
+
+      // Check if temperature exceeds 35°C and trigger callback
+      if (temp >= 35 && onTemperatureExceed) {
+        console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
+        onTemperatureExceed(temp);
+      }
       
     } catch (error) {
       console.error('❌ StatusBar weather API error:', error);
