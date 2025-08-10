@@ -1260,7 +1260,7 @@ const AIChatbot = () => {
 
     // Don't start if main listening is active
     if (userWantsListening || isListening) {
-      console.log('���️ Skipping wake word start - main listening is active');
+      console.log('⏭️ Skipping wake word start - main listening is active');
       return;
     }
 
@@ -2888,7 +2888,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       try {
         // Main speech recognition for conversations
         recognitionRef.current = new SpeechRecognition();
-        console.log('�� Main recognition instance created:', recognitionRef.current);
+        console.log('✅ Main recognition instance created:', recognitionRef.current);
       } catch (error) {
         console.error('❌ Failed to create speech recognition:', error);
         return;
@@ -3297,7 +3297,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           />
 
       {/* Conversation Container */}
-      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 flex-1 min-h-[40vh] lg:min-h-[35vh] overflow-y-auto">
+      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 min-h-[20vh] lg:min-h-[18vh] overflow-y-auto">
         <div className="flex flex-col gap-4">
           {messages.map((message) => (
             <div key={message.id}>
