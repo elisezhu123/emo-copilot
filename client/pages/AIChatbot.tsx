@@ -29,6 +29,8 @@ const AIChatbot = () => {
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
+  const [temperatureTriggered, setTemperatureTriggered] = useState<boolean>(false);
+  const [awaitingACPermission, setAwaitingACPermission] = useState<boolean>(false);
 
   // Emotional emoji states
   const [showComfortEmoji, setShowComfortEmoji] = useState(false);
@@ -339,6 +341,30 @@ const AIChatbot = () => {
 
   // Breathing exercise and meditation functions - REMOVED
   // These wellness features have been removed as requested
+
+  // Handle temperature exceeding 35°C
+  const handleTemperatureExceed = (temp: number) => {
+    if (temperatureTriggered) return; // Prevent multiple triggers
+
+    setTemperatureTriggered(true);
+    setAwaitingACPermission(true);
+
+    // Show AC emoji
+    setShowACEmoji(true);
+    setTimeout(() => setShowACEmoji(false), 4000);
+
+    // Add AI message asking for permission
+    const permissionMessage: Message = {
+      id: Date.now().toString() + '_temp_trigger',
+      text: `I've detected the temperature is ${temp}°C - quite hot! Should I turn on the air conditioner to cool things down for you?`,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, permissionMessage]);
+
+    // Speak the message
+    speakText(`It's ${temp} degrees outside - quite hot! Should I turn on the air conditioner to cool things down for you?`);
+  };
 
   // Car control functions with global state
   const setAirConditioner = (temp: number, turnOn: boolean = true) => {
@@ -1666,11 +1692,33 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Check for action requests and perform them
       const userLower = userMessage.toLowerCase();
 
+      // Handle AC permission responses when awaiting permission
+      if (awaitingACPermission && (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+          userLower.includes('okay') || userLower.includes('please') || userLower.includes('turn on') ||
+          userLower.includes('cool') || userLower.includes('ac'))) {
+
+        setAwaitingACPermission(false);
+
+        // Turn on AC at cooling temperature
+        setTimeout(() => {
+          setAirConditioner(20, true);
+          setShowACEmoji(true);
+          setTimeout(() => setShowACEmoji(false), 3000);
+        }, 1000);
+
+        return "Perfect! I've turned on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+      }
+
+      if (awaitingACPermission && (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t'))) {
+        setAwaitingACPermission(false);
+        return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
+      }
+
       // Music and entertainment requests (enhanced for stress support)
       if (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
           userLower.includes('play') || userLower.includes('listen') || userLower.includes('song')) ||
           userLower.includes('yes') && userLower.includes('music') ||
-          (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('okay')) && 
+          (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('okay')) &&
           messages.some(msg => msg.text.includes('calming music'))) {
 
         // Show music emoji first
@@ -2157,6 +2205,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
             title="Co-Driver Assistant"
             showHomeButton={true}
             showTemperature={true}
+            onTemperatureExceed={handleTemperatureExceed}
           />
 
       {/* Conversation Container */}
