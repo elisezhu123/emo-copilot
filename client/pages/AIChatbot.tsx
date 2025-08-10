@@ -1212,6 +1212,11 @@ const AIChatbot = () => {
 
   // Start continuous listening
   const startContinuousListening = () => {
+    console.log('🎤 startContinuousListening called');
+    console.log('🔍 recognitionRef.current:', recognitionRef.current);
+    console.log('🔍 isListening:', isListening);
+    console.log('🔍 userWantsListening:', userWantsListening);
+
     if (!recognitionRef.current) {
       console.log('❌ Speech recognition not available');
       return;
