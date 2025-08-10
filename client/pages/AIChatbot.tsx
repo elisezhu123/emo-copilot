@@ -1416,7 +1416,7 @@ ${response}
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
-�� Trusted mechanic or tow service
+• Trusted mechanic or tow service
 • Family/friends for pickup
 
 🗺️ I can help you find nearby auto repair shops or describe your location to assistance services. Stay safe and don't attempt repairs in dangerous locations!`;
@@ -2466,55 +2466,55 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       {/* Conditional Content - Show emoji or normal chat interface */}
       {showComfortEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <ComfortFace />
           </div>
         </div>
       ) : showShockEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <ShockFace />
           </div>
         </div>
       ) : showCuteEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <CuteFace />
           </div>
         </div>
       ) : showCryEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <CryFace />
           </div>
         </div>
       ) : showEnjoyEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <EnjoyFace />
           </div>
         </div>
       ) : showACEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <ACFace />
           </div>
         </div>
       ) : showLightingEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <LightingFace />
           </div>
         </div>
       ) : showHappyEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <HappyFace />
           </div>
         </div>
       ) : showSadEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
+          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
             <SadFace />
           </div>
         </div>
