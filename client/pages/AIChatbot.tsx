@@ -2124,6 +2124,60 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Check for action requests and perform them
       const userLower = userMessage.toLowerCase();
 
+      // Check for child story suggestions when driver mentions having children
+      if ((userLower.includes('child') || userLower.includes('kid') || userLower.includes('children') ||
+           userLower.includes('son') || userLower.includes('daughter') || userLower.includes('my boy') ||
+           userLower.includes('my girl') || userLower.includes('little one')) &&
+          (userLower.includes('have') || userLower.includes('got') || userLower.includes('with me') ||
+           userLower.includes('back seat') || userLower.includes('car') || userLower.includes('bored') ||
+           userLower.includes('crying') || userLower.includes('restless') || userLower.includes('tired') ||
+           userLower.includes('entertain') || userLower.includes('story') || userLower.includes('book'))) {
+
+        // Show happy emoji for child-friendly suggestion
+        setTimeout(() => {
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+        }, 1000);
+
+        const childStoryResponse = "I'd love to help entertain your little passenger! I can tell some wonderful short stories - would you like me to share a quick adventure tale about a brave little explorer, a magical forest story, or maybe a funny animal adventure? These stories are perfect for car rides and will keep your child engaged and happy!";
+
+        // Add comfort words after emoji
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_child_comfort',
+            text: "Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.",
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText("Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.");
+        }, 3000);
+
+        return childStoryResponse;
+      }
+
+      // Handle story selection when user responds to child story offer
+      if ((userLower.includes('adventure') || userLower.includes('explorer')) &&
+          messages.some(msg => msg.text.includes('brave little explorer'))) {
+        const adventureStory = "Once upon a time, there was a curious little explorer named Sam who discovered a magical compass in their backyard. The compass pointed to different colors instead of directions! When Sam followed the red arrow, they found a garden full of singing flowers. The blue arrow led to a pond where friendly frogs told jokes. And the golden arrow? Well, that led to the most wonderful treasure of all - a picnic blanket where Sam's family was waiting with their favorite snacks! The End. What an adventure!";
+        speakText(adventureStory);
+        return adventureStory;
+      }
+
+      if ((userLower.includes('forest') || userLower.includes('magical')) &&
+          messages.some(msg => msg.text.includes('magical forest story'))) {
+        const forestStory = "In a gentle, magical forest lived a little bunny named Luna who could make flowers glow with her tiny paws. One day, Luna met a sad owl who had lost his way home. Luna touched the trees one by one, making them sparkle like stars to light the path. Together, they followed the glowing trail through the forest. When they found Owl's cozy tree house, all the forest animals cheered! From that day on, Luna became known as the Forest Light Keeper, helping anyone who needed to find their way. The End. What a kind little bunny!";
+        speakText(forestStory);
+        return forestStory;
+      }
+
+      if ((userLower.includes('animal') || userLower.includes('funny')) &&
+          messages.some(msg => msg.text.includes('funny animal adventure'))) {
+        const animalStory = "There once was a little penguin named Pip who wanted to learn how to fly. Pip watched the birds and flapped their wings, but just slid on their belly instead! Then Pip met a wise old turtle who said, 'Everyone has their own special talent.' So Pip tried swimming and - whoosh! - became the fastest swimmer in the whole arctic! All the other animals cheered as Pip zoomed through the water like a feathered rocket. Pip learned that being different made them extra special! The End. What a fantastic discovery!";
+        speakText(animalStory);
+        return animalStory;
+      }
+
       // Handle AC permission responses when awaiting permission
       if (awaitingACPermission && (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
           userLower.includes('okay') || userLower.includes('please') || userLower.includes('turn on') ||
