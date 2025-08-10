@@ -3253,7 +3253,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           />
 
       {/* Conversation Container */}
-      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 flex-1 min-h-[60vh] lg:min-h-[70vh] overflow-y-auto">
+      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 flex-1 min-h-[60vh] lg:min-h-[50vh] overflow-y-auto">
         <div className="flex flex-col gap-4">
           {messages.map((message) => (
             <div key={message.id}>
