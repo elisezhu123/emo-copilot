@@ -1266,7 +1266,7 @@ const AIChatbot = () => {
         console.log('👂 Wake word listening stopped');
       }
     } catch (error) {
-      console.log('⚠��� Error stopping wake word recognition:', error);
+      console.log('⚠️ Error stopping wake word recognition:', error);
     }
   };
 
@@ -2873,6 +2873,11 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         recognitionRef.current.continuous = true; // Continuous listening
         recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onstart = () => {
+          console.log('🎤 Speech recognition has started - listening for speech...');
+          setIsListening(true);
+        };
 
         recognitionRef.current.onresult = (event: any) => {
           console.log('🎤 Speech recognition result event triggered');
