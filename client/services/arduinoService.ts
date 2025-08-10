@@ -31,14 +31,16 @@ class ArduinoService {
   async connect(): Promise<boolean> {
     try {
       if (!('serial' in navigator)) {
-        throw new Error('Web Serial API not supported');
+        console.log('💡 Web Serial API not supported - using mock data for heart rate monitoring');
+        this.startMockData();
+        return false;
       }
 
-      // Request a port
+      // Request a port (this requires user interaction)
       this.port = await (navigator as any).serial.requestPort();
-      
+
       // Open the port
-      await this.port.open({ 
+      await this.port.open({
         baudRate: 115200, // Match Arduino's Serial.begin(115200)
         dataBits: 8,
         stopBits: 1,
@@ -51,18 +53,25 @@ class ArduinoService {
 
       // Start reading data
       this.startReading();
-      
+
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.connectionAttempts++;
-      console.error('❌ Failed to connect to Arduino:', error);
-      
-      if (this.connectionAttempts < this.maxConnectionAttempts) {
-        console.log(`🔄 Retrying connection (${this.connectionAttempts}/${this.maxConnectionAttempts})...`);
-        // Retry after 2 seconds
-        setTimeout(() => this.connect(), 2000);
+
+      // Handle specific error cases gracefully
+      if (error.name === 'NotFoundError' || error.message.includes('No port selected')) {
+        console.log('💡 No Arduino device selected - using mock data for heart rate monitoring');
+      } else if (error.name === 'NotAllowedError') {
+        console.log('💡 Arduino access denied - using mock data for heart rate monitoring');
+      } else {
+        console.log('💡 Arduino connection failed - using mock data for heart rate monitoring');
       }
-      
+
+      // Don't retry automatically in web environment - just use mock data
+      if (!this.isConnected && this.connectionAttempts === 1) {
+        this.startMockData();
+      }
+
       return false;
     }
   }
