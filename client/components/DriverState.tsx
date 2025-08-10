@@ -1,41 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { arduinoService, HRVData } from '../services/arduinoService';
+import React, { useState, useEffect, useRef } from 'react';
+import { arduinoService, HRVData, HeartRateData } from '../services/arduinoService';
 import { carStateManager, DriverStateType } from '../services/carStateManager';
 
 interface DriverStateProps {
   className?: string;
 }
 
+interface EmotionalAnalysisData {
+  timestamp: number;
+  heartRate: number;
+  sdnn: number;
+}
+
 const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
   const [currentState, setCurrentState] = useState<DriverStateType>('neutral');
   const [currentHRV, setCurrentHRV] = useState(173);
+  const [currentHeartRate, setCurrentHeartRate] = useState(75);
+  const [baselineHeartRate, setBaselineHeartRate] = useState<number | null>(null);
+  const [baselineSDNN, setBaselineSDNN] = useState<number | null>(null);
+  const [emotionalHistory, setEmotionalHistory] = useState<EmotionalAnalysisData[]>([]);
+  const [stateStartTime, setStateStartTime] = useState<number>(Date.now());
+  const [calibrationPeriod, setCalibrationPeriod] = useState<boolean>(true);
+  const calibrationStartTime = useRef<number>(Date.now());
+  const CALIBRATION_DURATION = 2 * 60 * 1000; // 2 minutes for baseline calibration
 
   useEffect(() => {
     // Subscribe to HRV data changes
-    const unsubscribe = arduinoService.subscribeHRV((data: HRVData) => {
+    const unsubscribeHRV = arduinoService.subscribeHRV((data: HRVData) => {
       setCurrentHRV(data.value);
-      const newState = getDriverStateFromHRV(data.value);
-      setCurrentState(newState);
-      
-      // Update global car state manager with driver state
-      carStateManager.setDriverState(newState);
-      console.log('🧠 Driver state updated:', newState, 'HRV:', data.value);
     });
 
-    return unsubscribe;
-  }, []);
+    // Subscribe to heart rate data changes
+    const unsubscribeHR = arduinoService.subscribe((data: HeartRateData) => {
+      if (data.values.length > 0) {
+        const latestHR = data.values[data.values.length - 1];
+        setCurrentHeartRate(latestHR);
 
-  // Determine driver state based on HRV value
-  const getDriverStateFromHRV = (hrv: number): DriverStateType => {
-    if (hrv <= 60) return 'anxious';
-    if (hrv >= 61 && hrv <= 90) return 'stressed';
-    if (hrv >= 121 && hrv <= 160) return 'focused';
-    if (hrv >= 161 && hrv <= 180) return 'neutral';
-    if (hrv >= 181 && hrv <= 220) return 'calm';
-    if (hrv >= 221 && hrv <= 250) return 'relaxed';
-    // Default fallback for values outside specified ranges
-    if (hrv >= 91 && hrv <= 120) return 'neutral'; // Fill gap between stressed and focused
-    return 'neutral'; // Default for any other values
+        const currentTime = Date.now();
+        const isCalibrating = currentTime - calibrationStartTime.current < CALIBRATION_DURATION;
+
+        if (isCalibrating) {
+          // During calibration, collect baseline data
+          collectBaselineData(latestHR, data.value);
+        } else {
+          // After calibration, perform emotional analysis
+          if (calibrationPeriod) {
+            setCalibrationPeriod(false);
+            console.log('🎯 Calibration complete. Baseline HR:', baselineHeartRate, 'Baseline SDNN:', baselineSDNN);
+          }
+          performEmotionalAnalysis(latestHR, data.value, currentTime);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribeHRV();
+      unsubscribeHR();
+    };
+  }, [baselineHeartRate, baselineSDNN, calibrationPeriod]);
+
+  // Collect baseline data during calibration period
+  const collectBaselineData = (heartRate: number, sdnn: number) => {
+    setEmotionalHistory(prev => {
+      const newHistory = [...prev, { timestamp: Date.now(), heartRate, sdnn }];
+
+      // Calculate running baseline averages
+      if (newHistory.length >= 10) { // Start calculating after 10 readings
+        const recentData = newHistory.slice(-30); // Use last 30 readings for baseline
+        const avgHR = recentData.reduce((sum, data) => sum + data.heartRate, 0) / recentData.length;
+        const avgSDNN = recentData.reduce((sum, data) => sum + data.sdnn, 0) / recentData.length;
+
+        setBaselineHeartRate(Math.round(avgHR));
+        setBaselineSDNN(Math.round(avgSDNN));
+      }
+
+      return newHistory;
+    });
+  };
+
+  // Perform emotional analysis based on heart rate and SDNN changes from baseline
+  const performEmotionalAnalysis = (heartRate: number, sdnn: number, currentTime: number) => {
+    if (baselineHeartRate === null || baselineSDNN === null) return;
+
+    // Calculate changes from baseline
+    const hrChange = heartRate - baselineHeartRate;
+    const sdnnChangePercent = ((sdnn - baselineSDNN) / baselineSDNN) * 100;
+
+    // Add current data to history
+    const newDataPoint = { timestamp: currentTime, heartRate, sdnn };
+    setEmotionalHistory(prev => {
+      const updated = [...prev, newDataPoint];
+      // Keep only last hour of data
+      const oneHourAgo = currentTime - (60 * 60 * 1000);
+      return updated.filter(data => data.timestamp > oneHourAgo);
+    });
+
+    // Determine new state based on the rules
+    const newState = analyzeEmotionalState(hrChange, sdnnChangePercent, currentTime);
+
+    if (newState !== currentState) {
+      setCurrentState(newState);
+      setStateStartTime(currentTime);
+      carStateManager.setDriverState(newState);
+      console.log(`🧠 Driver state updated: ${currentState} → ${newState}`);
+      console.log(`📊 HR change: ${hrChange > 0 ? '+' : ''}${hrChange}bpm, SDNN change: ${sdnnChangePercent > 0 ? '+' : ''}${sdnnChangePercent.toFixed(1)}%`);
+    }
+  };
+
+  // Analyze emotional state based on HR and SDNN changes with duration requirements
+  const analyzeEmotionalState = (hrChange: number, sdnnChangePercent: number, currentTime: number): DriverStateType => {
+    const timeInCurrentState = (currentTime - stateStartTime) / (60 * 1000); // minutes
+
+    // Check conditions for each state with duration requirements
+
+    // Anxious: HR +20bpm or SDNN -40% for 2-5 minutes
+    if ((hrChange >= 20 || sdnnChangePercent <= -40) && timeInCurrentState >= 2 && timeInCurrentState <= 5) {
+      return 'anxious';
+    }
+
+    // Stressed: HR +10-20bpm or SDNN -30% for 2-3 minutes
+    if ((hrChange >= 10 && hrChange < 20) || (sdnnChangePercent <= -30 && sdnnChangePercent > -40)) {
+      if (timeInCurrentState >= 2 && timeInCurrentState <= 3) {
+        return 'stressed';
+      }
+    }
+
+    // Focused: HR +5-10bpm or SDNN stable/+10% for 2-10 minutes
+    if ((hrChange >= 5 && hrChange < 10) || (sdnnChangePercent >= -10 && sdnnChangePercent <= 10)) {
+      if (timeInCurrentState >= 2 && timeInCurrentState <= 10) {
+        return 'focused';
+      }
+    }
+
+    // Neutral: HR ±0-5bpm or SDNN stable for 2-5 minutes
+    if ((Math.abs(hrChange) <= 5) || (Math.abs(sdnnChangePercent) <= 10)) {
+      if (timeInCurrentState >= 2 && timeInCurrentState <= 5) {
+        return 'neutral';
+      }
+    }
+
+    // Calm: HR -5-10bpm or SDNN +10-20% for 2-5 minutes
+    if ((hrChange >= -10 && hrChange <= -5) || (sdnnChangePercent >= 10 && sdnnChangePercent <= 20)) {
+      if (timeInCurrentState >= 2 && timeInCurrentState <= 5) {
+        return 'calm';
+      }
+    }
+
+    // Relaxed: HR -10+bpm or SDNN +20%+ for 5+ minutes
+    if ((hrChange <= -10) || (sdnnChangePercent >= 20)) {
+      if (timeInCurrentState >= 5) {
+        return 'relaxed';
+      }
+    }
+
+    // If no conditions are met or duration requirements not satisfied, maintain current state
+    return currentState;
   };
 
   // Get state display info
@@ -93,8 +212,18 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
         <span className="text-xs text-black lg:text-sm">{stateInfo.label}</span>
       </div>
       {/* Debug info - can be removed in production */}
-      <div className="text-xs text-gray-500">
-        HRV: {currentHRV}ms
+      <div className="text-xs text-gray-500 text-center">
+        {calibrationPeriod ? (
+          <div className="text-orange-500 font-medium">
+            Calibrating... {Math.max(0, Math.ceil((CALIBRATION_DURATION - (Date.now() - calibrationStartTime.current)) / 1000))}s
+          </div>
+        ) : (
+          <div>
+            <div>HR: {currentHeartRate} ({baselineHeartRate ? (currentHeartRate - baselineHeartRate > 0 ? '+' : '') + (currentHeartRate - baselineHeartRate) : '?'})</div>
+            <div>SDNN: {currentHRV} ({baselineSDNN ? ((currentHRV - baselineSDNN) / baselineSDNN * 100 > 0 ? '+' : '') + ((currentHRV - baselineSDNN) / baselineSDNN * 100).toFixed(0) + '%' : '?'})</div>
+            <div>Time: {Math.floor((Date.now() - stateStartTime) / 60000)}:{Math.floor(((Date.now() - stateStartTime) % 60000) / 1000).toString().padStart(2, '0')}</div>
+          </div>
+        )}
       </div>
     </div>
   );
