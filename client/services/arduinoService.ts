@@ -13,17 +13,13 @@ class ArduinoService {
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private heartRateValues: number[] = [];
-  private rrIntervals: number[] = []; // RR intervals for SDNN calculation
-  private currentHRV: number = 173; // Current SDNN value
-  private currentSDNN: number = 50; // Current SDNN in milliseconds
+  private currentHRV: number = 173; // Start at neutral 173, will change to different states over time
   private maxValues = 8;
-  private maxRRIntervals = 50; // Keep last 50 RR intervals for SDNN
   private subscribers: ((data: HeartRateData) => void)[] = [];
   private hrvSubscribers: ((data: HRVData) => void)[] = [];
   private isConnected = false;
   private connectionAttempts = 0;
   private maxConnectionAttempts = 3;
-  private lastHeartbeatTime: number = 0;
 
   constructor() {
     // Check if Web Serial API is supported
@@ -171,9 +167,6 @@ class ArduinoService {
       this.heartRateValues = this.heartRateValues.slice(-this.maxValues);
     }
 
-    // Add RR interval for SDNN calculation
-    this.addRRInterval(value);
-
     // Notify subscribers
     const data: HeartRateData = {
       values: [...this.heartRateValues],
@@ -191,17 +184,10 @@ class ArduinoService {
 
   private updateHRV(value: number) {
     this.currentHRV = value;
-    // If the input is already SDNN, use it directly, otherwise treat as RR interval
-    if (value > 10 && value < 200) {
-      this.currentSDNN = value;
-    } else {
-      // Calculate SDNN from RR intervals if we have enough data
-      this.calculateSDNN();
-    }
 
-    // Notify HRV subscribers with SDNN value
+    // Notify HRV subscribers
     const data: HRVData = {
-      value: this.currentSDNN,
+      value: value,
       timestamp: Date.now()
     };
 
@@ -212,57 +198,6 @@ class ArduinoService {
         console.error('❌ Error in Arduino HRV subscriber callback:', error);
       }
     });
-  }
-
-  private addRRInterval(heartRate: number) {
-    const currentTime = Date.now();
-
-    if (this.lastHeartbeatTime > 0) {
-      // Calculate RR interval from heart rate or time difference
-      let rrInterval: number;
-
-      if (heartRate > 0) {
-        // Calculate RR interval from heart rate: RR = 60000 / HR (in ms)
-        rrInterval = 60000 / heartRate;
-      } else {
-        // Use time difference between heartbeats
-        rrInterval = currentTime - this.lastHeartbeatTime;
-      }
-
-      // Add to RR intervals array
-      this.rrIntervals.push(rrInterval);
-
-      // Keep only the last maxRRIntervals values
-      if (this.rrIntervals.length > this.maxRRIntervals) {
-        this.rrIntervals = this.rrIntervals.slice(-this.maxRRIntervals);
-      }
-
-      // Calculate new SDNN
-      this.calculateSDNN();
-    }
-
-    this.lastHeartbeatTime = currentTime;
-  }
-
-  private calculateSDNN() {
-    if (this.rrIntervals.length < 5) {
-      return; // Need at least 5 intervals for meaningful SDNN
-    }
-
-    // Calculate mean RR interval
-    const mean = this.rrIntervals.reduce((sum, rr) => sum + rr, 0) / this.rrIntervals.length;
-
-    // Calculate variance
-    const variance = this.rrIntervals.reduce((sum, rr) => {
-      const diff = rr - mean;
-      return sum + (diff * diff);
-    }, 0) / (this.rrIntervals.length - 1);
-
-    // SDNN is the square root of variance
-    this.currentSDNN = Math.sqrt(variance);
-
-    // Clamp SDNN to reasonable range (5-200ms)
-    this.currentSDNN = Math.max(5, Math.min(200, this.currentSDNN));
   }
 
   subscribe(callback: (data: HeartRateData) => void): () => void {
@@ -310,9 +245,6 @@ class ArduinoService {
     return this.currentHRV;
   }
 
-  getCurrentSDNN(): number {
-    return this.currentSDNN;
-  }
 
   isConnectedToArduino(): boolean {
     return this.isConnected;
@@ -374,14 +306,14 @@ class ArduinoService {
     let currentBaseHRV = 173; // Start at neutral 173
     let trendDirection = 'stable'; // stable, improving, declining
 
-    // Define SDNN ranges for each state (more realistic HRV measurement)
-    const sdnnStates = {
-      anxious: { base: 25, variation: 10 },    // 15-35ms (low SDNN = high stress)
-      stressed: { base: 35, variation: 8 },     // 27-43ms
-      neutral: { base: 50, variation: 10 },     // 40-60ms (normal range)
-      focused: { base: 55, variation: 10 },     // 45-65ms (slightly elevated)
-      calm: { base: 65, variation: 10 },        // 55-75ms (good range)
-      relaxed: { base: 80, variation: 15 }      // 65-95ms (very good HRV)
+    // Define HRV ranges for each state
+    const hrvStates = {
+      anxious: { base: 75, variation: 15 },    // 60-90
+      stressed: { base: 85, variation: 5 },     // 80-90
+      neutral: { base: 173, variation: 7 },     // 166-180
+      focused: { base: 140, variation: 20 },    // 120-160
+      calm: { base: 200, variation: 20 },       // 180-220
+      relaxed: { base: 235, variation: 15 }     // 220-250
     };
 
     setInterval(() => {
@@ -394,7 +326,7 @@ class ArduinoService {
       }
     }, 2000); // New value every 2 seconds
 
-    // Mock SDNN data with realistic state changes
+    // Mock HRV data with realistic state changes
     setInterval(() => {
       if (!this.isConnected) {
         const currentTime = Date.now();
@@ -472,34 +404,24 @@ class ArduinoService {
           stateStartTime = currentTime;
           stateChangeInterval = 5 + Math.random() * 5; // 5-10 minutes
 
-          console.log(`🧠 SDNN State Change: ${previousState} → ${currentHRVState} (trend: ${trendDirection})`);
+          console.log(`🧠 HRV State Change: ${previousState} → ${currentHRVState} (trend: ${trendDirection})`);
           console.log(`⏱️ Next state change in ${stateChangeInterval.toFixed(1)} minutes`);
         }
 
-        // Generate SDNN value based on current state (realistic SDNN ranges)
-        const sdnnStates = {
-          anxious: { base: 25, variation: 10 },    // 15-35ms (low SDNN = high stress)
-          stressed: { base: 35, variation: 8 },     // 27-43ms
-          neutral: { base: 50, variation: 10 },     // 40-60ms (normal range)
-          focused: { base: 55, variation: 10 },     // 45-65ms (slightly elevated)
-          calm: { base: 65, variation: 10 },        // 55-75ms (good range)
-          relaxed: { base: 80, variation: 15 }      // 65-95ms (very good HRV)
-        };
-
-        const stateConfig = sdnnStates[currentHRVState];
-        const baseSDNN = stateConfig.base;
+        // Generate HRV value based on current state
+        const stateConfig = hrvStates[currentHRVState];
+        const baseHRV = stateConfig.base;
         const variation = stateConfig.variation;
 
         // Add some variation within the state range
         const randomVariation = Math.floor(Math.random() * (variation * 2 + 1)) - variation;
-        const newSDNN = Math.max(10, Math.min(120, baseSDNN + randomVariation));
+        const newHRV = Math.max(30, Math.min(300, baseHRV + randomVariation));
 
-        this.currentSDNN = newSDNN;
-        this.updateHRV(newSDNN);
+        this.updateHRV(newHRV);
 
         // Log current state info every 30 seconds
         if (Math.floor(timeInState * 2) % 60 === 0) { // Every 30 seconds
-          console.log(`📊 SDNN: ${newSDNN}ms | State: ${currentHRVState} | Time in state: ${timeInState.toFixed(1)}min | Trend: ${trendDirection}`);
+          console.log(`📊 HRV: ${newHRV} | State: ${currentHRVState} | Time in state: ${timeInState.toFixed(1)}min | Trend: ${trendDirection}`);
         }
       }
     }, 3000); // Check every 3 seconds for more realistic updates
