@@ -1002,7 +1002,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠️ Google Maps API key not configured');
+      console.warn('⚠�� Google Maps API key not configured');
       return `I'd love to help you find ${query}, but I need my navigation system configured. For now, I can still provide directions and emotional support!`;
     }
 
@@ -1228,7 +1228,7 @@ const AIChatbot = () => {
       setIsListening(true);
       console.log('✅ Speech recognition started successfully');
     } catch (error) {
-      console.log('⚠️ Recognition start failed:', error);
+      console.log('⚠��� Recognition start failed:', error);
       // If recognition is already running, that's fine
       if (error.message && error.message.includes('already started')) {
         setIsListening(true);
@@ -1694,7 +1694,7 @@ Just speak naturally - I understand many variations of these commands!`;
           setShowComfortEmoji(true);
           setTimeout(() => setShowComfortEmoji(false), 3000);
         }, 1000);
-        return `I've set the air conditioner to ${temperature}°C for your comfort!`;
+        return `I've set the air conditioner to ${temperature}��C for your comfort!`;
       } else {
         setTimeout(() => {
           setAirConditioner(22, true);
@@ -3139,8 +3139,10 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
       // Restart wake word listening when main listening stops
       setTimeout(() => {
-        startWakeWordListening();
-      }, 1000);
+        if (!userWantsListening) { // Double check user still wants it stopped
+          startWakeWordListening();
+        }
+      }, 2000);
     } else {
       console.log('🎤 User starting speech recognition...');
       setUserWantsListening(true); // User wants continuous listening
