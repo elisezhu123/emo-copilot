@@ -2929,9 +2929,14 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onend = () => {
+          console.log('🎤 Speech recognition ended');
+          console.log('🔍 userWantsListening:', userWantsListening);
+          console.log('🔍 isSpeaking:', isSpeaking);
+          console.log('🔍 isListening:', isListening);
+
           // Only restart listening if user has explicitly enabled it and not speaking
-          console.log('🎤 Recognition ended. User wants listening:', userWantsListening, 'Is speaking:', isSpeaking);
           if (userWantsListening && !isSpeaking) {
+            console.log('🔄 Restarting recognition automatically...');
             setTimeout(() => {
               try {
                 startContinuousListening();
@@ -2939,6 +2944,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
                 console.log('⚠️ Failed to restart listening:', error);
               }
             }, 500);
+          } else {
+            console.log('❌ Not restarting recognition - conditions not met');
           }
         };
       }
