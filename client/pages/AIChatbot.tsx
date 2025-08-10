@@ -3064,6 +3064,21 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     } else {
       console.log('🎤 User starting speech recognition...');
       setUserWantsListening(true); // User wants continuous listening
+
+      // Add a test message to verify the system is working
+      const testMessage: Message = {
+        id: Date.now().toString(),
+        text: "Microphone activated - testing system...",
+        type: 'user',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, testMessage]);
+
+      // Test AI response
+      setTimeout(() => {
+        addBotResponse("test");
+      }, 1000);
+
       // Stop wake word listening when main listening starts
       stopWakeWordListening();
       startContinuousListening();
