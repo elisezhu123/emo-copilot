@@ -54,6 +54,10 @@ const AIChatbot = () => {
   const [showHappyEmoji, setShowHappyEmoji] = useState(false);
   const [showSadEmoji, setShowSadEmoji] = useState(false);
 
+  // Alert system states
+  const [activeAlert, setActiveAlert] = useState<string | null>(null);
+  const [alertTriggered, setAlertTriggered] = useState<{[key: string]: boolean}>({});
+
   // Wellness features - REMOVED
   // const [isBreathingActive, setIsBreathingActive] = useState(false);
   // const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
