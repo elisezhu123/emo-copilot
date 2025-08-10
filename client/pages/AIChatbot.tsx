@@ -1717,7 +1717,7 @@ Just speak naturally - I understand many variations of these commands!`;
         if (safetyWarnings.length > 0) {
           return `🚨 CURRENT SAFETY CONDITIONS:\n\n${safetyWarnings.join('\n\n')}\n\n🛡️ STAY SAFE: Always trust your instincts, reduce speed in poor conditions, and pull over if visibility becomes dangerous. Your safety is the top priority!`;
         } else {
-          return "✅ ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
+          return "��� ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
         }
       } else {
         return "I need your location to check current road conditions. Please enable location access so I can provide real-time safety updates for your area!";
@@ -2818,10 +2818,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         console.error('❌ Microphone permission error:', error);
         if (error.name === 'NotAllowedError') {
           console.log('💡 User denied microphone permission. Please allow it in browser settings.');
+          setMicrophoneStatus('permission-denied');
         } else if (error.name === 'NotFoundError') {
           console.log('💡 No microphone found. Please connect a microphone.');
+          setMicrophoneStatus('not-supported');
         } else {
           console.log('💡 Microphone error:', error.message);
+          setMicrophoneStatus('not-supported');
         }
       }
     };
