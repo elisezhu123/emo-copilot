@@ -2228,6 +2228,69 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         }
       }
 
+      // Handle breathing exercise permission responses
+      if (awaitingBreathingPermission) {
+        if (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+            userLower.includes('okay') || userLower.includes('please') || userLower.includes('need') ||
+            userLower.includes('help') || userLower.includes('breathing')) {
+
+          setAwaitingBreathingPermission(false);
+
+          // Show happy emoji for acceptance
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+
+          // Start breathing exercise after emoji
+          setTimeout(() => {
+            startBreathingExercise();
+          }, 3000);
+
+          const acceptanceMessage = 'Wonderful! I\'ll guide you through a calming 4-7-8 breathing exercise to help you relax and refocus.';
+          const comfortWords = 'Taking a moment to breathe and center yourself is always a wise choice. Let\'s restore your calm and clarity together.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 2000);
+
+          return acceptanceMessage;
+        }
+
+        if (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t') ||
+            userLower.includes('maybe later') || userLower.includes('busy')) {
+
+          setAwaitingBreathingPermission(false);
+
+          // Show sad emoji for rejection
+          setShowSadEmoji(true);
+          setTimeout(() => setShowSadEmoji(false), 3000);
+
+          const sadResponse = 'That\'s perfectly okay! You know what\'s best for you right now.';
+          const comfortWords = 'Remember, I\'m always here when you need support. Sometimes just acknowledging stress is the first step to feeling better. Drive safely and take care of yourself.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort_sad',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 3000);
+
+          return sadResponse;
+        }
+      }
+
       // Music and entertainment requests (enhanced for stress support)
       if (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
           userLower.includes('play') || userLower.includes('listen') || userLower.includes('song')) ||
