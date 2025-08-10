@@ -75,9 +75,17 @@ const StatusBar: React.FC<StatusBarProps> = ({
       
     } catch (error) {
       console.error('❌ StatusBar weather API error:', error);
-      // Fallback to current Limerick temperature
-      setTemperature('15°C');
-      console.log('🌡️ StatusBar using fallback Limerick temperature: 15°C');
+      // For testing: simulate high temperature occasionally
+      const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
+      const fallbackTemp = shouldSimulateHighTemp ? 37 : 15;
+      setTemperature(`${fallbackTemp}°C`);
+      console.log(`🌡️ StatusBar using ${shouldSimulateHighTemp ? 'simulated high' : 'fallback Limerick'} temperature: ${fallbackTemp}°C`);
+
+      // Check if simulated temperature exceeds 35°C
+      if (fallbackTemp >= 35 && onTemperatureExceed) {
+        console.log('🔥 Simulated temperature exceeds 35°C, triggering AC permission dialog');
+        onTemperatureExceed(fallbackTemp);
+      }
     }
   };
 
