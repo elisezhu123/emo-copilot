@@ -2899,6 +2899,17 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           console.log('🎤 Speech recognition has started - listening for speech...');
           console.log('✅ You can now speak and your words should appear');
           setIsListening(true);
+
+          // Add a test timeout to see if recognition is actually working
+          setTimeout(() => {
+            if (userWantsListening && isListening) {
+              console.log('🔍 Speech recognition test: Still listening after 5 seconds - this is good!');
+              console.log('🔍 If you spoke but no text appeared, check:');
+              console.log('   1. Your microphone is not muted');
+              console.log('   2. You are speaking clearly and loudly enough');
+              console.log('   3. Your browser has microphone permission');
+            }
+          }, 5000);
         };
 
         recognitionRef.current.onspeechstart = () => {
