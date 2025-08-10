@@ -58,6 +58,9 @@ const AIChatbot = () => {
   const [activeAlert, setActiveAlert] = useState<string | null>(null);
   const [alertTriggered, setAlertTriggered] = useState<{[key: string]: boolean}>({});
 
+  // Microphone status
+  const [microphoneStatus, setMicrophoneStatus] = useState<'unknown' | 'available' | 'permission-denied' | 'not-supported'>('unknown');
+
   // Wellness features - REMOVED
   // const [isBreathingActive, setIsBreathingActive] = useState(false);
   // const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
@@ -1053,7 +1056,7 @@ const AIChatbot = () => {
         safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n💡 SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
-        safetyAdvice += "��� Share your route with someone\n";
+        safetyAdvice += "�� Share your route with someone\n";
         safetyAdvice += "• Take breaks every 2 hours for long trips\n";
         safetyAdvice += "• Keep phone charged for navigation";
       }
