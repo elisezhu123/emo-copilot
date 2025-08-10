@@ -2925,26 +2925,32 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onerror = (event: any) => {
-          console.error('🚨 Speech recognition error:', event.error);
-          console.error('🚨 Error details:', event);
+          console.log('⚠️ Speech recognition error:', event.error);
+
+          // Don't treat "aborted" as an error - it's normal when stopping manually
+          if (event.error === 'aborted') {
+            console.log('🎤 Speech recognition was stopped (normal operation)');
+            return;
+          }
 
           if (event.error === 'not-allowed') {
             console.error('❌ Microphone permission denied!');
             setMicrophoneStatus('permission-denied');
+            setUserWantsListening(false);
             alert('Please allow microphone access in your browser settings and refresh the page.');
           } else if (event.error === 'no-speech') {
             console.log('⚠️ No speech detected, continuing to listen...');
             // Restart listening for no-speech error
             setTimeout(() => {
-              if (userWantsListening) {
+              if (userWantsListening && !isSpeaking) {
                 startContinuousListening();
               }
-            }, 500);
-          } else if (event.error !== 'aborted') {
-            console.log(`⚠️ Recognition error (${event.error}), restarting...`);
-            // Restart listening after error (except if manually aborted)
+            }, 1000);
+          } else {
+            console.log(`🔄 Recognition error (${event.error}), restarting...`);
+            // Restart listening after error
             setTimeout(() => {
-              if (userWantsListening) {
+              if (userWantsListening && !isSpeaking) {
                 startContinuousListening();
               }
             }, 2000);
