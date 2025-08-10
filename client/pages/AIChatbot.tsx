@@ -167,7 +167,7 @@ const AIChatbot = () => {
     }
 
     if (isWeatherNavigation) {
-      console.log('��️ Arrived at AI chatbot due to extreme weather detection');
+      console.log('⚠️ Arrived at AI chatbot due to extreme weather detection');
 
       // Clear the weather parameter from URL
       window.history.replaceState({}, '', window.location.pathname);
@@ -3297,7 +3297,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           />
 
       {/* Conversation Container */}
-      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 min-h-[45vh] lg:min-h-[50vh] overflow-y-auto">
+      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
         <div className="flex flex-col gap-4">
           {messages.map((message) => (
             <div key={message.id}>
