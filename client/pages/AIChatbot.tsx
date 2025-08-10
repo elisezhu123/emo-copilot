@@ -441,6 +441,19 @@ const AIChatbot = () => {
     return unsubscribe;
   }, []);
 
+  // Reset all emoji states on component mount
+  useEffect(() => {
+    setShowComfortEmoji(false);
+    setShowShockEmoji(false);
+    setShowCuteEmoji(false);
+    setShowCryEmoji(false);
+    setShowEnjoyEmoji(false);
+    setShowACEmoji(false);
+    setShowLightingEmoji(false);
+    setShowHappyEmoji(false);
+    setShowSadEmoji(false);
+  }, []);
+
   // Periodic driving condition monitoring for time-based alerts
   useEffect(() => {
     const monitoringInterval = setInterval(() => {
@@ -1053,7 +1066,7 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n���� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
