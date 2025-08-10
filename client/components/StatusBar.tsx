@@ -119,7 +119,18 @@ const StatusBar: React.FC<StatusBarProps> = ({
           }
 
           // Fallback to Limerick weather when location is not available
-          fetchWeather(52.6638, -8.6267); // Limerick coordinates
+          // For testing: occasionally simulate high temperature
+          const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
+          if (shouldSimulateHighTemp) {
+            const simulatedTemp = 36 + Math.floor(Math.random() * 4); // 36-39°C
+            setTemperature(`${simulatedTemp}°C`);
+            console.log(`🔥 Simulated high temperature: ${simulatedTemp}°C`);
+            if (onTemperatureExceed) {
+              onTemperatureExceed(simulatedTemp);
+            }
+          } else {
+            fetchWeather(52.6638, -8.6267); // Limerick coordinates
+          }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );
