@@ -2897,7 +2897,16 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
         recognitionRef.current.onstart = () => {
           console.log('🎤 Speech recognition has started - listening for speech...');
+          console.log('✅ You can now speak and your words should appear');
           setIsListening(true);
+        };
+
+        recognitionRef.current.onspeechstart = () => {
+          console.log('🗣️ Speech detected - processing...');
+        };
+
+        recognitionRef.current.onspeechend = () => {
+          console.log('🔇 Speech ended - processing transcript...');
         };
 
         recognitionRef.current.onresult = (event: any) => {
