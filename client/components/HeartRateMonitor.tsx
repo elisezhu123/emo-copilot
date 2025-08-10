@@ -148,16 +148,6 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
           );
         })}
       </div>
-
-      {/* Connection Status Indicator */}
-      <div className="flex items-center gap-1 mt-1">
-        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-orange-500'}`}></div>
-        <span className="text-xs text-gray-600">
-          {isConnected ? 'Arduino' : 'Simulated'}
-        </span>
-      </div>
-
-    </div>
   );
 };
 
