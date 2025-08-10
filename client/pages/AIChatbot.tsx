@@ -1795,7 +1795,7 @@ Just speak naturally - I understand many variations of these commands!`;
 
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
-�� Don't drive when drowsy - pull over safely
+• Don't drive when drowsy - pull over safely
 • Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
@@ -2948,16 +2948,19 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
           // Get the latest result
           const lastResultIndex = event.results.length - 1;
-          const transcript = event.results[lastResultIndex][0].transcript.trim();
-          const confidence = event.results[lastResultIndex][0].confidence;
+          const result = event.results[lastResultIndex];
+          const transcript = result[0].transcript.trim();
+          const isFinal = result.isFinal;
+          const confidence = result[0].confidence;
 
           console.log('🎤 Raw transcript:', transcript);
+          console.log('🎤 Is final:', isFinal);
           console.log('🎤 Confidence:', confidence);
           console.log('🎤 Length:', transcript.length);
 
-          // Only process if transcript is meaningful (more than 1 word or single important words)
-          if (transcript.length > 2) {
-            console.log('✅ Processing transcript:', transcript);
+          // Only process final results with meaningful content
+          if (isFinal && transcript.length > 1) {
+            console.log('✅ Processing final transcript:', transcript);
 
             // Temporarily stop listening while processing, but keep user intent
             recognitionRef.current?.stop();
@@ -2976,6 +2979,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
             // Trigger AI response (which will restart listening)
             addBotResponse(transcript);
+          } else if (!isFinal && transcript.length > 0) {
+            console.log('📝 Interim result:', transcript);
           }
         };
 
@@ -3140,7 +3145,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
               }
             }, 1000);
           } else {
-            console.log('��� Not restarting wake word recognition - conditions not met');
+            console.log('❌ Not restarting wake word recognition - conditions not met');
           }
         };
 
