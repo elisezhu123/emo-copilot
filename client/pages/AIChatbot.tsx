@@ -1226,6 +1226,7 @@ const AIChatbot = () => {
       console.log('🎤 Starting speech recognition...');
       recognitionRef.current.start();
       setIsListening(true);
+      console.log('✅ Speech recognition started successfully');
     } catch (error) {
       console.log('⚠️ Recognition start failed:', error);
       // If recognition is already running, that's fine
@@ -1265,7 +1266,7 @@ const AIChatbot = () => {
         console.log('👂 Wake word listening stopped');
       }
     } catch (error) {
-      console.log('⚠️ Error stopping wake word recognition:', error);
+      console.log('⚠��� Error stopping wake word recognition:', error);
     }
   };
 
