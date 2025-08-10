@@ -27,20 +27,14 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
     // Check connection status
     setIsConnected(arduinoService.isConnectedToArduino());
 
-    // Try to connect to Arduino automatically, fallback to mock data if it fails
-    const initializeConnection = async () => {
+    // Start with mock data for heart rate monitoring (Arduino connection requires user interaction)
+    const initializeConnection = () => {
       if (!arduinoService.isConnectedToArduino()) {
-        try {
-          const connected = await arduinoService.connect();
-          setIsConnected(connected);
-          if (!connected) {
-            // If Arduino connection fails, enable mock data
-            arduinoService.enableMockData();
-          }
-        } catch (error) {
-          console.log('Arduino connection failed, using mock data');
-          arduinoService.enableMockData();
-        }
+        console.log('💡 Starting heart rate monitoring with simulated data');
+        arduinoService.enableMockData();
+        setIsConnected(false); // Show that we're using mock data
+      } else {
+        setIsConnected(true); // Arduino is already connected
       }
     };
 
