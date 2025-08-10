@@ -137,7 +137,18 @@ const StatusBar: React.FC<StatusBarProps> = ({
     } else if (showTemperature) {
       // Fallback to Limerick weather when geolocation is not supported
       console.log('🌡️ StatusBar: Geolocation not supported, using Limerick weather');
-      fetchWeather(52.6638, -8.6267); // Limerick coordinates
+      // For testing: occasionally simulate high temperature
+      const shouldSimulateHighTemp = Math.random() < 0.3; // 30% chance
+      if (shouldSimulateHighTemp) {
+        const simulatedTemp = 36 + Math.floor(Math.random() * 4); // 36-39°C
+        setTemperature(`${simulatedTemp}°C`);
+        console.log(`🔥 Simulated high temperature: ${simulatedTemp}°C`);
+        if (onTemperatureExceed) {
+          onTemperatureExceed(simulatedTemp);
+        }
+      } else {
+        fetchWeather(52.6638, -8.6267); // Limerick coordinates
+      }
     }
   }, [showTemperature]);
 
