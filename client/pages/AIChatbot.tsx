@@ -1245,14 +1245,22 @@ const AIChatbot = () => {
       return;
     }
 
+    // Don't start if main listening is active
+    if (userWantsListening || isListening) {
+      console.log('⏭️ Skipping wake word start - main listening is active');
+      return;
+    }
+
     try {
       console.log('👂 Starting wake word listening for "Hey Melo"...');
       wakeWordRecognitionRef.current.start();
       setIsWakeWordListening(true);
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ Wake word recognition start failed:', error);
+      // If already started, that's fine
       if (error.message && error.message.includes('already started')) {
         setIsWakeWordListening(true);
+        console.log('✅ Wake word recognition was already active');
       }
     }
   };
