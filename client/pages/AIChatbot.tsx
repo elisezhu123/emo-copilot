@@ -2914,10 +2914,27 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
         recognitionRef.current.onspeechstart = () => {
           console.log('🗣️ Speech detected - processing...');
+          console.log('✅ Your microphone is working! Continue speaking...');
         };
 
         recognitionRef.current.onspeechend = () => {
           console.log('🔇 Speech ended - processing transcript...');
+        };
+
+        recognitionRef.current.onaudiostart = () => {
+          console.log('🎵 Audio input started - microphone is active');
+        };
+
+        recognitionRef.current.onaudioend = () => {
+          console.log('🔇 Audio input ended');
+        };
+
+        recognitionRef.current.onsoundstart = () => {
+          console.log('🔊 Sound detected by microphone');
+        };
+
+        recognitionRef.current.onsoundend = () => {
+          console.log('🔇 Sound ended');
         };
 
         recognitionRef.current.onresult = (event: any) => {
@@ -3154,7 +3171,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 Microphone status:', microphoneStatus);
 
     // Add visual feedback that microphone button was clicked
-    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
+    console.log('��� Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
     console.log('🔍 Browser info:', navigator.userAgent);
     console.log('🔍 Speech recognition support:', 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
     console.log('🔍 Microphone status:', microphoneStatus);
