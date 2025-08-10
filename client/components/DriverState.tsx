@@ -132,7 +132,7 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
       }
     }
 
-    // Neutral: HR ±0-5bpm or HRV stable for 2-5 minutes
+    // Neutral: HR ��0-5bpm or HRV stable for 2-5 minutes
     if ((Math.abs(hrChange) <= 5) || (Math.abs(hrvChangePercent) <= 10)) {
       if (timeInCurrentState >= 2 && timeInCurrentState <= 5) {
         return 'neutral';
@@ -211,8 +211,9 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
         </div>
         <span className="text-xs text-black lg:text-sm">{stateInfo.label}</span>
       </div>
-      {/* Debug info - can be removed in production */}
+      {/* HRV Display */}
       <div className="text-xs text-gray-500 text-center">
+        <div>HRV: {currentHRV}ms</div>
         {calibrationPeriod ? (
           <div className="text-orange-500 font-medium">
             Calibrating... {Math.max(0, Math.ceil((CALIBRATION_DURATION - (Date.now() - calibrationStartTime.current)) / 1000))}s
@@ -220,7 +221,7 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
         ) : (
           <div>
             <div>HR: {currentHeartRate} ({baselineHeartRate ? (currentHeartRate - baselineHeartRate > 0 ? '+' : '') + (currentHeartRate - baselineHeartRate) : '?'})</div>
-            <div>HRV: {currentHRV} ({baselineSDNN ? ((currentHRV - baselineSDNN) / baselineSDNN * 100 > 0 ? '+' : '') + ((currentHRV - baselineSDNN) / baselineSDNN * 100).toFixed(0) + '%' : '?'})</div>
+            <div>Change: {baselineSDNN ? ((currentHRV - baselineSDNN) / baselineSDNN * 100 > 0 ? '+' : '') + ((currentHRV - baselineSDNN) / baselineSDNN * 100).toFixed(0) + '%' : '?'}</div>
             <div>Time: {Math.floor((Date.now() - stateStartTime) / 60000)}:{Math.floor(((Date.now() - stateStartTime) % 60000) / 1000).toString().padStart(2, '0')}</div>
           </div>
         )}
