@@ -1212,6 +1212,50 @@ const AIChatbot = () => {
       }
     }
 
+    // Handle breathing exercise permission responses in fallback
+    if (awaitingBreathingPermission) {
+      if (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+          message.includes('okay') || message.includes('please') || message.includes('guide') ||
+          message.includes('breathing') || message.includes('help')) {
+
+        setAwaitingBreathingPermission(false);
+
+        // Show happy emoji for acceptance
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+
+        // Start breathing exercise after emoji
+        setTimeout(() => {
+          startBreathingExercise();
+        }, 3500);
+
+        return "Wonderful! I'll guide you through a relaxing breathing exercise.";
+      }
+
+      if (message.includes('no') || message.includes('not') || message.includes('don\'t')) {
+        setAwaitingBreathingPermission(false);
+
+        // Show sad emoji for rejection
+        setShowSadEmoji(true);
+        setTimeout(() => setShowSadEmoji(false), 3000);
+
+        const comfortWords = "I understand. Remember to take deep breaths naturally and stay relaxed while driving. I'm here if you need me.";
+
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_breathing_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 3000);
+
+        return "No problem at all. You know what's best for you.";
+      }
+    }
+
     // Test commands for various triggers
     if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
       setTimeout(() => {
