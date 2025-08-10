@@ -1504,6 +1504,43 @@ const AIChatbot = () => {
       return "Testing focus mode trigger! Simulating 5 minutes of focused driving...";
     }
 
+    // Test commands for new alert system
+    if (message.includes('test ice') || message.includes('simulate ice')) {
+      triggerIceRiskAlert();
+      return "Testing ice risk alert! Simulating near-freezing conditions...";
+    }
+
+    if (message.includes('test wind') || message.includes('simulate wind')) {
+      triggerHighWindAlert(12);
+      return "Testing high wind alert! Simulating strong crosswinds...";
+    }
+
+    if (message.includes('test fog alert') || message.includes('simulate fog alert')) {
+      triggerFogAlert(500);
+      return "Testing fog alert! Simulating low visibility conditions...";
+    }
+
+    if (message.includes('test rain') || message.includes('simulate rain')) {
+      triggerRainAlert();
+      return "Testing rain alert! Simulating wet road conditions...";
+    }
+
+    if (message.includes('test fatigue') || message.includes('simulate fatigue')) {
+      triggerFatigueRiskAlert();
+      return "Testing fatigue risk alert! Simulating peak drowsiness hours...";
+    }
+
+    if (message.includes('test rush hour') || message.includes('simulate traffic')) {
+      triggerRushHourAlert();
+      return "Testing rush hour alert! Simulating heavy traffic conditions...";
+    }
+
+    if (message.includes('reset alerts') || message.includes('clear alerts')) {
+      setAlertTriggered({});
+      setActiveAlert(null);
+      return "All alert triggers have been reset! You can test the alerts again.";
+    }
+
     // Voice control help system
     if (message.includes('help') || message.includes('commands') || message.includes('what can you do') ||
         message.includes('voice commands') || message.includes('how to use')) {
