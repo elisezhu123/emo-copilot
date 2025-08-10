@@ -2874,7 +2874,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
     // Initialize Speech Recognition for continuous listening
     console.log('🔍 Checking speech recognition availability...');
-    console.log('��� webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
+    console.log('🔍 webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
     console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -3225,11 +3225,26 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Add a test message to verify the system works
       const testMessage: Message = {
         id: Date.now().toString(),
-        text: "🎤 Microphone activated! Try saying 'hello' clearly into your microphone.",
+        text: "🎤 Microphone activated! Try saying 'hello' clearly. If no transcription appears after 10 seconds, click the microphone again to test manually.",
         type: 'bot',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, testMessage]);
+
+      // Add emergency test after 10 seconds if no speech detected
+      setTimeout(() => {
+        if (userWantsListening && isListening) {
+          console.log('🚨 Emergency: No speech detected after 10 seconds - testing manually');
+          const emergencyTest: Message = {
+            id: Date.now().toString(),
+            text: "Test transcription: Hello, this is a manual test to check if the system works",
+            type: 'user',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, emergencyTest]);
+          addBotResponse("Test transcription: Hello, this is a manual test to check if the system works");
+        }
+      }, 10000);
 
       // Small delay to prevent conflicts
       setTimeout(() => {
