@@ -2864,8 +2864,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           console.log('🎤 Raw transcript:', transcript);
           console.log('🎤 Word count:', transcript.split(' ').length);
 
-          // Only process if transcript is meaningful (more than 2 words)
-          if (transcript.split(' ').length > 1) {
+          // Only process if transcript is meaningful (more than 1 word or single important words)
+          if (transcript.length > 2) {
             console.log('✅ Processing transcript:', transcript);
 
             // Temporarily stop listening while processing, but keep user intent
