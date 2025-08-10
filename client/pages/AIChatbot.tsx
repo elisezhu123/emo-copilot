@@ -3159,7 +3159,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   };
 
   return (
-    <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl">
+    <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl flex flex-col">
       {/* Conditional Content - Show emoji or normal chat interface */}
       {showComfortEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-2">
