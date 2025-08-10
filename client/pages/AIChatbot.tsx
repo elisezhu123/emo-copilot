@@ -1795,7 +1795,7 @@ Just speak naturally - I understand many variations of these commands!`;
 
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
-• Don't drive when drowsy - pull over safely
+�� Don't drive when drowsy - pull over safely
 • Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
@@ -2896,8 +2896,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       if (recognitionRef.current) {
         recognitionRef.current.continuous = true; // Continuous listening
-        recognitionRef.current.interimResults = false;
+        recognitionRef.current.interimResults = true; // Allow interim results for better responsiveness
         recognitionRef.current.lang = 'en-US';
+        recognitionRef.current.maxAlternatives = 1; // Only need one result
 
         recognitionRef.current.onstart = () => {
           console.log('🎤 Speech recognition has started - listening for speech...');
@@ -3139,7 +3140,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
               }
             }, 1000);
           } else {
-            console.log('❌ Not restarting wake word recognition - conditions not met');
+            console.log('��� Not restarting wake word recognition - conditions not met');
           }
         };
 
