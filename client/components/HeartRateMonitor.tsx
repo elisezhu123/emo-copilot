@@ -148,6 +148,8 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
           );
         })}
       </div>
+
+    </div>
   );
 };
 
