@@ -352,11 +352,11 @@ const AIChatbot = () => {
       // Check if driver state changed to stressed while in chatbot
       if (previousState.driverState !== 'stressed' && newState.driverState === 'stressed') {
         console.log('🚨 Stress detected while in AI chatbot - offering music therapy');
-        
+
         // Show comfort emoji for stress support
         setShowComfortEmoji(true);
         setTimeout(() => setShowComfortEmoji(false), 3000);
-        
+
         // Add proactive stress support message
         const stressMessage = {
           id: Date.now().toString() + '_stress_detected',
@@ -365,11 +365,34 @@ const AIChatbot = () => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, stressMessage]);
-        
+
         // Speak the stress support message
         setTimeout(() => {
           speakText("I'm detecting elevated stress levels. Would you like some calming music or a breathing exercise?");
         }, 1000);
+      }
+
+      // Monitor focus mode duration
+      if (newState.driverState === 'focused') {
+        if (focusModeStartTime === null) {
+          // Start tracking focus mode
+          setFocusModeStartTime(Date.now());
+          console.log('🎯 Focus mode started - tracking duration');
+        } else {
+          // Check if focus mode has been active for 5 minutes
+          const focusDuration = (Date.now() - focusModeStartTime) / (1000 * 60); // minutes
+          if (focusDuration >= 5 && !focusTriggered) {
+            console.log('🧘 Focus mode active for 5 minutes - triggering breathing exercise offer');
+            handleFocusMode();
+          }
+        }
+      } else {
+        // Reset focus mode tracking if state changes
+        if (focusModeStartTime !== null) {
+          console.log('🎯 Focus mode ended - resetting timer');
+          setFocusModeStartTime(null);
+          setFocusTriggered(false);
+        }
       }
 
       previousState = newState;
