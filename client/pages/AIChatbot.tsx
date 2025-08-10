@@ -36,6 +36,12 @@ const AIChatbot = () => {
   const [currentWeatherCondition, setCurrentWeatherCondition] = useState<WeatherCondition | null>(null);
   const [awaitingWeatherPermission, setAwaitingWeatherPermission] = useState<boolean>(false);
   const [weatherTriggered, setWeatherTriggered] = useState<boolean>(false);
+  const [focusModeStartTime, setFocusModeStartTime] = useState<number | null>(null);
+  const [awaitingBreathingPermission, setAwaitingBreathingPermission] = useState<boolean>(false);
+  const [isBreathingExercise, setIsBreathingExercise] = useState<boolean>(false);
+  const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [breathingCount, setBreathingCount] = useState<number>(0);
+  const [focusTriggered, setFocusTriggered] = useState<boolean>(false);
 
   // Emotional emoji states
   const [showComfortEmoji, setShowComfortEmoji] = useState(false);
@@ -1410,7 +1416,7 @@ ${response}
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
-• Trusted mechanic or tow service
+�� Trusted mechanic or tow service
 • Family/friends for pickup
 
 🗺️ I can help you find nearby auto repair shops or describe your location to assistance services. Stay safe and don't attempt repairs in dangerous locations!`;
