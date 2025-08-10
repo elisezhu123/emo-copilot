@@ -1260,7 +1260,7 @@ const AIChatbot = () => {
 
     // Don't start if main listening is active
     if (userWantsListening || isListening) {
-      console.log('⏭️ Skipping wake word start - main listening is active');
+      console.log('���️ Skipping wake word start - main listening is active');
       return;
     }
 
@@ -1574,6 +1574,10 @@ const AIChatbot = () => {
     // Simple test commands
     if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
       return "Hello! I'm Melo, your AI co-driver assistant. I'm here to help with navigation, music, and keeping you safe on the road. How can I assist you today?";
+    }
+
+    if (message.includes('microphone test') || message.includes('mic test')) {
+      return "🎤 Microphone test successful! I can hear you clearly. Your speech recognition is working properly.";
     }
 
     if (message.includes('test') && message.includes('speech')) {
@@ -2884,7 +2888,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       try {
         // Main speech recognition for conversations
         recognitionRef.current = new SpeechRecognition();
-        console.log('✅ Main recognition instance created:', recognitionRef.current);
+        console.log('�� Main recognition instance created:', recognitionRef.current);
       } catch (error) {
         console.error('❌ Failed to create speech recognition:', error);
         return;
@@ -3171,7 +3175,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 Microphone status:', microphoneStatus);
 
     // Add visual feedback that microphone button was clicked
-    console.log('��� Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
+    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
     console.log('🔍 Browser info:', navigator.userAgent);
     console.log('🔍 Speech recognition support:', 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
     console.log('🔍 Microphone status:', microphoneStatus);
