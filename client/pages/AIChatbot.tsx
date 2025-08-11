@@ -3131,15 +3131,6 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       setUserWantsListening(true); // User wants continuous listening
 
-      // Add activation message
-      const startMessage: Message = {
-        id: Date.now().toString(),
-        text: "🎤 Microphone activated! I'm listening... Try saying 'hello' to test.",
-        type: 'bot',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, startMessage]);
-
       // Start continuous listening
       setTimeout(() => {
         if (userWantsListening) {
