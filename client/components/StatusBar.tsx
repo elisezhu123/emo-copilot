@@ -27,7 +27,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   onExtremeWeather
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
+  const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
 
   // Real-time clock update
