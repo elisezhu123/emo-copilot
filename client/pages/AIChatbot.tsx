@@ -341,7 +341,7 @@ const AIChatbot = () => {
           }
 
           // Fallback to Limerick weather when location is not available
-          console.log('Location permission denied, using Limerick weather as fallback');
+          console.log('💡 Using default location (Limerick) for weather and navigation features');
           fetchWeather(52.6638, -8.6267); // Limerick coordinates
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
