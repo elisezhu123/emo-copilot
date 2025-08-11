@@ -587,28 +587,46 @@ class FreesoundService {
 
   // Get tracks by specific genres - ensure at least 10 tracks
   async getTracksByGenres(genres: string[]): Promise<Track[]> {
+    console.log('🎵 getTracksByGenres called with:', genres);
+    console.log('🎵 API configured:', this.isConfigured());
+    console.log('🎵 API key available:', !!this.apiKey);
+
+    if (!this.isConfigured()) {
+      console.error('❌ Freesound API not configured! Cannot fetch real music.');
+      return this.getFallbackTracks().filter(track =>
+        genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
+      );
+    }
+
     const allTracks: Track[] = [];
 
     for (const genre of genres) {
-      console.log(`🎵 Searching for ${genre} music in Freesound Music category...`);
+      console.log(`🎵 Searching Freesound API for ${genre} music...`);
 
-      // First try Music category search for proper music playlists
-      const musicCategoryTracks = await this.searchMusicCategory(genre);
-      allTracks.push(...musicCategoryTracks);
+      try {
+        // First try Music category search for proper music playlists
+        const musicCategoryTracks = await this.searchMusicCategory(genre);
+        console.log(`✅ Found ${musicCategoryTracks.length} tracks for ${genre} from music category`);
+        allTracks.push(...musicCategoryTracks);
 
-      // If not enough tracks from music category, try genre-specific search
-      if (musicCategoryTracks.length < 5) {
-        const genreSearchTerms = this.getGenreSearchTerms(genre);
+        // If not enough tracks from music category, try genre-specific search
+        if (musicCategoryTracks.length < 3) {
+          console.log(`🔄 Trying additional search for ${genre}...`);
+          const genreSearchTerms = this.getGenreSearchTerms(genre);
 
-        for (const searchTerm of genreSearchTerms) {
-          const tracks = await this.searchTracks(searchTerm, {
-            duration: 'duration:[30.0 TO 180.0]'
-          });
-          allTracks.push(...tracks);
+          for (const searchTerm of genreSearchTerms) {
+            const tracks = await this.searchTracks(searchTerm, {
+              duration: 'duration:[30.0 TO 180.0]'
+            });
+            console.log(`✅ Found ${tracks.length} additional tracks for search term: ${searchTerm}`);
+            allTracks.push(...tracks);
 
-          // Limit per genre to avoid too many tracks
-          if (allTracks.length >= 30) break;
+            // Limit per genre to avoid too many tracks
+            if (allTracks.length >= 30) break;
+          }
         }
+      } catch (error) {
+        console.error(`❌ Error searching for ${genre}:`, error);
       }
     }
 
