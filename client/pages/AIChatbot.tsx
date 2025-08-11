@@ -1046,7 +1046,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠�� Google Maps API key not configured');
+      console.warn('⚠��� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -1471,10 +1471,12 @@ const AIChatbot = () => {
     // Test commands for various triggers
     if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
       console.log('🔥 Temperature test command triggered by message:', message);
+      // Use the actual displayed temperature from status bar, or current temperature state
+      const currentTemp = temperature ? parseInt(temperature.replace('°C', '')) : 15;
       setTimeout(() => {
-        handleTemperatureExceed(37);
+        handleTemperatureExceed(currentTemp > 35 ? currentTemp : 37); // Use real temp if hot, otherwise simulate 37°C
       }, 1000);
-      return "Testing temperature trigger! Simulating 37°C temperature...";
+      return `Testing temperature trigger! Current temperature: ${temperature || '15°C'}${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C)'}...`;
     }
 
     if (message.includes('test snow') || message.includes('simulate snow')) {
