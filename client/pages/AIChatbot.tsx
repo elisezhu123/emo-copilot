@@ -667,7 +667,7 @@ const AIChatbot = () => {
     const controlMessage: Message = {
       id: Date.now().toString() + '_ac_control',
       text: turnOn ?
-        `❄��� Air conditioner set to ${temp}°C. You should feel more comfortable soon!` :
+        `❄️ Air conditioner set to ${temp}°C. You should feel more comfortable soon!` :
         `Air conditioner turned off. Let me know if you need any other adjustments.`,
       type: 'bot',
       timestamp: new Date()
@@ -2881,9 +2881,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      console.log('✅ Speech recognition available, requesting microphone permission...');
-      // Request microphone permission first
-      requestMicrophonePermission();
+      console.log('✅ Speech recognition available - will request permission when microphone button is clicked');
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       console.log('🔍 SpeechRecognition constructor:', SpeechRecognition);
