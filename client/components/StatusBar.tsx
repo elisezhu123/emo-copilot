@@ -83,11 +83,12 @@ const StatusBar: React.FC<StatusBarProps> = ({
       const windSpeed = data.wind?.speed || 0;
       const description = data.weather[0].description;
 
-      // Check if temperature exceeds 35°C and trigger callback
-      if (temp >= 35 && onTemperatureExceed) {
-        console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
-        onTemperatureExceed(temp);
-      }
+      // Check if temperature exceeds 35°C and trigger callback (disabled for testing)
+      // if (temp >= 35 && onTemperatureExceed) {
+      //   console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
+      //   onTemperatureExceed(temp);
+      // }
+      console.log('🌡️ Current temperature:', temp, '°C (AC trigger disabled for testing)');
 
       // Check for extreme weather conditions
       const extremeConditions = [
