@@ -161,23 +161,32 @@ class AudioManager {
       };
     }
 
-    const state = {
-      isPlaying: !this.audio.paused && !this.audio.ended,
-      isPaused: this.audio.paused,
-      currentTime: this.audio.currentTime,
-      duration: this.audio.duration || 0,
-      volume: this.audio.volume,
-      isMuted: this.audio.muted,
-      isLoading: false, // Force loading to false - we'll manage this manually
-      error: this.audio.error ? this.audio.error.message : null
-    };
+    try {
+      const state = {
+        isPlaying: !this.audio.paused && !this.audio.ended,
+        isPaused: this.audio.paused,
+        currentTime: this.audio.currentTime || 0,
+        duration: this.audio.duration || 0,
+        volume: this.audio.volume || 0.7,
+        isMuted: this.audio.muted || false,
+        isLoading: false, // Force loading to false - we'll manage this manually
+        error: this.audio.error ? (this.audio.error.message || 'Audio error occurred') : null
+      };
 
-    // Log state changes for debugging
-    if (state.error) {
-      console.error('🔴 Audio State Error:', state.error);
+      return state;
+    } catch (error) {
+      console.error('❌ Error getting audio state:', error);
+      return {
+        isPlaying: false,
+        isPaused: true,
+        currentTime: 0,
+        duration: 0,
+        volume: 0.7,
+        isMuted: false,
+        isLoading: false,
+        error: 'Audio state error'
+      };
     }
-
-    return state;
   }
 
   // Load and play a track with improved error handling
