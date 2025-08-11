@@ -519,14 +519,14 @@ const AIChatbot = () => {
     // Add AI message asking for permission
     const permissionMessage: Message = {
       id: Date.now().toString() + '_temp_trigger',
-      text: `I've detected the temperature is ${temp}°C - quite hot! Should I turn on the air conditioner to cool things down for you?`,
+      text: `I've detected the temperature is ${temp}°C - quite hot! Would you want me to set the air conditioner on?`,
       type: 'bot',
       timestamp: new Date()
     };
     setMessages(prev => [...prev, permissionMessage]);
 
     // Speak the message
-    speakText(`It's ${temp} degrees outside - quite hot! Should I turn on the air conditioner to cool things down for you?`);
+    speakText(`It's ${temp} degrees outside - quite hot! Would you want me to set the air conditioner on?`);
   };
 
   // Handle extreme weather conditions
