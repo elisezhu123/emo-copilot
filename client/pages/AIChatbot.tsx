@@ -3317,11 +3317,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           {/* Microphone Button - Matches Figma Design */}
           <button
             onClick={toggleListening}
-            className={`transition-all duration-300 ${
-              userWantsListening
-                ? 'w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-emotion-default flex items-center justify-center shadow-lg'
-                : 'w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-emotion-mouth hover:scale-105 flex items-center justify-center shadow-lg'
-            } ${microphoneStatus === 'permission-denied' || microphoneStatus === 'not-supported' ? 'bg-red-500' : ''} ${isSpeaking ? 'ring-4 ring-emotion-orange ring-opacity-50' : ''}`}
+            className="flex items-center justify-center w-16 h-16 rounded-full bg-[#FF8B7E] hover:scale-105 transition-all duration-300 shadow-lg"
             title={
               microphoneStatus === 'permission-denied'
                 ? 'Microphone permission denied. Please allow microphone access in your browser settings and refresh the page.'
