@@ -1361,7 +1361,7 @@ const AIChatbot = () => {
         setTimeout(() => {
           setShowACEmoji(false);
           // Turn on AC after emoji is shown
-          setAirConditioner(20, true);
+          setAirConditioner(22, true);
         }, 3000);
       }, 1000);
 
@@ -1509,7 +1509,7 @@ const AIChatbot = () => {
         setShowACEmoji(true);
         setTimeout(() => {
           setShowACEmoji(false);
-          setAirConditioner(20, true);
+          setAirConditioner(22, true);
         }, 3000);
       }, 1000);
       return "Testing AC emoji sequence! Watch the happy AC face for 3 seconds, then AC turns on...";
@@ -1921,7 +1921,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-����� Won't start: Check battery connections, fuel level
+��� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
@@ -2003,7 +2003,7 @@ ${response}
         return "I'll warm things up for you! Setting the AC to 24°C to help you feel more comfortable.";
       } else {
         setTimeout(() => {
-          setAirConditioner(20, true);
+          setAirConditioner(22, true);
           setShowComfortEmoji(true);
           setTimeout(() => setShowComfortEmoji(false), 3000);
         }, 1000);
@@ -2506,7 +2506,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           setTimeout(() => {
             setShowACEmoji(false);
             // Turn on AC after emoji is shown
-            setAirConditioner(20, true);
+            setAirConditioner(22, true);
           }, 3000);
         }, 1000);
 
