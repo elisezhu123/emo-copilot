@@ -41,12 +41,12 @@ class FreesoundService {
 
       const params = new URLSearchParams({
         token: this.apiKey,
-        query: musicQuery,
-        page_size: '20',
-        fields: 'id,name,username,duration,tags,previews,type,channels',
-        // Specifically target Music category and its subcategories
-        filter: `grouping_pack:"" type:wav duration:[30.0 TO 300.0] channels:2 tag:music ${filters.duration || ''}`,
-        sort: 'downloads_desc'
+        query: `${musicQuery} music`,
+        page_size: '15',
+        fields: 'id,name,username,duration,tags,previews,type,channels,license',
+        // Search for music with better filters
+        filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
+        sort: 'rating_desc'
       });
 
       console.log('🎵 Searching Freesound:', `${this.baseUrl}/search/text/?${params}`);
