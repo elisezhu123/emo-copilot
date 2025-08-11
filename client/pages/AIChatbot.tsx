@@ -3051,8 +3051,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
       }
 
-      // Wake word recognition for "Hey Melo"
-      wakeWordRecognitionRef.current = new SpeechRecognition();
+      // Wake word recognition disabled to prevent microphone conflicts
+      // wakeWordRecognitionRef.current = new SpeechRecognition();
       
       if (wakeWordRecognitionRef.current) {
         wakeWordRecognitionRef.current.continuous = true;
