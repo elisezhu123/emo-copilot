@@ -1502,6 +1502,19 @@ const AIChatbot = () => {
       return "Testing 'too hot' complaint! Watch for the hot emoji sequence...";
     }
 
+    // Test AC emoji sequence
+    if (message.includes('test ac sequence')) {
+      console.log('❄️ Testing AC emoji sequence');
+      setTimeout(() => {
+        setShowACEmoji(true);
+        setTimeout(() => {
+          setShowACEmoji(false);
+          setAirConditioner(20, true);
+        }, 3000);
+      }, 1000);
+      return "Testing AC emoji sequence! Watch the happy AC face for 3 seconds, then AC turns on...";
+    }
+
     if (message.includes('test snow') || message.includes('simulate snow')) {
       setTimeout(() => {
         handleExtremeWeather({
@@ -1908,7 +1921,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-��� Won't start: Check battery connections, fuel level
+����� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
