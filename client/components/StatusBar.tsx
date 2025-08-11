@@ -52,26 +52,9 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const fetchWeather = async (lat: number, lng: number) => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-      if (!apiKey || apiKey === 'your-openweather-api-key' || apiKey.length < 10) {
-        console.log('🌡️ Using realistic Limerick weather simulation');
-        // Generate realistic temperature based on time of day and season
-        const hour = new Date().getHours();
-        const baseTemp = 20; // Base temperature for Limerick
-
-        // Adjust for time of day (cooler at night, warmer during day)
-        let timeAdjustment = 0;
-        if (hour >= 6 && hour <= 18) {
-          timeAdjustment = Math.sin((hour - 6) * Math.PI / 12) * 3; // +0 to +3°C during day
-        } else {
-          timeAdjustment = -2; // -2°C at night
-        }
-
-        // Add small random variation
-        const variation = (Math.random() - 0.5) * 2; // ±1°C random
-        const realisticTemp = Math.round(baseTemp + timeAdjustment + variation);
-
-        setTemperature(`${realisticTemp}°C`);
-        console.log(`🌡️ Simulated Limerick temperature: ${realisticTemp}°C (base: ${baseTemp}, time adj: ${timeAdjustment.toFixed(1)}, variation: ${variation.toFixed(1)})`);
+      if (!apiKey || apiKey === 'your-openweather-api-key') {
+        console.warn('⚠️ OpenWeather API key not configured - using default temperature');
+        setTemperature('20°C');
         return;
       }
 
