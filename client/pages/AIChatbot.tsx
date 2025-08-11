@@ -1085,7 +1085,7 @@ const AIChatbot = () => {
     }
 
     try {
-      console.log(`🧭 Getting directions to ${destination} from:`, currentLocation);
+      console.log(`��� Getting directions to ${destination} from:`, currentLocation);
 
       // Enhanced route analysis with danger detection
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -1765,7 +1765,7 @@ Just speak naturally - I understand many variations of these commands!`;
         if (safetyWarnings.length > 0) {
           return `🚨 CURRENT SAFETY CONDITIONS:\n\n${safetyWarnings.join('\n\n')}\n\n🛡️ STAY SAFE: Always trust your instincts, reduce speed in poor conditions, and pull over if visibility becomes dangerous. Your safety is the top priority!`;
         } else {
-          return "✅ ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
+          return "�� ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
         }
       } else {
         return "I need your location to check current road conditions. Please enable location access so I can provide real-time safety updates for your area!";
@@ -2021,58 +2021,39 @@ ${response}
     const message = userMessage.toLowerCase();
     const response = botResponse.toLowerCase();
 
-    // Comfort emoji triggers + proactive wellness suggestions
-    if (message.includes('stress') || message.includes('anxious') || message.includes('worried') ||
-        message.includes('scared') || message.includes('nervous') || message.includes('overwhelmed') ||
-        response.includes('comfort') || response.includes('calm') || response.includes('relax')) {
+    // Only trigger emojis for specific test commands, not during normal conversation
+    // This prevents emojis from appearing unexpectedly while talking
+
+    // Comfort emoji triggers - Only for specific test commands
+    if (message.includes('test comfort') || message.includes('test stress') || message.includes('test breathing')) {
       setShowComfortEmoji(true);
       setTimeout(() => setShowComfortEmoji(false), 3000);
-
-      // Proactively suggest breathing exercise for stress
-      setTimeout(() => {
-        const wellnessMessage: Message = {
-          id: Date.now().toString() + '_wellness_suggest',
-          text: "I notice you might be feeling stressed. Would you like me to guide you through a quick breathing exercise? Just say 'start breathing' and I'll help you relax.",
-          type: 'bot',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, wellnessMessage]);
-        speakText("I can help you feel better. Would you like to try a breathing exercise with me?");
-      }, 4000);
       return;
     }
 
-    // Shock emoji triggers
-    if (message.includes('accident') || message.includes('emergency') || message.includes('help') ||
-        message.includes('crash') || message.includes('police') || message.includes('ambulance') ||
-        response.includes('shock') || response.includes('emergency') || response.includes('urgent')) {
+    // Shock emoji triggers - Only for specific test commands
+    if (message.includes('test shock') || message.includes('test emergency') || message.includes('test alert')) {
       setShowShockEmoji(true);
       setTimeout(() => setShowShockEmoji(false), 3000);
       return;
     }
 
-    // Cute emoji triggers
-    if (message.includes('good morning') || message.includes('thank you') || message.includes('love') ||
-        message.includes('sweet') || message.includes('nice') || message.includes('cute') ||
-        response.includes('adorable') || response.includes('sweet') || response.includes('lovely')) {
+    // Cute emoji triggers - Only for specific test commands
+    if (message.includes('test cute') || message.includes('test sweet')) {
       setShowCuteEmoji(true);
       setTimeout(() => setShowCuteEmoji(false), 3000);
       return;
     }
 
-    // Cry emoji triggers
-    if (message.includes('sad') || message.includes('cry') || message.includes('upset') ||
-        message.includes('disappointed') || message.includes('hurt') || message.includes('bad day') ||
-        response.includes('sorry') || response.includes('difficult') || response.includes('understand')) {
+    // Cry emoji triggers - Only for specific test commands
+    if (message.includes('test cry') || message.includes('test sad')) {
       setShowCryEmoji(true);
       setTimeout(() => setShowCryEmoji(false), 3000);
       return;
     }
 
-    // Enjoy emoji triggers
-    if (message.includes('happy') || message.includes('excited') || message.includes('great') ||
-        message.includes('awesome') || message.includes('fun') || message.includes('enjoy') ||
-        response.includes('wonderful') || response.includes('amazing') || response.includes('fantastic')) {
+    // Enjoy emoji triggers - Only for specific test commands
+    if (message.includes('test happy') || message.includes('test enjoy') || message.includes('test fun')) {
       setShowEnjoyEmoji(true);
       setTimeout(() => setShowEnjoyEmoji(false), 3000);
       return;
@@ -2311,7 +2292,7 @@ ${response}
       
       if (!apiKey || apiKey === 'your-deepseek-api-key') {
         console.warn('⚠️ DeepSeek API key not configured - using fallback responses');
-        console.log('🔄 Calling fallback response for:', userMessage);
+        console.log('���� Calling fallback response for:', userMessage);
         const fallbackResult = await getFallbackResponse(userMessage);
         console.log('✅ Fallback response generated:', fallbackResult);
         return fallbackResult;
@@ -3276,13 +3257,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {/* Microphone Section - Updated Figma Design */}
       <div className="flex justify-center items-center gap-4 mt-8">
-        {/* Left Sound Wave - Always visible */}
+        {/* Left Sound Wave - Changes color when microphone is active */}
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill="#FF8B7E"/>
+          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
         </svg>
 
-        {/* Microphone Button - 64x64px with 6px padding to match Figma exactly */}
-        <div className="flex w-16 h-16 p-1.5 justify-center items-center rounded-full bg-[#FF8B7E] relative">
+        {/* Microphone Button - Changes to dark brown when active */}
+        <div className={`flex w-16 h-16 p-1.5 justify-center items-center rounded-full relative ${userWantsListening ? 'bg-[#3A2018]' : 'bg-[#FF8B7E]'}`}>
           <button
             onClick={toggleListening}
             className="flex justify-center items-center w-full h-full hover:scale-105 transition-all duration-300"
@@ -3307,9 +3288,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           </button>
         </div>
 
-        {/* Right Sound Wave - Always visible */}
+        {/* Right Sound Wave - Changes color when microphone is active */}
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill="#FF8B7E"/>
+          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
         </svg>
       </div>
 
