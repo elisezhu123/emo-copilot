@@ -78,8 +78,7 @@ const EmoCopilotDashboard = () => {
     return unsubscribe;
   }, [navigate]);
 
-  // Wake word recognition ref
-  const wakeWordRecognitionRef = useRef<any>(null);
+  // Wake word recognition ref removed - no longer using microphone on dashboard
 
   // Microphone permissions are now only requested on AI Chatbot page to prevent Safari conflicts
 
