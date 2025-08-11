@@ -58,6 +58,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
         return;
       }
 
+      console.log('🌐 Using real OpenWeather API with provided key');
+
       // Use Limerick coordinates if not provided or fetch for current location
       const limerickLat = 52.6638;
       const limerickLng = -8.6267;
