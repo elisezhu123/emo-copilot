@@ -250,7 +250,7 @@ const AIChatbot = () => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
-        console.warn('���️ OpenWeather API key not configured - using Limerick temperature');
+        console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
         setTemperature('15°C');
         return;
       }
@@ -3181,7 +3181,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         return;
       }
 
-      console.log('✅ Microphone permission granted, starting voice recognition...');
+      console.log('�� Microphone permission granted, starting voice recognition...');
 
       setUserWantsListening(true); // User wants continuous listening
 
@@ -3197,98 +3197,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
   return (
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl flex flex-col h-screen">
-      {/* Conditional Content - Show emoji or normal chat interface */}
-      {showComfortEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <ComfortFace />
-          </div>
-        </div>
-      ) : showShockEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <ShockFace />
-          </div>
-        </div>
-      ) : showCuteEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <CuteFace />
-          </div>
-        </div>
-      ) : showCryEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <CryFace />
-          </div>
-        </div>
-      ) : showEnjoyEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <EnjoyFace />
-          </div>
-        </div>
-      ) : showACEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <ACFace />
-          </div>
-        </div>
-      ) : showLightingEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <LightingFace />
-          </div>
-        </div>
-      ) : showHappyEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <HappyFace />
-          </div>
-        </div>
-      ) : showSadEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <SadFace />
-          </div>
-        </div>
-      ) : showAlertEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <AlertFace />
-          </div>
-        </div>
-      ) : showYesPermissionEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <YesPermissionFace />
-          </div>
-        </div>
-      ) : showNoPermissionEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <NoPermissionFace />
-          </div>
-        </div>
-      ) : showMusicEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <MusicFace />
-          </div>
-        </div>
-      ) : showHotEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <HotFace />
-          </div>
-        </div>
-      ) : showBreathingEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
-            <BreathingFace />
-          </div>
-        </div>
-      ) : (
+      {/* Normal Chat Interface */}
+      {!(showComfortEmoji || showShockEmoji || showCuteEmoji || showCryEmoji || showEnjoyEmoji || showACEmoji || showLightingEmoji || showHappyEmoji || showSadEmoji || showAlertEmoji || showYesPermissionEmoji || showNoPermissionEmoji || showMusicEmoji || showHotEmoji || showBreathingEmoji) && (
         <>
           {/* Status Bar */}
           <StatusBar
