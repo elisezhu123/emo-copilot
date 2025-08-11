@@ -89,15 +89,60 @@ class AudioManager {
       return;
     }
 
-    console.error('❌ Audio error event:', error);
-    console.error('❌ Audio element error details:', {
-      error: audioError,
-      code: audioError?.code,
-      message: audioError?.message,
-      networkState: this.audio?.networkState,
-      readyState: this.audio?.readyState,
-      src: this.audio?.src
-    });
+    // Get human-readable error details
+    const getErrorCodeName = (code: number | undefined): string => {
+      if (!code) return 'Unknown';
+      switch (code) {
+        case MediaError.MEDIA_ERR_ABORTED: return 'ABORTED (Operation was aborted)';
+        case MediaError.MEDIA_ERR_NETWORK: return 'NETWORK (Network error occurred)';
+        case MediaError.MEDIA_ERR_DECODE: return 'DECODE (Error occurred while decoding)';
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: return 'SRC_NOT_SUPPORTED (Audio format not supported)';
+        default: return `Unknown error code: ${code}`;
+      }
+    };
+
+    const getNetworkStateName = (state: number | undefined): string => {
+      if (!state) return 'Unknown';
+      switch (state) {
+        case HTMLMediaElement.NETWORK_EMPTY: return 'EMPTY (No data)';
+        case HTMLMediaElement.NETWORK_IDLE: return 'IDLE (Not loading)';
+        case HTMLMediaElement.NETWORK_LOADING: return 'LOADING (Downloading data)';
+        case HTMLMediaElement.NETWORK_NO_SOURCE: return 'NO_SOURCE (No valid source)';
+        default: return `Unknown network state: ${state}`;
+      }
+    };
+
+    const getReadyStateName = (state: number | undefined): string => {
+      if (!state) return 'Unknown';
+      switch (state) {
+        case HTMLMediaElement.HAVE_NOTHING: return 'HAVE_NOTHING (No data)';
+        case HTMLMediaElement.HAVE_METADATA: return 'HAVE_METADATA (Metadata loaded)';
+        case HTMLMediaElement.HAVE_CURRENT_DATA: return 'HAVE_CURRENT_DATA (Current frame loaded)';
+        case HTMLMediaElement.HAVE_FUTURE_DATA: return 'HAVE_FUTURE_DATA (Some future data loaded)';
+        case HTMLMediaElement.HAVE_ENOUGH_DATA: return 'HAVE_ENOUGH_DATA (Enough data to play)';
+        default: return `Unknown ready state: ${state}`;
+      }
+    };
+
+    console.error('❌ Audio error event type:', error.type);
+    console.error('❌ Audio error details:');
+    console.error('   Error Code:', getErrorCodeName(audioError?.code));
+    console.error('   Error Message:', audioError?.message || 'No message');
+    console.error('   Network State:', getNetworkStateName(this.audio?.networkState));
+    console.error('   Ready State:', getReadyStateName(this.audio?.readyState));
+    console.error('   Source URL:', this.audio?.src || 'No source');
+    console.error('   Current Time:', this.audio?.currentTime || 0);
+    console.error('   Duration:', this.audio?.duration || 'Unknown');
+
+    // Log a user-friendly error message
+    if (audioError?.code === MediaError.MEDIA_ERR_NETWORK) {
+      console.error('🌐 Network error: Unable to load audio. Check your internet connection or try a different track.');
+    } else if (audioError?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+      console.error('🔧 Format error: This audio format is not supported by your browser.');
+    } else if (audioError?.code === MediaError.MEDIA_ERR_DECODE) {
+      console.error('🎵 Decode error: The audio file appears to be corrupted or invalid.');
+    }
+
     this.notifyListeners();
   }
 
