@@ -344,9 +344,11 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Lighting turned on" : "Lighting turned off");
 
-    // Show Lighting emoji for 3 seconds
-    setShowLightingEmoji(true);
-    setTimeout(() => setShowLightingEmoji(false), 3000);
+    // Show Lighting emoji for 3 seconds only when turning ON
+    if (newState) {
+      setShowLightingEmoji(true);
+      setTimeout(() => setShowLightingEmoji(false), 3000);
+    }
   };
 
   // Check temperature and show hot emoji if > 35°C
