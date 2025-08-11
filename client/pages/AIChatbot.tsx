@@ -3319,6 +3319,127 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           {/* Breathing and meditation features have been removed as requested */}
         </>
       )}
+
+      {/* Emoji Popups - Overlays */}
+      {showComfortEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <ComfortFace />
+          </div>
+        </div>
+      )}
+
+      {showShockEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <ShockFace />
+          </div>
+        </div>
+      )}
+
+      {showCuteEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <CuteFace />
+          </div>
+        </div>
+      )}
+
+      {showCryEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <CryFace />
+          </div>
+        </div>
+      )}
+
+      {showEnjoyEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <EnjoyFace />
+          </div>
+        </div>
+      )}
+
+      {showACEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <ACFace />
+          </div>
+        </div>
+      )}
+
+      {showLightingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <LightingFace />
+          </div>
+        </div>
+      )}
+
+      {showHappyEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <HappyFace />
+          </div>
+        </div>
+      )}
+
+      {showSadEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <SadFace />
+          </div>
+        </div>
+      )}
+
+      {showAlertEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <AlertFace />
+          </div>
+        </div>
+      )}
+
+      {showYesPermissionEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <YesPermissionFace />
+          </div>
+        </div>
+      )}
+
+      {showNoPermissionEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <NoPermissionFace />
+          </div>
+        </div>
+      )}
+
+      {showMusicEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <MusicFace />
+          </div>
+        </div>
+      )}
+
+      {showHotEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <HotFace />
+          </div>
+        </div>
+      )}
+
+      {showBreathingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+            <BreathingFace />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
