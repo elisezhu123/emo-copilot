@@ -497,9 +497,13 @@ const AIChatbot = () => {
     setTemperatureTriggered(true);
     setAwaitingACPermission(true);
 
-    // Show AC emoji
-    setShowACEmoji(true);
-    setTimeout(() => setShowACEmoji(false), 4000);
+    // Show hot emoji first, then AC emoji
+    setShowHotEmoji(true);
+    setTimeout(() => {
+      setShowHotEmoji(false);
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+    }, 3000);
 
     // Add AI message asking for permission
     const permissionMessage: Message = {
@@ -1117,7 +1121,7 @@ const AIChatbot = () => {
       // Add time-specific advice
       const currentHour = new Date().getHours();
       if (currentHour >= 18 || currentHour <= 6) {
-        fullResponse += "\n• Night driving: Use headlights, watch for wildlife, stay extra alert";
+        fullResponse += "\n�� Night driving: Use headlights, watch for wildlife, stay extra alert";
       }
       
       return fullResponse;
@@ -2922,7 +2926,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           // Show interim results in real-time
           if (interimTranscript.length > 0) {
             setPendingTranscript(interimTranscript);
-            console.log('📝 Displaying interim result:', interimTranscript);
+            console.log('��� Displaying interim result:', interimTranscript);
           }
 
           // Process final results
