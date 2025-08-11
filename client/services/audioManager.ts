@@ -220,6 +220,10 @@ class AudioManager {
       // Properly stop current audio to prevent abort errors
       this.stopCurrentAudio();
 
+      // Clear the source to prevent loading old URLs
+      this.audio.src = '';
+      this.audio.removeAttribute('src');
+
       // Small delay to let the stop complete
       await new Promise(resolve => setTimeout(resolve, 100));
 
