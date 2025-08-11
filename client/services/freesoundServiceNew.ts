@@ -649,16 +649,16 @@ class FreesoundService {
     const searchTermsMap: { [key: string]: string[] } = {
       'Classical': ['classical', 'piano', 'orchestra', 'symphony', 'chamber music', 'baroque'],
       'Ambient': ['ambient', 'atmospheric', 'soundscape', 'ambient music', 'drone', 'minimalist'],
-      'Piano': ['piano', 'piano solo', 'keyboard', 'piano music', 'piano instrumental'],
-      'Peaceful': ['peaceful', 'calm', 'serene', 'tranquil', 'gentle music'],
       'Jazz': ['jazz', 'smooth jazz', 'blues', 'swing', 'bebop', 'jazz instrumental'],
-      'Electronic': ['electronic', 'synth', 'edm', 'techno', 'house', 'electronic music'],
-      'Folk': ['folk', 'acoustic', 'country', 'traditional', 'bluegrass', 'folk music'],
-      'Meditation': ['meditation', 'zen', 'mindfulness', 'spiritual music', 'healing music'],
-      'Natural': ['organic', 'acoustic', 'nature inspired', 'environmental music'],
-      'Chill': ['chill', 'chillout', 'downtempo', 'lounge', 'relaxed music'],
-      'Instrumental': ['instrumental', 'melody', 'orchestral', 'ensemble', 'background music'],
-      'Relaxing': ['relaxing', 'soothing', 'peaceful', 'calming music', 'soft music']
+      'Folk': ['folk', 'acoustic', 'traditional', 'bluegrass', 'folk music'],
+      'Rock': ['rock', 'electric guitar', 'rock music', 'alternative', 'indie rock'],
+      'Blues': ['blues', 'delta blues', 'electric blues', 'blues guitar', 'blues music'],
+      'Chillout': ['chill', 'chillout', 'downtempo', 'lounge', 'relaxed music'],
+      'Country': ['country', 'country music', 'bluegrass', 'americana', 'western'],
+      'Hip-Pop': ['hip hop', 'rap', 'urban', 'hip hop music', 'beats'],
+      'Electro Pop': ['electronic', 'synth', 'electro', 'synthpop', 'electronic music'],
+      'Downbeat': ['downbeat', 'trip hop', 'downtempo', 'chillhop', 'lofi'],
+      'New Age': ['new age', 'meditation', 'zen', 'spiritual music', 'healing music']
     };
 
     return searchTermsMap[genre] || [genre.toLowerCase()];
