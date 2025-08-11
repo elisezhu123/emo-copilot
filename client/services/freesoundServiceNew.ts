@@ -15,10 +15,17 @@ class FreesoundService {
 
   constructor() {
     this.apiKey = import.meta.env.VITE_FREESOUND_API_KEY || '';
+    if (this.apiKey) {
+      console.log('🎵 Freesound API configured with key:', this.apiKey.substring(0, 10) + '...');
+    } else {
+      console.warn('⚠️ Freesound API key not found in environment variables');
+    }
   }
 
   isConfigured(): boolean {
-    return this.apiKey.length > 0;
+    const configured = this.apiKey.length > 0;
+    console.log('🎵 Freesound API configured:', configured);
+    return configured;
   }
 
   // Search for tracks with proper CORS and redirect handling
