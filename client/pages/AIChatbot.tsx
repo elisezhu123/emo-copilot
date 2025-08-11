@@ -1591,7 +1591,7 @@ const AIChatbot = () => {
       return `I can understand many voice commands! Try saying:
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-🚗 Navigation: "go to dashboard", "open playlists", "navigate to music page"
+��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
 ❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 ⚠️ Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
@@ -2947,41 +2947,52 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           console.log('🎤 Speech recognition result event triggered');
           console.log('🎤 Results count:', event.results.length);
 
-          // Get the latest result
-          const lastResultIndex = event.results.length - 1;
-          const result = event.results[lastResultIndex];
-          const transcript = result[0].transcript.trim();
-          const isFinal = result.isFinal;
-          const confidence = result[0].confidence;
+          // Process all results, including interim ones
+          let finalTranscript = '';
+          let interimTranscript = '';
 
-          console.log('🎤 Raw transcript:', transcript);
-          console.log('🎤 Is final:', isFinal);
-          console.log('🎤 Confidence:', confidence);
-          console.log('🎤 Length:', transcript.length);
+          for (let i = 0; i < event.results.length; i++) {
+            const result = event.results[i];
+            const transcript = result[0].transcript;
 
-          // Only process final results with meaningful content
-          if (isFinal && transcript.length > 1) {
-            console.log('✅ Processing final transcript:', transcript);
+            if (result.isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
 
-            // Temporarily stop listening while processing, but keep user intent
+          console.log('🎤 Final transcript:', finalTranscript);
+          console.log('🎤 Interim transcript:', interimTranscript);
+
+          // Show interim results in real-time
+          if (interimTranscript.length > 0) {
+            setPendingTranscript(interimTranscript);
+            console.log('📝 Displaying interim result:', interimTranscript);
+          }
+
+          // Process final results
+          if (finalTranscript.length > 1) {
+            console.log('✅ Processing final transcript:', finalTranscript);
+
+            // Clear interim transcript
+            setPendingTranscript(null);
+
+            // Temporarily stop listening while processing
             recognitionRef.current?.stop();
-            setIsListening(false); // Just for UI state, don't change user intent
-            setPendingTranscript(transcript);
+            setIsListening(false);
 
             // Add user message immediately
             const newMessage: Message = {
               id: Date.now().toString(),
-              text: transcript,
+              text: finalTranscript.trim(),
               type: 'user',
               timestamp: new Date()
             };
             setMessages(prev => [...prev, newMessage]);
-            setPendingTranscript(null);
 
             // Trigger AI response (which will restart listening)
-            addBotResponse(transcript);
-          } else if (!isFinal && transcript.length > 0) {
-            console.log('📝 Interim result:', transcript);
+            addBotResponse(finalTranscript.trim());
           }
         };
 
