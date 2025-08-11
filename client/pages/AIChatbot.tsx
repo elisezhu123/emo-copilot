@@ -467,6 +467,12 @@ const AIChatbot = () => {
     setShowLightingEmoji(false);
     setShowHappyEmoji(false);
     setShowSadEmoji(false);
+    setShowAlertEmoji(false);
+    setShowYesPermissionEmoji(false);
+    setShowNoPermissionEmoji(false);
+    setShowMusicEmoji(false);
+    setShowHotEmoji(false);
+    setShowBreathingEmoji(false);
   }, []);
 
   // Automatic driving condition monitoring disabled - alerts only shown when user mentions conditions via voice
@@ -1067,7 +1073,7 @@ const AIChatbot = () => {
       
       // Simulate route hazard detection
       if (Math.random() > 0.7) {
-        routeDangers.push("🚧 CONSTRUCTION ZONE: Lane closures ahead at mile marker 12. Expect 10-15 minute delays.");
+        routeDangers.push("�� CONSTRUCTION ZONE: Lane closures ahead at mile marker 12. Expect 10-15 minute delays.");
       }
       
       if (Math.random() > 0.8) {
@@ -3166,6 +3172,42 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         <div className="flex items-center justify-center min-h-screen w-full p-4">
           <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <SadFace />
+          </div>
+        </div>
+      ) : showAlertEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <AlertFace />
+          </div>
+        </div>
+      ) : showYesPermissionEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <YesPermissionFace />
+          </div>
+        </div>
+      ) : showNoPermissionEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <NoPermissionFace />
+          </div>
+        </div>
+      ) : showMusicEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <MusicFace />
+          </div>
+        </div>
+      ) : showHotEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <HotFace />
+          </div>
+        </div>
+      ) : showBreathingEmoji ? (
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+            <BreathingFace />
           </div>
         </div>
       ) : (
