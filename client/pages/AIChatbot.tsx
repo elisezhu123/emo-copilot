@@ -667,7 +667,7 @@ const AIChatbot = () => {
     const controlMessage: Message = {
       id: Date.now().toString() + '_ac_control',
       text: turnOn ?
-        `❄️ Air conditioner set to ${temp}°C. You should feel more comfortable soon!` :
+        `❄��� Air conditioner set to ${temp}°C. You should feel more comfortable soon!` :
         `Air conditioner turned off. Let me know if you need any other adjustments.`,
       type: 'bot',
       timestamp: new Date()
@@ -2844,20 +2844,21 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   };
 
   useEffect(() => {
-    // Request microphone permissions automatically
+    // Request microphone permissions only when user clicks microphone button
     const requestMicrophonePermission = async () => {
       try {
-        console.log('🎤 Requesting microphone permission...');
+        console.log('🎤 Requesting microphone permission for AI chatbot...');
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           throw new Error('getUserMedia not supported');
         }
 
         // Request microphone access to get permission
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('✅ Microphone permission granted automatically');
+        console.log('✅ Microphone permission granted for AI chatbot');
         setMicrophoneStatus('available');
         // Immediately stop the stream since we just needed permission
         stream.getTracks().forEach(track => track.stop());
+        return true;
       } catch (error: any) {
         console.error('❌ Microphone permission error:', error);
         if (error.name === 'NotAllowedError') {
@@ -2870,6 +2871,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           console.log('💡 Microphone error:', error.message);
           setMicrophoneStatus('not-supported');
         }
+        return false;
       }
     };
 
