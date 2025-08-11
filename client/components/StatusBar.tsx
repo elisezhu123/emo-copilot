@@ -92,7 +92,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
         onTemperatureExceed(temp);
       }
-      console.log('🌡️ Current temperature:', temp, '°C (real API temperature)');
+      console.log('🌡️ Real OpenWeather API temperature:', temp, '°C for location:', weatherLat, weatherLng);
 
       // Check for extreme weather conditions
       const extremeConditions = [
