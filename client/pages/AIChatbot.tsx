@@ -3368,26 +3368,6 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         )}
       </div>
 
-      {/* Debug Test Button - Remove after testing */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={async () => {
-            console.log('🧪 MANUAL TEST BUTTON CLICKED');
-            try {
-              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-              console.log('✅ Manual permission test SUCCESSFUL');
-              stream.getTracks().forEach(track => track.stop());
-              alert('✅ Microphone permission test successful!');
-            } catch (error) {
-              console.error('❌ Manual permission test FAILED:', error);
-              alert('❌ Microphone permission test failed: ' + error.message);
-            }
-          }}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
-        >
-          🧪 Test Microphone Permission
-        </button>
-      </div>
 
           {/* Wellness Activity Overlay - REMOVED */}
           {/* Breathing and meditation features have been removed as requested */}
