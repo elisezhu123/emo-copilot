@@ -1483,6 +1483,7 @@ const AIChatbot = () => {
 
     // Test commands for various triggers
     if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
+      console.log('🔥 Temperature test command triggered by message:', message);
       setTimeout(() => {
         handleTemperatureExceed(37);
       }, 1000);
