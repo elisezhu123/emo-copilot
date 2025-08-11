@@ -3423,49 +3423,59 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         </div>
       </div>
 
-      {/* Microphone Section */}
+      {/* Microphone Section - Figma Design Implementation */}
       <div className="flex justify-center items-center gap-4 mt-8">
-        {/* Left Sound Wave */}
-        <div className="flex items-center gap-0.5">
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
-          </svg>
-        </div>
+        {/* Left Sound Wave - Only show when active */}
+        {userWantsListening ? (
+          <div className="flex items-center gap-0.5">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill="#3A2018"/>
+            </svg>
+          </div>
+        ) : (
+          <div className="w-6 h-6"></div>
+        )}
 
         {/* Microphone Button Container */}
         <div className="relative">
-          {/* Microphone Button - Always Active for Continuous Listening */}
+          {/* Microphone Button - Matches Figma Design */}
           <button
             onClick={toggleListening}
-            className={`w-16 h-16 lg:w-20 lg:h-20 rounded-full transition-all duration-300 ${
-              microphoneStatus === 'permission-denied' || microphoneStatus === 'not-supported'
-                ? 'bg-red-500'
-                : userWantsListening
-                ? 'bg-emotion-default'
-                : 'bg-emotion-mouth hover:scale-105'
-            } ${isSpeaking ? 'ring-4 ring-emotion-orange ring-opacity-50' : ''} shadow-lg flex items-center justify-center`}
+            className={`transition-all duration-300 ${
+              userWantsListening
+                ? 'w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-emotion-default flex items-center justify-center shadow-lg'
+                : 'w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-emotion-mouth hover:scale-105 flex items-center justify-center shadow-lg'
+            } ${microphoneStatus === 'permission-denied' || microphoneStatus === 'not-supported' ? 'bg-red-500' : ''} ${isSpeaking ? 'ring-4 ring-emotion-orange ring-opacity-50' : ''}`}
             title={
               microphoneStatus === 'permission-denied'
                 ? 'Microphone permission denied. Please allow microphone access in your browser settings and refresh the page.'
                 : microphoneStatus === 'not-supported'
                 ? 'Microphone not supported. Please use Chrome, Safari, or Edge with HTTPS/localhost.'
                 : userWantsListening
-                ? 'Continuously listening... (Click to pause)'
-                : 'Say "Hey Melo" to activate or click to start listening'
+                ? 'Listening continuously... (Click to stop)'
+                : 'Click to start voice recognition'
             }
           >
-            <svg className="w-12 h-12 lg:w-14 lg:h-14 text-white" fill="currentColor" viewBox="0 0 48 48">
+            <svg
+              className={`text-white ${userWantsListening ? 'w-12 h-12 lg:w-14 lg:h-14' : 'w-8 h-8 lg:w-10 lg:h-10'}`}
+              fill="currentColor"
+              viewBox="0 0 48 48"
+            >
               <path d="M16 12C16 7.58172 19.5817 4 24 4C28.4183 4 32 7.58172 32 12V24C32 28.4183 28.4183 32 24 32C19.5817 32 16 28.4183 16 24V12ZM24 6.5C20.9624 6.5 18.5 8.96243 18.5 12V24C18.5 27.0376 20.9624 29.5 24 29.5C27.0376 29.5 29.5 27.0376 29.5 24V12C29.5 8.96243 27.0376 6.5 24 6.5ZM25 37.7148C32.2653 37.2021 38 31.1458 38 23.75C38 23.0596 37.4404 22.5 36.75 22.5C36.0596 22.5 35.5 23.0596 35.5 23.75C35.5 30.1013 30.3513 35.25 24 35.25C17.6487 35.25 12.5 30.1013 12.5 23.75C12.5 23.0596 11.9404 22.5 11.25 22.5C10.5596 22.5 10 23.0596 10 23.75C10 30.9752 15.4734 36.9221 22.5 37.6706V42.75C22.5 43.4404 23.0596 44 23.75 44C24.4404 44 25 43.4404 25 42.75V37.7148Z" fill="white"/>
             </svg>
           </button>
         </div>
 
-        {/* Right Sound Wave */}
-        <div className="flex items-center gap-0.5">
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
-          </svg>
-        </div>
+        {/* Right Sound Wave - Only show when active */}
+        {userWantsListening ? (
+          <div className="flex items-center gap-0.5">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill="#3A2018"/>
+            </svg>
+          </div>
+        ) : (
+          <div className="w-6 h-6"></div>
+        )}
       </div>
 
           {/* Wellness Activity Overlay - REMOVED */}
