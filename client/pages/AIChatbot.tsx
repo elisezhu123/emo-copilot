@@ -1934,7 +1934,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-���� Won't start: Check battery connections, fuel level
+��� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
@@ -2025,11 +2025,11 @@ ${response}
     }
 
     if (message.includes('dark') || message.includes('can\'t see') || message.includes('hard to see') || message.includes('too dark') || message.includes('turn on light')) {
-      // Show lighting emoji for 3 seconds first, then turn on lights
+      // Show cute squinting emoji for 3 seconds first, then turn on lights
       setTimeout(() => {
-        setShowLightingEmoji(true);
+        setShowCuteEmoji(true);
         setTimeout(() => {
-          setShowLightingEmoji(false);
+          setShowCuteEmoji(false);
           // Turn on lights after emoji is shown
           controlLights(true);
         }, 3000);
@@ -3181,7 +3181,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         return;
       }
 
-      console.log('✅ Microphone permission granted, starting voice recognition...');
+      console.log('��� Microphone permission granted, starting voice recognition...');
 
       setUserWantsListening(true); // User wants continuous listening
 
