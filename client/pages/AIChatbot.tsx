@@ -3079,6 +3079,37 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     };
   }, []);
 
+  // Request microphone permission function
+  const requestMicrophonePermission = async (): Promise<boolean> => {
+    try {
+      console.log('🎤 Requesting microphone permission...');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia not supported');
+      }
+
+      // Request microphone access to get permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('✅ Microphone permission granted');
+      setMicrophoneStatus('available');
+      // Immediately stop the stream since we just needed permission
+      stream.getTracks().forEach(track => track.stop());
+      return true;
+    } catch (error: any) {
+      console.error('❌ Microphone permission error:', error);
+      if (error.name === 'NotAllowedError') {
+        console.log('💡 User denied microphone permission. Please allow it in browser settings.');
+        setMicrophoneStatus('permission-denied');
+      } else if (error.name === 'NotFoundError') {
+        console.log('💡 No microphone found. Please connect a microphone.');
+        setMicrophoneStatus('not-supported');
+      } else {
+        console.log('💡 Microphone error:', error.message);
+        setMicrophoneStatus('not-supported');
+      }
+      return false;
+    }
+  };
+
   const toggleListening = async () => {
     console.log('🚨 MICROPHONE BUTTON CLICKED! 🚨');
     console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
