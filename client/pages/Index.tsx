@@ -125,7 +125,7 @@ const EmoCopilotDashboard = () => {
           setCurrentTrack(allTracks[0]);
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
-          console.log('��� Music loaded but not auto-playing. User must click play.');
+          console.log('🎵 Music loaded but not auto-playing. User must click play.');
         } else {
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
@@ -244,7 +244,7 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (!savedGenres || savedGenres.length === 0) {
-        alert('请先在音乐选择页面选择���喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
+        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
         return;
       }
       
@@ -656,6 +656,24 @@ const EmoCopilotDashboard = () => {
         </div>
         </div>
         </>
+      )}
+
+      {/* AC Emoji Popup Overlay */}
+      {showACEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-[480px] max-h-[280px] w-[480px] h-[280px] flex items-center justify-center animate-spontaneous-pop shadow-2xl">
+            <ACFace />
+          </div>
+        </div>
+      )}
+
+      {/* Lighting Emoji Popup Overlay */}
+      {showLightingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-[480px] max-h-[280px] w-[480px] h-[280px] flex items-center justify-center animate-spontaneous-pop shadow-2xl">
+            <CuteFace />
+          </div>
+        </div>
       )}
     </div>
   );
