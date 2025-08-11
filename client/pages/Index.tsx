@@ -81,36 +81,7 @@ const EmoCopilotDashboard = () => {
   // Wake word recognition ref
   const wakeWordRecognitionRef = useRef<any>(null);
 
-  // Request microphone permissions automatically for voice features
-  useEffect(() => {
-    const requestMicrophonePermission = async () => {
-      try {
-        console.log('🎤 Requesting microphone permission for wake word detection...');
-        // Request microphone access to get permission
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('✅ Microphone permission granted automatically on dashboard');
-        console.log('🗣️ You can now say "Hey Melo" to navigate to the AI chatbot');
-        // Immediately stop the stream since we just needed permission
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Show user confirmation that wake word is ready
-        setTimeout(() => {
-          console.log('🎯 Wake word detection is now ACTIVE! Say "Hey Melo" to open AI chatbot');
-        }, 2000);
-      } catch (error) {
-        console.log('❌ Microphone permission denied or not available on dashboard:', error);
-        console.log('⚠️ Wake word detection "Hey Melo" will not work without microphone access');
-        
-        // Show user how to enable microphone
-        setTimeout(() => {
-          console.log('💡 To enable "Hey Melo" wake word: Click the microphone icon in your browser\'s address bar and allow microphone access');
-        }, 1000);
-      }
-    };
-
-    // Request permission on component mount
-    requestMicrophonePermission();
-  }, []);
+  // Microphone permissions are now only requested on AI Chatbot page to prevent Safari conflicts
 
   // Wake word detection for "Hey Melo" - navigate to AI chatbot
   useEffect(() => {
