@@ -3329,7 +3329,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
             }
           >
             <svg
-              className={`text-white ${userWantsListening ? 'w-12 h-12 lg:w-14 lg:h-14' : 'w-8 h-8 lg:w-10 lg:h-10'}`}
+              className="text-white w-12 h-12"
               fill="currentColor"
               viewBox="0 0 48 48"
             >
