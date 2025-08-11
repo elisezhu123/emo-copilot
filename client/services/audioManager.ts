@@ -81,11 +81,19 @@ class AudioManager {
   }
 
   private onError(error: Event) {
+    const audioError = this.audio?.error;
+
+    // Don't log AbortError as it's normal when switching tracks
+    if (audioError?.code === MediaError.MEDIA_ERR_ABORTED) {
+      console.log('ℹ️ Audio loading aborted (normal when switching tracks)');
+      return;
+    }
+
     console.error('❌ Audio error event:', error);
     console.error('❌ Audio element error details:', {
-      error: this.audio?.error,
-      code: this.audio?.error?.code,
-      message: this.audio?.error?.message,
+      error: audioError,
+      code: audioError?.code,
+      message: audioError?.message,
       networkState: this.audio?.networkState,
       readyState: this.audio?.readyState,
       src: this.audio?.src
