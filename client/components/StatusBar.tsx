@@ -246,12 +246,12 @@ const StatusBar: React.FC<StatusBarProps> = ({
             });
           }
         } else {
-          // Simulate high temperature
-          const simulatedTemp = 36 + Math.floor(Math.random() * 4);
+          // Simulate realistic temperature - DISABLED high temp simulation
+          const simulatedTemp = 15 + Math.floor(Math.random() * 10); // 15-25°C realistic range
           setTemperature(`${simulatedTemp}°C`);
-          if (onTemperatureExceed) {
-            onTemperatureExceed(simulatedTemp);
-          }
+          // if (onTemperatureExceed) {
+          //   onTemperatureExceed(simulatedTemp);
+          // }
         }
       } else {
         fetchWeather(52.6638, -8.6267); // Limerick coordinates
