@@ -278,7 +278,7 @@ const AIChatbot = () => {
       // checkWeatherAlerts(data);
 
     } catch (error) {
-      console.error('❌ Weather API error:', error);
+      console.error('�� Weather API error:', error);
       // Fallback to current Limerick temperature
       setTemperature('15°C');
       console.log('��️ Using fallback Limerick temperature: 15°C');
@@ -2011,13 +2011,17 @@ ${response}
       }
     }
 
-    if (message.includes('dark') || message.includes('can\'t see') || message.includes('hard to see')) {
+    if (message.includes('dark') || message.includes('can\'t see') || message.includes('hard to see') || message.includes('too dark') || message.includes('turn on light')) {
+      // Show lighting emoji for 3 seconds first, then turn on lights
       setTimeout(() => {
-        controlLights(true);
-        setShowCuteEmoji(true);
-        setTimeout(() => setShowCuteEmoji(false), 3000);
+        setShowLightingEmoji(true);
+        setTimeout(() => {
+          setShowLightingEmoji(false);
+          // Turn on lights after emoji is shown
+          controlLights(true);
+        }, 3000);
       }, 1000);
-      return "Safety first! I'm turning on your lights for better visibility. Drive carefully!";
+      return "Safety first! I'll turn on your lights for better visibility. Drive carefully!";
     }
 
     if (message.includes('where am i') || message.includes('location') || message.includes('lost')) {
