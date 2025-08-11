@@ -36,7 +36,7 @@ const MusicPlaylists = () => {
         await simpleMusicService.updateGenres(savedGenres);
 
         const allTracks = await simpleMusicService.getAllTracks();
-        console.log('🎵 Final tracks loaded:', allTracks.length);
+        console.log('���� Final tracks loaded:', allTracks.length);
         setTracks(allTracks);
 
         if (allTracks.length > 0) {
@@ -249,12 +249,39 @@ const MusicPlaylists = () => {
               <p className="text-xs text-red-600 mb-1">
                 🔊 Audio Issue: {audioState.error}
               </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="text-xs text-red-700 underline hover:text-red-800"
-              >
-                Click here to refresh and try again
-              </button>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={async () => {
+                    if (currentTrack) {
+                      console.log('🔄 Retrying current track:', currentTrack.title);
+                      try {
+                        await playTrack(currentTrack);
+                      } catch (error) {
+                        console.error('Retry failed:', error);
+                      }
+                    }
+                  }}
+                  className="text-xs text-blue-700 underline hover:text-blue-800"
+                >
+                  🔄 Retry
+                </button>
+                <button
+                  onClick={async () => {
+                    console.log('🎵 Trying next track...');
+                    await playNextTrack();
+                  }}
+                  className="text-xs text-green-700 underline hover:text-green-800"
+                  disabled={tracks.length <= 1}
+                >
+                  ⏭️ Next Track
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-xs text-red-700 underline hover:text-red-800"
+                >
+                  🔄 Refresh Page
+                </button>
+              </div>
             </div>
           )}
           {audioState.isLoading && (
