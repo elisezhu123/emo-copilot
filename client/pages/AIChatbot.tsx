@@ -1591,7 +1591,7 @@ const AIChatbot = () => {
       return `I can understand many voice commands! Try saying:
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
+���� Navigation: "go to dashboard", "open playlists", "navigate to music page"
 ❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 ⚠️ Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
@@ -3054,116 +3054,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Wake word recognition disabled to prevent microphone conflicts
       // wakeWordRecognitionRef.current = new SpeechRecognition();
       
-      if (wakeWordRecognitionRef.current) {
-        wakeWordRecognitionRef.current.continuous = true;
-        wakeWordRecognitionRef.current.interimResults = true;
-        wakeWordRecognitionRef.current.lang = 'en-US';
-
-        wakeWordRecognitionRef.current.onresult = (event: any) => {
-          const lastResultIndex = event.results.length - 1;
-          const transcript = event.results[lastResultIndex][0].transcript.toLowerCase().trim();
-          
-          console.log('👂 Wake word listening:', transcript);
-
-          // Check for "Hey Melo" or variations
-          if (transcript.includes('hey melo') || transcript.includes('hey melow') || 
-              transcript.includes('a melo') || transcript.includes('hey milo')) {
-            console.log('🎯 Wake word detected!');
-            
-            // Show visual feedback
-            setWakeWordDetected(true);
-            setTimeout(() => setWakeWordDetected(false), 2000);
-            
-            // Stop wake word listening temporarily
-            stopWakeWordListening();
-            
-            // If we're not already on the AI chatbot page, navigate there
-            if (window.location.pathname !== '/ai-chatbot') {
-              console.log('🚀 Navigating to AI chatbot page');
-              window.location.href = '/ai-chatbot';
-              return; // Exit early since we're navigating away
-            }
-            
-            // Auto-activate air conditioner (cooling)
-            setTimeout(() => {
-              console.log('❄️ Auto-activating air conditioner via wake word');
-              setAirConditioner(20, true); // Set to cooling temperature
-              setShowACEmoji(true);
-              setTimeout(() => setShowACEmoji(false), 3000);
-            }, 1000);
-            
-            // Auto-activate lights
-            setTimeout(() => {
-              console.log('💡 Auto-activating lights via wake word');
-              controlLights(true);
-              setShowLightingEmoji(true);
-              setTimeout(() => setShowLightingEmoji(false), 3000);
-            }, 1500);
-            
-            // Start main conversation listening
-            setUserWantsListening(true);
-            startContinuousListening();
-            
-            // Give audio feedback
-            speakText("Yes, I'm listening. I've turned on the air conditioner and lights for you. How can I help?");
-            
-            // Restart wake word listening after a delay
-            setTimeout(() => {
-              if (!userWantsListening) {
-                startWakeWordListening();
-              }
-            }, 8000); // Longer delay to account for automation actions
-          }
-        };
-
-        wakeWordRecognitionRef.current.onerror = (event: any) => {
-          // Don't treat "aborted" as an error - it's normal when stopping manually
-          if (event.error === 'aborted') {
-            console.log('👂 Wake word recognition was stopped (normal operation)');
-            return;
-          }
-
-          console.log('⚠️ Wake word recognition error:', event.error);
-
-          // For other errors, try to restart after a delay
-          if (event.error === 'not-allowed') {
-            console.log('❌ Microphone permission denied for wake word');
-            setMicrophoneStatus('permission-denied');
-          } else {
-            console.log('🔄 Restarting wake word recognition after error:', event.error);
-            setTimeout(() => {
-              if (!userWantsListening) {
-                startWakeWordListening();
-              }
-            }, 3000);
-          }
-        };
-
-        wakeWordRecognitionRef.current.onend = () => {
-          console.log('👂 Wake word recognition ended');
-          console.log('🔍 userWantsListening:', userWantsListening);
-          console.log('🔍 isWakeWordListening:', isWakeWordListening);
-
-          // Only restart wake word listening if:
-          // 1. User is not actively using main listening
-          // 2. We're supposed to be wake word listening
-          // 3. Component is still mounted
-          if (!userWantsListening && isWakeWordListening) {
-            console.log('🔄 Restarting wake word recognition...');
-            setTimeout(() => {
-              // Double check conditions before restarting
-              if (!userWantsListening && isWakeWordListening) {
-                startWakeWordListening();
-              }
-            }, 1000);
-          } else {
-            console.log('❌ Not restarting wake word recognition - conditions not met');
-          }
-        };
-
-        // Wake word detection disabled - only start when user clicks microphone button
-        console.log('🎤 Wake word detection ready but not started - preventing Safari permission conflicts');
-      }
+      // Wake word recognition setup disabled to prevent microphone conflicts
+      console.log('🎤 Wake word detection completely disabled to prevent Safari permission conflicts');
 
       // Don't start listening immediately - wait for user to click button
     } else {
