@@ -669,16 +669,16 @@ class FreesoundService {
     const filterMap: { [key: string]: string } = {
       'Classical': 'tag:music (tag:classical OR tag:piano OR tag:orchestra OR tag:symphony OR tag:chamber)',
       'Ambient': 'tag:music (tag:ambient OR tag:atmospheric OR tag:soundscape OR tag:drone)',
-      'Piano': 'tag:music (tag:piano OR tag:keyboard OR tag:keys) tag:instrumental',
-      'Peaceful': 'tag:music (tag:peaceful OR tag:calm OR tag:serene OR tag:tranquil OR tag:gentle)',
       'Jazz': 'tag:music (tag:jazz OR tag:blues OR tag:swing OR tag:smooth)',
-      'Electronic': 'tag:music (tag:electronic OR tag:synth OR tag:edm OR tag:techno OR tag:house)',
-      'Folk': 'tag:music (tag:folk OR tag:acoustic OR tag:country OR tag:traditional)',
-      'Meditation': 'tag:music (tag:meditation OR tag:zen OR tag:mindfulness OR tag:spiritual OR tag:healing)',
-      'Natural': 'tag:music (tag:organic OR tag:acoustic OR tag:nature OR tag:environmental)',
-      'Chill': 'tag:music (tag:chill OR tag:chillout OR tag:downtempo OR tag:lounge OR tag:relaxed)',
-      'Instrumental': 'tag:music tag:instrumental (tag:melody OR tag:orchestral OR tag:ensemble)',
-      'Relaxing': 'tag:music (tag:relaxing OR tag:soothing OR tag:peaceful OR tag:calming OR tag:soft)'
+      'Folk': 'tag:music (tag:folk OR tag:acoustic OR tag:traditional)',
+      'Rock': 'tag:music (tag:rock OR tag:guitar OR tag:electric OR tag:alternative)',
+      'Blues': 'tag:music (tag:blues OR tag:delta OR tag:electric OR tag:guitar)',
+      'Chillout': 'tag:music (tag:chill OR tag:chillout OR tag:downtempo OR tag:lounge OR tag:relaxed)',
+      'Country': 'tag:music (tag:country OR tag:bluegrass OR tag:americana OR tag:western)',
+      'Hip-Pop': 'tag:music (tag:hip OR tag:hop OR tag:rap OR tag:urban OR tag:beats)',
+      'Electro Pop': 'tag:music (tag:electronic OR tag:synth OR tag:electro OR tag:synthpop)',
+      'Downbeat': 'tag:music (tag:downbeat OR tag:trip OR tag:downtempo OR tag:chillhop OR tag:lofi)',
+      'New Age': 'tag:music (tag:new OR tag:age OR tag:meditation OR tag:zen OR tag:spiritual OR tag:healing)'
     };
 
     return filterMap[genre] || `tag:music tag:${genre.toLowerCase()}`;
