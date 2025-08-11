@@ -28,6 +28,8 @@ const EmoCopilotDashboard = () => {
   const [showAIBotEmoji, setShowAIBotEmoji] = useState(false);
   const [showEnjoyEmoji, setShowEnjoyEmoji] = useState(false);
   const [showHotEmoji, setShowHotEmoji] = useState(false);
+  const [showACEmoji, setShowACEmoji] = useState(false);
+  const [showLightingEmoji, setShowLightingEmoji] = useState(false);
   const [musicStartTime, setMusicStartTime] = useState<number | null>(null);
   const [musicTimer, setMusicTimer] = useState<NodeJS.Timeout | null>(null);
   const [audioState, setAudioState] = useState<AudioState>({
