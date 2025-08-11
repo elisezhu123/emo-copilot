@@ -2924,7 +2924,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         recognitionRef.current.onspeechend = () => {
-          console.log('�� Speech ended - processing transcript...');
+          console.log('🔇 Speech ended - processing transcript...');
         };
 
         recognitionRef.current.onaudiostart = () => {
@@ -3280,6 +3280,10 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       setTimeout(() => {
         if (userWantsListening) { // Double check user still wants it started
           startContinuousListening();
+          // Now that user has granted permission, we can also enable wake word detection for future use
+          if (microphoneStatus === 'available') {
+            console.log('🎤 Microphone permission granted - wake word detection now available for future use');
+          }
         }
       }, 500);
     }
