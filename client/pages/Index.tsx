@@ -328,9 +328,11 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
 
-    // Show AC emoji for 3 seconds
-    setShowACEmoji(true);
-    setTimeout(() => setShowACEmoji(false), 3000);
+    // Show AC emoji for 3 seconds only when turning ON
+    if (newState) {
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+    }
   };
 
   const toggleLighting = () => {
