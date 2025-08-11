@@ -24,6 +24,11 @@ const MusicPlaylists = () => {
   useEffect(() => {
     // Load tracks from the music service - same logic as dashboard
     const loadTracks = async () => {
+      // Test API configuration immediately
+      console.log('🎵 Testing API configuration...');
+      console.log('🎵 Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
+      console.log('🎵 DeepSeek API Key:', import.meta.env.VITE_DEEPSEEK_API_KEY ? 'CONFIGURED' : 'MISSING');
+
       const savedGenres = musicService.loadSelectedGenres();
 
       if (savedGenres && savedGenres.length > 0) {
@@ -31,9 +36,11 @@ const MusicPlaylists = () => {
         await simpleMusicService.updateGenres(savedGenres);
 
         const allTracks = await simpleMusicService.getAllTracks();
+        console.log('🎵 Final tracks loaded:', allTracks.length);
         setTracks(allTracks);
 
         if (allTracks.length > 0) {
+          console.log('🎵 Sample track:', allTracks[0]);
           setCurrentTrack(allTracks[0]);
           audioManager.setPlaylist(allTracks);
         }
