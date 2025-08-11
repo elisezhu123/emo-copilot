@@ -331,7 +331,7 @@ const AIChatbot = () => {
                     fetchWeather(location.lat, location.lng);
                   },
                   (retryError) => {
-                    console.error('❌ Location retry failed:', retryError.message);
+                    console.error('�� Location retry failed:', retryError.message);
                     // Don't add automatic location messages to keep UI clean
                     console.log('Location retry failed, but keeping UI clean');
                   },
@@ -456,7 +456,7 @@ const AIChatbot = () => {
     return unsubscribe;
   }, []);
 
-  // Reset all emoji states on component mount
+  // Reset all emoji states and temperature triggers on component mount
   useEffect(() => {
     setShowComfortEmoji(false);
     setShowShockEmoji(false);
@@ -473,6 +473,13 @@ const AIChatbot = () => {
     setShowMusicEmoji(false);
     setShowHotEmoji(false);
     setShowBreathingEmoji(false);
+
+    // Reset temperature and weather triggered states for clean start
+    setTemperatureTriggered(false);
+    setWeatherTriggered(false);
+    setAwaitingACPermission(false);
+    setAwaitingWeatherPermission(false);
+    console.log('🌡️ Reset temperature and weather trigger states');
   }, []);
 
   // Automatic driving condition monitoring disabled - alerts only shown when user mentions conditions via voice
