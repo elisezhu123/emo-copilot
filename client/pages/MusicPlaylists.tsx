@@ -36,7 +36,7 @@ const MusicPlaylists = () => {
         await simpleMusicService.updateGenres(savedGenres);
 
         const allTracks = await simpleMusicService.getAllTracks();
-        console.log('���� Final tracks loaded:', allTracks.length);
+        console.log('🎵 Final tracks loaded:', allTracks.length);
         setTracks(allTracks);
 
         if (allTracks.length > 0) {
@@ -460,6 +460,28 @@ const MusicPlaylists = () => {
                 className="text-xs bg-emotion-orange text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
               >
                 🔊 Test Audio System
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    console.log('🔍 Testing audio error handling...');
+                    const invalidTrack = {
+                      id: 'error_test',
+                      title: 'Error Test',
+                      artist: 'Debug Test',
+                      duration: 10,
+                      genre: 'Test',
+                      url: 'https://invalid-url-that-should-fail.com/nonexistent.mp3'
+                    };
+                    await playTrack(invalidTrack);
+                  } catch (error) {
+                    console.log('✅ Error handling test completed - check console for detailed error info');
+                  }
+                }}
+                className="text-xs bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
+              >
+                🔍 Test Error Handling
               </button>
             </div>
           </div>
