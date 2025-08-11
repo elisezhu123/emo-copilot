@@ -284,8 +284,14 @@ class AudioManager {
 
   // Get a reliable test audio URL that actually works
   private getTestAudioUrl(): string {
-    // Use a simple data URL that always works without network issues
-    return 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEUCjyRzfPBeCkCKYPH8diNOwhZsGJ5';
+    // Use reliable test audio files that work cross-origin
+    const testUrls = [
+      'https://www.w3schools.com/html/horse.mp3',
+      'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3',
+      'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+    ];
+
+    return testUrls[Math.floor(Math.random() * testUrls.length)];
   }
 
   // Validate if an audio URL is potentially valid
