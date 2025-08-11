@@ -824,59 +824,16 @@ const AIChatbot = () => {
     );
   };
 
-  // Enhanced alert monitoring system - DISABLED (alerts only shown when user mentions conditions via voice)
+  // Enhanced alert monitoring system - DISABLED (alerts only shown when user says test commands)
   const monitorDrivingConditions = () => {
-    // All automatic time-based alerts disabled - only triggered by voice commands
+    // All automatic time-based alerts disabled - only triggered by test commands
     return;
-
-    // const currentHour = new Date().getHours();
-
-    // // Check for fatigue risk during peak drowsiness hours (2-6 AM, 2-4 PM)
-    // if ((currentHour >= 2 && currentHour <= 6) || (currentHour >= 14 && currentHour <= 16)) {
-    //   if (!alertTriggered.fatigueRisk) {
-    //     triggerFatigueRiskAlert();
-    //   }
-    // }
-
-    // // Check for rush hour alerts (7-9 AM, 5-7 PM)
-    // if ((currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 19)) {
-    //   if (!alertTriggered.rushHour) {
-    //     triggerRushHourAlert();
-    //   }
-    // }
   };
 
-  // Weather-based alert integration - DISABLED (alerts only shown when user mentions weather via voice)
+  // Weather-based alert integration - DISABLED (alerts only shown when user says test commands)
   const checkWeatherAlerts = (weatherData: any) => {
-    // All automatic weather alerts disabled - only triggered by voice commands
+    // All automatic weather alerts disabled - only triggered by test commands
     return;
-
-    // if (!weatherData) return;
-
-    // const condition = weatherData.weather[0].main.toLowerCase();
-    // const temperature = weatherData.main.temp;
-    // const visibility = weatherData.visibility;
-    // const windSpeed = weatherData.wind?.speed || 0;
-
-    // // Ice risk alert
-    // if (temperature <= 2 && !alertTriggered.iceRisk) {
-    //   triggerIceRiskAlert();
-    // }
-
-    // // High wind alert
-    // if (windSpeed > 10 && !alertTriggered.highWind) {
-    //   triggerHighWindAlert(windSpeed);
-    // }
-
-    // // Fog alert
-    // if (visibility < 1000 && !alertTriggered.fogAlert) {
-    //   triggerFogAlert(visibility);
-    // }
-
-    // // Rain alert
-    // if (condition.includes('rain') && !alertTriggered.rainAlert) {
-    //   triggerRainAlert();
-    // }
   };
 
   // Enhanced navigation with real-time safety and danger warnings
@@ -1085,7 +1042,7 @@ const AIChatbot = () => {
     }
 
     try {
-      console.log(`��� Getting directions to ${destination} from:`, currentLocation);
+      console.log(`🧭 Getting directions to ${destination} from:`, currentLocation);
 
       // Enhanced route analysis with danger detection
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -1272,7 +1229,7 @@ const AIChatbot = () => {
     }
 
     try {
-      console.log('👂 Starting wake word listening for "Hey Melo"...');
+      console.log('��� Starting wake word listening for "Hey Melo"...');
       wakeWordRecognitionRef.current.start();
       setIsWakeWordListening(true);
     } catch (error: any) {
@@ -1765,7 +1722,7 @@ Just speak naturally - I understand many variations of these commands!`;
         if (safetyWarnings.length > 0) {
           return `🚨 CURRENT SAFETY CONDITIONS:\n\n${safetyWarnings.join('\n\n')}\n\n🛡️ STAY SAFE: Always trust your instincts, reduce speed in poor conditions, and pull over if visibility becomes dangerous. Your safety is the top priority!`;
         } else {
-          return "�� ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
+          return "✅ ROAD CONDITIONS: Looking good right now! Weather is clear and no major hazards detected. But stay alert - conditions can change quickly. Drive defensively and watch for other drivers!";
         }
       } else {
         return "I need your location to check current road conditions. Please enable location access so I can provide real-time safety updates for your area!";
@@ -2021,41 +1978,60 @@ ${response}
     const message = userMessage.toLowerCase();
     const response = botResponse.toLowerCase();
 
-    // Only trigger emojis for specific test commands, not during normal conversation
-    // This prevents emojis from appearing unexpectedly while talking
+    // Updated emotion analysis system:
+    // - Alerts only show on test commands
+    // - Comfort emoji can show during normal conversation
+    // - Other emojis show for specific scenarios
 
-    // Comfort emoji triggers - Only for specific test commands
-    if (message.includes('test comfort') || message.includes('test stress') || message.includes('test breathing')) {
+    // Comfort emoji - can trigger during normal conversation for stress/comfort words
+    if (message.includes('stress') || message.includes('anxious') || message.includes('worried') ||
+        message.includes('scared') || message.includes('nervous') || message.includes('overwhelmed') ||
+        message.includes('comfort') || message.includes('calm') || message.includes('relax')) {
       setShowComfortEmoji(true);
       setTimeout(() => setShowComfortEmoji(false), 3000);
       return;
     }
 
-    // Shock emoji triggers - Only for specific test commands
+    // Test command emojis - Only for specific test commands
     if (message.includes('test shock') || message.includes('test emergency') || message.includes('test alert')) {
       setShowShockEmoji(true);
       setTimeout(() => setShowShockEmoji(false), 3000);
       return;
     }
 
-    // Cute emoji triggers - Only for specific test commands
-    if (message.includes('test cute') || message.includes('test sweet')) {
+    if (message.includes('test cute') || message.includes('test sweet') || message.includes('test jokes')) {
       setShowCuteEmoji(true);
       setTimeout(() => setShowCuteEmoji(false), 3000);
       return;
     }
 
-    // Cry emoji triggers - Only for specific test commands
-    if (message.includes('test cry') || message.includes('test sad')) {
+    if (message.includes('test cry') || message.includes('test sad') || message.includes('test no')) {
       setShowCryEmoji(true);
       setTimeout(() => setShowCryEmoji(false), 3000);
       return;
     }
 
-    // Enjoy emoji triggers - Only for specific test commands
-    if (message.includes('test happy') || message.includes('test enjoy') || message.includes('test fun')) {
+    if (message.includes('test happy') || message.includes('test enjoy') || message.includes('test yes') || message.includes('test breathing')) {
       setShowEnjoyEmoji(true);
       setTimeout(() => setShowEnjoyEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test ac') || message.includes('test air conditioner') || message.includes('test hot')) {
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test lights') || message.includes('test fog lights') || message.includes('test headlights')) {
+      setShowLightingEmoji(true);
+      setTimeout(() => setShowLightingEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test music') || message.includes('test listen music')) {
+      setShowHappyEmoji(true);
+      setTimeout(() => setShowHappyEmoji(false), 3000);
       return;
     }
   };
@@ -2292,7 +2268,7 @@ ${response}
       
       if (!apiKey || apiKey === 'your-deepseek-api-key') {
         console.warn('⚠️ DeepSeek API key not configured - using fallback responses');
-        console.log('���� Calling fallback response for:', userMessage);
+        console.log('🔄 Calling fallback response for:', userMessage);
         const fallbackResult = await getFallbackResponse(userMessage);
         console.log('✅ Fallback response generated:', fallbackResult);
         return fallbackResult;
@@ -3125,56 +3101,56 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl flex flex-col h-screen">
       {/* Conditional Content - Show emoji or normal chat interface */}
       {showComfortEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <ComfortFace />
           </div>
         </div>
       ) : showShockEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <ShockFace />
           </div>
         </div>
       ) : showCuteEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <CuteFace />
           </div>
         </div>
       ) : showCryEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <CryFace />
           </div>
         </div>
       ) : showEnjoyEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <EnjoyFace />
           </div>
         </div>
       ) : showACEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <ACFace />
           </div>
         </div>
       ) : showLightingEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <LightingFace />
           </div>
         </div>
       ) : showHappyEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <HappyFace />
           </div>
         </div>
       ) : showSadEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '85vw', height: '85vh', maxWidth: '600px', maxHeight: '600px'}}>
+        <div className="flex items-center justify-center min-h-screen w-full p-4">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
             <SadFace />
           </div>
         </div>
