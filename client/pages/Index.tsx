@@ -273,7 +273,7 @@ const EmoCopilotDashboard = () => {
         }
       } else if (currentTrack) {
         // Toggle play/pause for current track
-        console.log('🎵 Toggling playback for:', currentTrack.title);
+        console.log('�� Toggling playback for:', currentTrack.title);
         await audioManager.togglePlay();
       } else {
         alert('Please wait for music to load...');
@@ -329,7 +329,9 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
 
-
+    // Show AC emoji for 3 seconds
+    setShowACEmoji(true);
+    setTimeout(() => setShowACEmoji(false), 3000);
   };
 
   const toggleLighting = () => {
