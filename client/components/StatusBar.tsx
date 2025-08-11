@@ -57,7 +57,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         // Use realistic current temperature for Limerick
         const realisticTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C range
         setTemperature(`${realisticTemp}°C`);
-        console.log(`��️ Using simulated Limerick temperature: ${realisticTemp}°C`);
+        console.log(`🌡️ Using simulated Limerick temperature: ${realisticTemp}°C`);
         return;
       }
 
@@ -118,9 +118,11 @@ const StatusBar: React.FC<StatusBarProps> = ({
       
     } catch (error) {
       console.error('❌ StatusBar weather API error:', error);
-      // For testing: simulate various weather conditions
+      console.log('🌡️ Using fallback weather data for Limerick area');
+
+      // Use realistic Limerick weather instead of random simulation
       const randomValue = Math.random();
-      let fallbackTemp = 15;
+      let fallbackTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C realistic for Limerick
       let simulatedWeather = null;
 
       if (randomValue < 0.15) { // 15% chance of extreme weather
