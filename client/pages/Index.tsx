@@ -173,17 +173,22 @@ const EmoCopilotDashboard = () => {
         };
 
         wakeWordRecognitionRef.current.onerror = (event: any) => {
-          console.error('❌ Dashboard wake word recognition error:', event.error);
-          if (event.error === 'not-allowed') {
-            console.error('🚫 Microphone permission denied - wake word detection disabled');
+          // Don't treat "aborted" as an error - it's normal when stopping manually
+          if (event.error === 'aborted') {
+            console.log('👂 Dashboard wake word recognition was stopped (normal operation)');
             return;
           }
-          if (event.error !== 'aborted') {
-            setTimeout(() => {
-              console.log('🔄 Retrying wake word detection...');
-              startWakeWordListening();
-            }, 2000);
+
+          console.log('⚠️ Dashboard wake word recognition error:', event.error);
+          if (event.error === 'not-allowed') {
+            console.log('🚫 Microphone permission denied - wake word detection disabled');
+            return;
           }
+
+          setTimeout(() => {
+            console.log('🔄 Retrying wake word detection...');
+            startWakeWordListening();
+          }, 2000);
         };
 
         wakeWordRecognitionRef.current.onend = () => {
@@ -412,7 +417,7 @@ const EmoCopilotDashboard = () => {
         }
 
         try {
-          console.log('🎵 Attempting to play:', randomTrack.url);
+          console.log('�� Attempting to play:', randomTrack.url);
           await audioManager.playTrack(randomTrack);
           setCurrentTrack(randomTrack);
           console.log('✅ Playback started successfully');
