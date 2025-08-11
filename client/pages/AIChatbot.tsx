@@ -1959,6 +1959,15 @@ ${response}
       return `It's currently ${temp} outside in Limerick. Should I adjust your AC to keep you comfortable inside the car?`;
     }
 
+    // Handle "too hot" complaints - trigger hot emoji sequence
+    if (message.includes('too hot') || message.includes('so hot') || message.includes('very hot') || message.includes('really hot')) {
+      console.log('🔥 User complained about heat, triggering hot emoji sequence');
+      setTimeout(() => {
+        handleTemperatureExceed(38); // Simulate high temperature for hot complaint
+      }, 1000);
+      return "Oh no! I can see you're feeling the heat. Let me help with that!";
+    }
+
     if (message.includes('cold') || message.includes('hot') || message.includes('warm')) {
       if (message.includes('cold')) {
         setTimeout(() => {
