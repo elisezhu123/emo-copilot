@@ -843,34 +843,37 @@ const AIChatbot = () => {
     }
   };
 
-  // Weather-based alert integration
+  // Weather-based alert integration - DISABLED (alerts only shown when user mentions weather via voice)
   const checkWeatherAlerts = (weatherData: any) => {
-    if (!weatherData) return;
+    // All automatic weather alerts disabled - only triggered by voice commands
+    return;
 
-    const condition = weatherData.weather[0].main.toLowerCase();
-    const temperature = weatherData.main.temp;
-    const visibility = weatherData.visibility;
-    const windSpeed = weatherData.wind?.speed || 0;
+    // if (!weatherData) return;
 
-    // Ice risk alert
-    if (temperature <= 2 && !alertTriggered.iceRisk) {
-      triggerIceRiskAlert();
-    }
+    // const condition = weatherData.weather[0].main.toLowerCase();
+    // const temperature = weatherData.main.temp;
+    // const visibility = weatherData.visibility;
+    // const windSpeed = weatherData.wind?.speed || 0;
 
-    // High wind alert
-    if (windSpeed > 10 && !alertTriggered.highWind) {
-      triggerHighWindAlert(windSpeed);
-    }
+    // // Ice risk alert
+    // if (temperature <= 2 && !alertTriggered.iceRisk) {
+    //   triggerIceRiskAlert();
+    // }
 
-    // Fog alert
-    if (visibility < 1000 && !alertTriggered.fogAlert) {
-      triggerFogAlert(visibility);
-    }
+    // // High wind alert
+    // if (windSpeed > 10 && !alertTriggered.highWind) {
+    //   triggerHighWindAlert(windSpeed);
+    // }
 
-    // Rain alert
-    if (condition.includes('rain') && !alertTriggered.rainAlert) {
-      triggerRainAlert();
-    }
+    // // Fog alert
+    // if (visibility < 1000 && !alertTriggered.fogAlert) {
+    //   triggerFogAlert(visibility);
+    // }
+
+    // // Rain alert
+    // if (condition.includes('rain') && !alertTriggered.rainAlert) {
+    //   triggerRainAlert();
+    // }
   };
 
   // Enhanced navigation with real-time safety and danger warnings
