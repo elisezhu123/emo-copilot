@@ -3209,12 +3209,14 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      // Restart wake word listening when main listening stops
-      setTimeout(() => {
-        if (!userWantsListening) { // Double check user still wants it stopped
-          startWakeWordListening();
-        }
-      }, 2000);
+      // Add confirmation message
+      const stopMessage: Message = {
+        id: Date.now().toString(),
+        text: "🔇 Voice recognition stopped. Click the microphone again when you want to talk!",
+        type: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, stopMessage]);
     } else {
       console.log('🎤 User starting speech recognition...');
 
