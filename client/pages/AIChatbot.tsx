@@ -278,7 +278,7 @@ const AIChatbot = () => {
       // checkWeatherAlerts(data);
 
     } catch (error) {
-      console.error('�� Weather API error:', error);
+      console.error('❌ Weather API error:', error);
       // Fallback to current Limerick temperature
       setTemperature('15°C');
       console.log('��️ Using fallback Limerick temperature: 15°C');
@@ -1513,6 +1513,19 @@ const AIChatbot = () => {
         }, 3000);
       }, 1000);
       return "Testing AC emoji sequence! Watch the happy AC face for 3 seconds, then AC turns on...";
+    }
+
+    // Test lighting emoji sequence
+    if (message.includes('test lights') || message.includes('test lighting')) {
+      console.log('💡 Testing lighting emoji sequence');
+      setTimeout(() => {
+        setShowLightingEmoji(true);
+        setTimeout(() => {
+          setShowLightingEmoji(false);
+          controlLights(true);
+        }, 3000);
+      }, 1000);
+      return "Testing lighting emoji sequence! Watch the bright-eyed face for 3 seconds, then lights turn on...";
     }
 
     if (message.includes('test snow') || message.includes('simulate snow')) {
