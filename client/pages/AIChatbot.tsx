@@ -331,13 +331,14 @@ const AIChatbot = () => {
               break;
           }
 
-          console.error('❌ Geolocation error:', errorMessage);
-          console.error('Error details:', {
-            code: error.code,
-            message: error.message || 'No message provided',
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent
-          });
+          console.log('📍 Location access:', errorMessage);
+          // Only log detailed error info for unexpected errors, not user permission denials
+          if (error.code !== error.PERMISSION_DENIED) {
+            console.log('Location error details:', {
+              code: error.code,
+              message: error.message || 'No message provided'
+            });
+          }
 
           // Fallback to Limerick weather when location is not available
           console.log('Location permission denied, using Limerick weather as fallback');
