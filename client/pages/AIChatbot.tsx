@@ -260,8 +260,8 @@ const AIChatbot = () => {
       setTemperature(`${temp}°C`);
       console.log('🌡️ Temperature updated for Limerick area:', `${temp}°C`);
 
-      // Check for weather-based alerts
-      checkWeatherAlerts(data);
+      // Weather alerts disabled - only shown when user mentions weather conditions via voice
+      // checkWeatherAlerts(data);
 
     } catch (error) {
       console.error('❌ Weather API error:', error);
