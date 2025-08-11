@@ -3139,7 +3139,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       {/* Conditional Content - Show emoji or normal chat interface */}
       {showComfortEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <ComfortFace />
           </div>
         </div>
