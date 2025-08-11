@@ -1519,13 +1519,13 @@ const AIChatbot = () => {
     if (message.includes('test lights') || message.includes('test lighting')) {
       console.log('💡 Testing lighting emoji sequence');
       setTimeout(() => {
-        setShowLightingEmoji(true);
+        setShowCuteEmoji(true);
         setTimeout(() => {
-          setShowLightingEmoji(false);
+          setShowCuteEmoji(false);
           controlLights(true);
         }, 3000);
       }, 1000);
-      return "Testing lighting emoji sequence! Watch the bright-eyed face for 3 seconds, then lights turn on...";
+      return "Testing lighting emoji sequence! Watch the squinting face for 3 seconds, then lights turn on...";
     }
 
     if (message.includes('test snow') || message.includes('simulate snow')) {
@@ -3181,7 +3181,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         return;
       }
 
-      console.log('��� Microphone permission granted, starting voice recognition...');
+      console.log('✅ Microphone permission granted, starting voice recognition...');
 
       setUserWantsListening(true); // User wants continuous listening
 
