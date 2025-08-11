@@ -54,7 +54,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
         console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
-        setTemperature('15°C');
+        setTemperature('20°C');
         return;
       }
 
