@@ -6,6 +6,7 @@ import DriverState from '../components/DriverState';
 import MusicProgressBar from '../components/MusicProgressBar';
 import ACFace from '../components/ACFace';
 import LightingFace from '../components/LightingFace';
+import CuteFace from '../components/CuteFace';
 import MusicFace from '../components/MusicFace';
 import HappyFace from '../components/HappyFace';
 import EnjoyFace from '../components/EnjoyFace';
