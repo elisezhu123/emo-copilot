@@ -2007,7 +2007,7 @@ ${response}
           setShowComfortEmoji(true);
           setTimeout(() => setShowComfortEmoji(false), 3000);
         }, 1000);
-        return "Let me cool things down! Setting the AC to 20°C so you can drive comfortably.";
+        return "Let me cool things down! Setting the AC to 22°C so you can drive comfortably.";
       }
     }
 
