@@ -3236,6 +3236,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }, 2000);
     } else {
       console.log('🎤 User starting speech recognition...');
+
+      // Request microphone permission first if not already granted
+      if (microphoneStatus === 'unknown' || microphoneStatus === 'permission-denied') {
+        console.log('🎤 Requesting microphone permission on first use...');
+        const permissionGranted = await requestMicrophonePermission();
+        if (!permissionGranted) {
+          console.error('❌ Cannot start speech recognition without microphone permission');
+          alert('Please allow microphone access to use voice features.');
+          return;
+        }
+      }
+
       setUserWantsListening(true); // User wants continuous listening
       // Stop wake word listening when main listening starts
       stopWakeWordListening();
