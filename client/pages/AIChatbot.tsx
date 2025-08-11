@@ -3187,9 +3187,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   }, []);
 
   const toggleListening = async () => {
-    console.log('🎤 Toggle listening clicked');
-    console.log('🔍 Recognition ref:', recognitionRef.current);
-    console.log('🔍 User wants listening:', userWantsListening);
+    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
+    console.log('🔍 Recognition available:', !!recognitionRef.current);
     console.log('🔍 Microphone status:', microphoneStatus);
 
     // Add visual feedback that microphone button was clicked
@@ -3237,29 +3236,29 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     } else {
       console.log('🎤 User starting speech recognition...');
 
-      // Request microphone permission first if not already granted
-      if (microphoneStatus === 'unknown' || microphoneStatus === 'permission-denied') {
-        console.log('🎤 Requesting microphone permission on first use...');
-        const permissionGranted = await requestMicrophonePermission();
-        if (!permissionGranted) {
-          console.error('❌ Cannot start speech recognition without microphone permission');
-          alert('Please allow microphone access to use voice features.');
-          return;
-        }
+      // Always request microphone permission when starting
+      console.log('🎤 Requesting microphone permission...');
+      const permissionGranted = await requestMicrophonePermission();
+      if (!permissionGranted) {
+        console.error('❌ Microphone permission denied');
+        alert('Please allow microphone access to use voice features. Check your browser settings and try again.');
+        return;
       }
+
+      console.log('✅ Microphone permission granted, starting voice recognition...');
 
       setUserWantsListening(true); // User wants continuous listening
       // Stop wake word listening when main listening starts
       stopWakeWordListening();
 
-      // Add a test message to verify the system works
-      const testMessage: Message = {
+      // Add activation message
+      const startMessage: Message = {
         id: Date.now().toString(),
-        text: "🎤 Microphone activated! Try saying 'hello' clearly. If no transcription appears after 10 seconds, click the microphone again to test manually.",
+        text: "🎤 Microphone activated! I'm listening... Try saying 'hello' to test.",
         type: 'bot',
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, testMessage]);
+      setMessages(prev => [...prev, startMessage]);
 
       // Add emergency test after 10 seconds if no speech detected
       setTimeout(() => {
@@ -3276,16 +3275,28 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         }
       }, 10000);
 
-      // Small delay to prevent conflicts
+      // Start continuous listening
       setTimeout(() => {
-        if (userWantsListening) { // Double check user still wants it started
+        if (userWantsListening) {
+          console.log('🎤 Starting continuous listening...');
           startContinuousListening();
-          // Now that user has granted permission, we can also enable wake word detection for future use
-          if (microphoneStatus === 'available') {
-            console.log('🎤 Microphone permission granted - wake word detection now available for future use');
-          }
         }
       }, 500);
+
+      // Test after 8 seconds if no speech detected
+      setTimeout(() => {
+        if (userWantsListening && !isListening) {
+          console.log('🚨 No speech detected after 8 seconds - adding test');
+          const testMessage: Message = {
+            id: Date.now().toString(),
+            text: "Test: Hello, microphone test - can you hear me?",
+            type: 'user',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, testMessage]);
+          addBotResponse("I can hear you! Your microphone and voice recognition are working correctly.");
+        }
+      }, 8000);
     }
   };
 
