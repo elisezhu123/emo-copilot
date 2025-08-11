@@ -216,6 +216,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               // }
             }
           } else {
+            console.log('🌍 Using Limerick coordinates for weather');
             fetchWeather(52.6638, -8.6267); // Limerick coordinates
           }
         },
