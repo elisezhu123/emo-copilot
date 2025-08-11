@@ -1059,7 +1059,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠️ Google Maps API key not configured');
+      console.warn('⚠�� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -1843,7 +1843,7 @@ Are you hurt? Do you need medical attention?`;
           weatherAdvice += `\n\n🚨 WEATHER ALERTS:\n${safetyWarnings.join('\n')}`;
         }
         
-        weatherAdvice += `\n\n🌦️ WEATHER DRIVING TIPS:
+        weatherAdvice += `\n\n🌦��� WEATHER DRIVING TIPS:
 • Rain: Reduce speed 10-15 mph, increase following distance
 • Snow/Ice: Drive slowly, avoid sudden movements, keep winter kit
 • Fog: Use fog lights, reduce speed significantly, avoid lane changes
@@ -3324,8 +3324,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
                 : microphoneStatus === 'not-supported'
                 ? 'Microphone not supported. Please use Chrome, Safari, or Edge with HTTPS/localhost.'
                 : userWantsListening
-                ? 'Listening continuously... (Click to stop)'
-                : 'Click to start voice recognition'
+                ? 'Recording... (Click to stop)'
+                : 'Click to record voice message'
             }
           >
             <svg
