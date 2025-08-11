@@ -72,22 +72,36 @@ class SimpleMusicService {
   // Update genres and refresh music collection
   async updateGenres(genres: string[]): Promise<void> {
     try {
-      console.log('🎵 Loading music for selected genres:', genres);
+      console.log('🎵 Loading REAL music from Freesound API for genres:', genres);
 
-      // Get tracks for all selected genres
+      // Force API call - don't use fallback immediately
       this.cachedTracks = await freesoundService.getTracksByGenres(genres);
 
-      console.log(`✅ Updated with ${this.cachedTracks.length} tracks for genres:`, genres);
+      console.log(`✅ Loaded ${this.cachedTracks.length} REAL tracks from Freesound API`);
 
-      // If no tracks found, ensure we have at least some fallback tracks
-      if (this.cachedTracks.length === 0) {
-        console.log('🎵 No tracks found, initializing with fallback tracks');
+      if (this.cachedTracks.length > 0) {
+        console.log('🎵 Sample tracks loaded:');
+        this.cachedTracks.slice(0, 3).forEach(track => {
+          console.log(`   - "${track.title}" by ${track.artist} (${track.genre})`);
+          console.log(`     URL: ${track.url?.substring(0, 50)}...`);
+        });
+      } else {
+        console.warn('⚠️ Freesound API returned no tracks, this should not happen with valid API key');
+      }
+
+    } catch (error) {
+      console.error('❌ Error loading from Freesound API:', error);
+      console.log('🔄 Retrying Freesound API call...');
+
+      // Try once more before giving up
+      try {
+        this.cachedTracks = await freesoundService.getTracksByGenres(genres);
+        console.log(`🎵 Retry successful: ${this.cachedTracks.length} tracks loaded`);
+      } catch (retryError) {
+        console.error('❌ Freesound API retry also failed:', retryError);
+        // Only now use fallback
         await this.initialize();
       }
-    } catch (error) {
-      console.error('❌ Error updating music for genres:', error);
-      // Initialize with fallback tracks if update fails
-      await this.initialize();
     }
   }
 
