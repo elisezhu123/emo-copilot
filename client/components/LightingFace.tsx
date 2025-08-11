@@ -2,13 +2,12 @@ import React from 'react';
 
 const LightingFace: React.FC = () => {
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <svg
-        className="w-full h-full object-contain"
-        viewBox="0 0 400 226"
-        fill="none"
+    <div className="flex items-center justify-center w-full h-full">
+      <svg 
+        className="w-full h-full max-w-[400px] max-h-[226px]" 
+        viewBox="0 0 400 226" 
+        fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
       >
         <g clipPath="url(#clip0_17_236)">
           {/* Left cheek/blush */}
@@ -29,7 +28,7 @@ const LightingFace: React.FC = () => {
             fillOpacity="0.8"
           />
           
-          {/* Mouth outline */}
+          {/* Mouth */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -37,11 +36,11 @@ const LightingFace: React.FC = () => {
             fill="#3A2018"
           />
           
-          {/* Mouth interior */}
+          {/* Inner mouth */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
-            d="M226.872 202.859C222.317 195.411 214.869 189.946 205.653 189.946C196.437 189.946 188.667 195.679 184.112 203.342C171.735 224.346 240.321 224.721 226.872 202.859Z" 
+            d="M226.872 202.859C222.317 195.411 214.869 189.946 205.653 189.946C196.437 189.946 188.667 195.679 184.113 203.342C171.735 224.346 240.322 224.721 226.872 202.859Z" 
             fill="#FF8B7E"
           />
           
@@ -61,13 +60,13 @@ const LightingFace: React.FC = () => {
             fill="#3A2018"
           />
           
-          {/* Left eye outer circle */}
+          {/* Left eye (outer circle) */}
           <path 
             d="M98.3004 162.38C124.138 151.603 136.348 121.921 125.572 96.0835C114.795 70.2455 85.1132 58.0357 59.2753 68.8122C33.4373 79.5887 21.2275 109.271 32.004 135.109C42.7805 160.947 72.4624 173.156 98.3004 162.38Z" 
             fill="#3A2018"
           />
           
-          {/* Left eye large white circle */}
+          {/* Left eye - large white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -75,7 +74,7 @@ const LightingFace: React.FC = () => {
             fill="white"
           />
           
-          {/* Left eye medium white circle */}
+          {/* Left eye - medium white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -83,7 +82,7 @@ const LightingFace: React.FC = () => {
             fill="white"
           />
           
-          {/* Left eye small white circle */}
+          {/* Left eye - small white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -91,13 +90,13 @@ const LightingFace: React.FC = () => {
             fill="white"
           />
           
-          {/* Right eye outer circle */}
+          {/* Right eye (outer circle) */}
           <path 
             d="M332.023 166.315C360.018 166.315 382.713 143.621 382.713 115.626C382.713 87.6303 360.018 64.9357 332.023 64.9357C304.028 64.9357 281.333 87.6303 281.333 115.626C281.333 143.621 304.028 166.315 332.023 166.315Z" 
             fill="#3A2018"
           />
           
-          {/* Right eye large white circle */}
+          {/* Right eye - large white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -105,7 +104,7 @@ const LightingFace: React.FC = () => {
             fill="white"
           />
           
-          {/* Right eye medium white circle */}
+          {/* Right eye - medium white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
@@ -113,7 +112,7 @@ const LightingFace: React.FC = () => {
             fill="white"
           />
           
-          {/* Right eye small white circle */}
+          {/* Right eye - small white circle */}
           <path 
             fillRule="evenodd" 
             clipRule="evenodd" 
