@@ -335,27 +335,53 @@ const MusicPlaylists = () => {
         {tracks.length === 0 && (
           <div className="text-center py-8">
             <p className="text-xs text-gray-500 mb-3">Select music genres to load playlists</p>
-            <button
-              onClick={async () => {
-                try {
-                  const testTrack = {
-                    id: 'test_audio',
-                    title: 'Audio Test',
-                    artist: 'System Test',
-                    duration: 3,
-                    genre: 'Test',
-                    url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
-                  };
-                  await playTrack(testTrack);
-                } catch (error) {
-                  console.error('Test audio failed:', error);
-                  alert('Audio test failed: ' + error.message);
-                }
-              }}
-              className="text-xs bg-emotion-orange text-white px-3 py-1 rounded-lg hover:bg-opacity-80"
-            >
-              🔊 Test Audio System
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={async () => {
+                  try {
+                    console.log('🎵 Testing Freesound API...');
+                    const { freesoundService } = await import('../services/freesoundServiceNew');
+                    const testTracks = await freesoundService.getTracksByGenres(['Classical']);
+                    console.log('✅ Freesound API test result:', testTracks);
+
+                    if (testTracks.length > 0) {
+                      alert(`✅ Freesound API working! Found ${testTracks.length} tracks. Playing first track...`);
+                      await playTrack(testTracks[0]);
+                    } else {
+                      alert('⚠️ Freesound API returned no tracks. Check API key.');
+                    }
+                  } catch (error) {
+                    console.error('Freesound API test failed:', error);
+                    alert('❌ Freesound API test failed: ' + error.message);
+                  }
+                }}
+                className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
+              >
+                🎵 Test Freesound API
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    const testTrack = {
+                      id: 'test_audio',
+                      title: 'Audio Test',
+                      artist: 'System Test',
+                      duration: 3,
+                      genre: 'Test',
+                      url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+                    };
+                    await playTrack(testTrack);
+                  } catch (error) {
+                    console.error('Test audio failed:', error);
+                    alert('Audio test failed: ' + error.message);
+                  }
+                }}
+                className="text-xs bg-emotion-orange text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
+              >
+                🔊 Test Audio System
+              </button>
+            </div>
           </div>
         )}
       </div>
