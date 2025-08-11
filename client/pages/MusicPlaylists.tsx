@@ -334,7 +334,28 @@ const MusicPlaylists = () => {
         {/* Show message if no tracks */}
         {tracks.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+            <p className="text-xs text-gray-500 mb-3">Select music genres to load playlists</p>
+            <button
+              onClick={async () => {
+                try {
+                  const testTrack = {
+                    id: 'test_audio',
+                    title: 'Audio Test',
+                    artist: 'System Test',
+                    duration: 3,
+                    genre: 'Test',
+                    url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+                  };
+                  await playTrack(testTrack);
+                } catch (error) {
+                  console.error('Test audio failed:', error);
+                  alert('Audio test failed: ' + error.message);
+                }
+              }}
+              className="text-xs bg-emotion-orange text-white px-3 py-1 rounded-lg hover:bg-opacity-80"
+            >
+              🔊 Test Audio System
+            </button>
           </div>
         )}
       </div>
