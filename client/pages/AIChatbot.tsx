@@ -3244,20 +3244,20 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       };
       setMessages(prev => [...prev, startMessage]);
 
-      // Add emergency test after 10 seconds if no speech detected
+      // Test after 8 seconds if no speech detected
       setTimeout(() => {
-        if (userWantsListening && isListening) {
-          console.log('🚨 Emergency: No speech detected after 10 seconds - testing manually');
-          const emergencyTest: Message = {
+        if (userWantsListening && !isListening) {
+          console.log('🚨 No speech detected after 8 seconds - adding test');
+          const testMessage: Message = {
             id: Date.now().toString(),
-            text: "Test transcription: Hello, this is a manual test to check if the system works",
+            text: "Test: Hello, microphone test - can you hear me?",
             type: 'user',
             timestamp: new Date()
           };
-          setMessages(prev => [...prev, emergencyTest]);
-          addBotResponse("Test transcription: Hello, this is a manual test to check if the system works");
+          setMessages(prev => [...prev, testMessage]);
+          addBotResponse("I can hear you! Your microphone and voice recognition are working correctly.");
         }
-      }, 10000);
+      }, 8000);
 
       // Start continuous listening
       setTimeout(() => {
