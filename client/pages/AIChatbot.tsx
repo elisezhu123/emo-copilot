@@ -1820,7 +1820,7 @@ Just speak naturally - I understand many variations of these commands!`;
 
 📞 EMERGENCY CONTACTS:
 • Police/Fire/Medical: 911
-• Roadside Assistance: Check your insurance card
+��� Roadside Assistance: Check your insurance card
 • Poison Control: 1-800-222-1222
 
 📍 LOCATION HELP: I can help identify your location for emergency responders if needed. Stay on the line with 911 and follow their instructions.
@@ -3105,13 +3105,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         };
 
         wakeWordRecognitionRef.current.onerror = (event: any) => {
-          console.log('⚠️ Wake word recognition error:', event.error);
-
           // Don't treat "aborted" as an error - it's normal when stopping manually
           if (event.error === 'aborted') {
             console.log('👂 Wake word recognition was stopped (normal operation)');
             return;
           }
+
+          console.log('⚠️ Wake word recognition error:', event.error);
 
           // For other errors, try to restart after a delay
           if (event.error === 'not-allowed') {
