@@ -1618,7 +1618,7 @@ const AIChatbot = () => {
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
 ��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
-❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
+❄️ Car Control: "turn on AC", "set temperature to 22", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 ⚠️ Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
 🔧 Alert Control: "reset alerts", "clear alerts"
