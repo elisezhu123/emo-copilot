@@ -214,7 +214,8 @@ class AudioManager {
       }
 
       console.log('🎵 Loading track:', track.title);
-      console.log('🔗 Audio URL:', audioUrl.substring(0, 100) + (audioUrl.length > 100 ? '...' : ''));
+      console.log('🔗 Final audio URL:', audioUrl);
+      console.log('🔗 Original track URL was:', track.url);
 
       // Properly stop current audio to prevent abort errors
       this.stopCurrentAudio();
