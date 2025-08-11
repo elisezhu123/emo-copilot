@@ -1629,7 +1629,7 @@ const AIChatbot = () => {
         message.includes('voice commands') || message.includes('how to use')) {
       return `I can understand many voice commands! Try saying:
 
-🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
+���� Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
 ��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
 ❄️ Car Control: "turn on AC", "set temperature to 22", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
@@ -3323,7 +3323,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       {/* Emoji Popups - Overlays */}
       {showComfortEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <ComfortFace />
           </div>
         </div>
@@ -3331,7 +3331,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showShockEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <ShockFace />
           </div>
         </div>
@@ -3339,7 +3339,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showCuteEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <CuteFace />
           </div>
         </div>
@@ -3347,7 +3347,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showCryEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <CryFace />
           </div>
         </div>
@@ -3355,7 +3355,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showEnjoyEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <EnjoyFace />
           </div>
         </div>
@@ -3363,7 +3363,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showACEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <ACFace />
           </div>
         </div>
@@ -3371,7 +3371,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showLightingEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <LightingFace />
           </div>
         </div>
@@ -3379,7 +3379,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showHappyEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <HappyFace />
           </div>
         </div>
@@ -3387,7 +3387,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showSadEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <SadFace />
           </div>
         </div>
@@ -3395,7 +3395,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showAlertEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <AlertFace />
           </div>
         </div>
@@ -3403,7 +3403,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showYesPermissionEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <YesPermissionFace />
           </div>
         </div>
@@ -3411,7 +3411,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showNoPermissionEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <NoPermissionFace />
           </div>
         </div>
@@ -3419,7 +3419,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showMusicEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <MusicFace />
           </div>
         </div>
@@ -3427,7 +3427,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showHotEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <HotFace />
           </div>
         </div>
@@ -3435,7 +3435,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       {showBreathingEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spontaneous-pop bg-white rounded-2xl p-6 shadow-2xl max-w-[380px] max-h-[179px] w-[380px] h-[179px]">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
             <BreathingFace />
           </div>
         </div>
