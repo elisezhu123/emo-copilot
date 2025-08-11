@@ -470,7 +470,7 @@ const AIChatbot = () => {
   // Breathing exercise and meditation functions - REMOVED
   // These wellness features have been removed as requested
 
-  // Handle temperature exceeding 35°C
+  // Handle temperature exceeding 35��C
   const handleTemperatureExceed = (temp: number) => {
     if (temperatureTriggered) return; // Prevent multiple triggers
 
@@ -3191,27 +3191,9 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 Recognition available:', !!recognitionRef.current);
     console.log('🔍 Microphone status:', microphoneStatus);
 
-    // Add visual feedback that microphone button was clicked
-    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
-    console.log('🔍 Browser info:', navigator.userAgent);
-    console.log('🔍 Speech recognition support:', 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-    console.log('🔍 Microphone status:', microphoneStatus);
-
-    // If stopping, add a manual test to check if the system works
-    if (userWantsListening) {
-      // Add a manual test message to verify message system works
-      const testMessage: Message = {
-        id: Date.now().toString(),
-        text: "Manual test: Type 'hello test' to verify the AI response system works",
-        type: 'user',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, testMessage]);
-    }
-
     if (!recognitionRef.current) {
-      console.error('❌ Recognition ref is null');
-      alert('Speech recognition is not available. Please check:\n1. Are you using Chrome, Safari, or Edge?\n2. Did you allow microphone permissions?\n3. Are you on HTTPS or localhost?');
+      console.error('❌ Speech recognition not available');
+      alert('Speech recognition is not supported in this browser. Please use Chrome, Safari, or Edge.');
       return;
     }
 
