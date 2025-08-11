@@ -674,7 +674,7 @@ const EmoCopilotDashboard = () => {
       {showLightingEmoji && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-8 max-w-[480px] max-h-[280px] w-[480px] h-[280px] flex items-center justify-center animate-spontaneous-pop shadow-2xl">
-            <CuteFace />
+            <LightingFace />
           </div>
         </div>
       )}
