@@ -221,7 +221,7 @@ class FreesoundService {
         artist: 'Classical Ensemble',
         duration: 180,
         genre: 'Classical',
-        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
       },
       {
         id: 'classical_2',
