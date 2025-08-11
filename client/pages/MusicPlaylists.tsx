@@ -346,16 +346,26 @@ const MusicPlaylists = () => {
               <button
                 onClick={async () => {
                   try {
-                    console.log('🎵 Testing Freesound API...');
+                    console.log('🎵 Testing Freesound API directly...');
+
+                    // Test API key presence
+                    const apiKey = import.meta.env.VITE_FREESOUND_API_KEY;
+                    console.log('🔑 API Key check:', apiKey ? `Found (${apiKey.substring(0, 10)}...)` : 'MISSING!');
+
+                    if (!apiKey) {
+                      alert('❌ Freesound API key is missing! Check environment variables.');
+                      return;
+                    }
+
                     const { freesoundService } = await import('../services/freesoundServiceNew');
                     const testTracks = await freesoundService.getTracksByGenres(['Classical']);
                     console.log('✅ Freesound API test result:', testTracks);
 
                     if (testTracks.length > 0) {
-                      alert(`✅ Freesound API working! Found ${testTracks.length} tracks. Playing first track...`);
+                      alert(`✅ Freesound API working! Found ${testTracks.length} real tracks. Playing first track...`);
                       await playTrack(testTracks[0]);
                     } else {
-                      alert('⚠️ Freesound API returned no tracks. Check API key.');
+                      alert('⚠️ Freesound API returned no tracks. This might be due to API limits or search filters.');
                     }
                   } catch (error) {
                     console.error('Freesound API test failed:', error);
@@ -365,6 +375,42 @@ const MusicPlaylists = () => {
                 className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
               >
                 🎵 Test Freesound API
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    console.log('🔄 Force reloading music with fresh API call...');
+
+                    // Get current selected genres
+                    const savedGenres = musicService.loadSelectedGenres();
+                    if (!savedGenres || savedGenres.length === 0) {
+                      alert('⚠️ No genres selected. Go to Music Selection first.');
+                      return;
+                    }
+
+                    // Force fresh API call
+                    await simpleMusicService.updateGenres(savedGenres);
+                    const freshTracks = await simpleMusicService.getAllTracks();
+
+                    console.log(`🔄 Reloaded ${freshTracks.length} tracks`);
+                    setTracks(freshTracks);
+
+                    if (freshTracks.length > 0) {
+                      setCurrentTrack(freshTracks[0]);
+                      audioManager.setPlaylist(freshTracks);
+                      alert(`✅ Reloaded ${freshTracks.length} tracks successfully!`);
+                    } else {
+                      alert('⚠️ No tracks loaded. Check API configuration.');
+                    }
+                  } catch (error) {
+                    console.error('Reload failed:', error);
+                    alert('❌ Reload failed: ' + error.message);
+                  }
+                }}
+                className="text-xs bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
+              >
+                🔄 Force Reload Music
               </button>
 
               <button
