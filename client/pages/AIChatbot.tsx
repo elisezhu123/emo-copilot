@@ -3132,20 +3132,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         }
       }, 500);
 
-      // Test after 8 seconds if no speech detected
-      setTimeout(() => {
-        if (userWantsListening && !isListening) {
-          console.log('🚨 No speech detected after 8 seconds - adding test');
-          const testMessage: Message = {
-            id: Date.now().toString(),
-            text: "Test: Hello, microphone test - can you hear me?",
-            type: 'user',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, testMessage]);
-          addBotResponse("I can hear you! Your microphone and voice recognition are working correctly.");
-        }
-      }, 8000);
+      // No test messages needed
     }
   };
 
