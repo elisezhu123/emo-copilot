@@ -2845,36 +2845,6 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   };
 
   useEffect(() => {
-    // Request microphone permissions only when user clicks microphone button
-    const requestMicrophonePermission = async () => {
-      try {
-        console.log('🎤 Requesting microphone permission for AI chatbot...');
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('getUserMedia not supported');
-        }
-
-        // Request microphone access to get permission
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('✅ Microphone permission granted for AI chatbot');
-        setMicrophoneStatus('available');
-        // Immediately stop the stream since we just needed permission
-        stream.getTracks().forEach(track => track.stop());
-        return true;
-      } catch (error: any) {
-        console.error('❌ Microphone permission error:', error);
-        if (error.name === 'NotAllowedError') {
-          console.log('💡 User denied microphone permission. Please allow it in browser settings.');
-          setMicrophoneStatus('permission-denied');
-        } else if (error.name === 'NotFoundError') {
-          console.log('💡 No microphone found. Please connect a microphone.');
-          setMicrophoneStatus('not-supported');
-        } else {
-          console.log('💡 Microphone error:', error.message);
-          setMicrophoneStatus('not-supported');
-        }
-        return false;
-      }
-    };
 
     // Initialize Speech Recognition for continuous listening
     console.log('🔍 Checking speech recognition availability...');
