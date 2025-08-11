@@ -286,7 +286,16 @@ const StatusBar: React.FC<StatusBarProps> = ({
       {/* Left Side - Status */}
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 bg-flowkit-green rounded-full lg:w-3 lg:h-3"></div>
-        <span className="font-medium">{title}</span>
+        <span className="font-medium">
+          {title === "Emo Copilot" ? (
+            <>
+              Emo Copilot Active
+              <br />
+            </>
+          ) : (
+            title
+          )}
+        </span>
       </div>
 
       {/* Center - Temperature */}
