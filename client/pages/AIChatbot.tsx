@@ -1096,7 +1096,7 @@ const AIChatbot = () => {
       }
       
       if (Math.random() > 0.6) {
-        routeDangers.push("📱 DEAD ZONE: Limited cell service for 5-mile stretch. Download offline maps as backup.");
+        routeDangers.push("�� DEAD ZONE: Limited cell service for 5-mile stretch. Download offline maps as backup.");
       }
       
       if (Math.random() > 0.75) {
@@ -2487,14 +2487,17 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
         setAwaitingACPermission(false);
 
-        // Turn on AC at cooling temperature
+        // Show AC emoji for 3 seconds first, then turn on AC
         setTimeout(() => {
-          setAirConditioner(20, true);
           setShowACEmoji(true);
-          setTimeout(() => setShowACEmoji(false), 3000);
+          setTimeout(() => {
+            setShowACEmoji(false);
+            // Turn on AC after emoji is shown
+            setAirConditioner(20, true);
+          }, 3000);
         }, 1000);
 
-        return "Perfect! I've turned on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+        return "Perfect! I'll turn on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
       }
 
       if (awaitingACPermission && (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t'))) {
@@ -2965,7 +2968,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
           // Process final results
           if (finalTranscript.length > 1) {
-            console.log('✅ Processing final transcript:', finalTranscript);
+            console.log('�� Processing final transcript:', finalTranscript);
 
             // Clear interim transcript
             setPendingTranscript(null);
