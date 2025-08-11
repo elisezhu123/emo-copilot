@@ -141,7 +141,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
           });
         }
       } else if (randomValue < 0.25) { // 10% chance of high temp - DISABLED for user experience
-        fallbackTemp = 15 + Math.floor(Math.random() * 10); // Use realistic temperature 15-25°C
+        fallbackTemp = 18 + Math.floor(Math.random() * 5); // Use realistic temperature 18-23°C around Limerick current
         // if (onTemperatureExceed) {
         //   onTemperatureExceed(fallbackTemp);
         // }
