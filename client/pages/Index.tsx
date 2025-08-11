@@ -125,7 +125,7 @@ const EmoCopilotDashboard = () => {
           setCurrentTrack(allTracks[0]);
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
-          console.log('🎵 Music loaded but not auto-playing. User must click play.');
+          console.log('��� Music loaded but not auto-playing. User must click play.');
         } else {
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
@@ -244,7 +244,7 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (!savedGenres || savedGenres.length === 0) {
-        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
+        alert('请先在音乐选择页面选择���喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
         return;
       }
       
@@ -273,7 +273,7 @@ const EmoCopilotDashboard = () => {
         }
       } else if (currentTrack) {
         // Toggle play/pause for current track
-        console.log('�� Toggling playback for:', currentTrack.title);
+        console.log('🎵 Toggling playback for:', currentTrack.title);
         await audioManager.togglePlay();
       } else {
         alert('Please wait for music to load...');
@@ -343,7 +343,9 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Lighting turned on" : "Lighting turned off");
 
-
+    // Show Lighting emoji for 3 seconds
+    setShowLightingEmoji(true);
+    setTimeout(() => setShowLightingEmoji(false), 3000);
   };
 
   // Check temperature and show hot emoji if > 35°C
