@@ -209,10 +209,14 @@ class AudioManager {
       if (!audioUrl) {
         console.warn('⚠️ No audio URL provided, using test audio');
         audioUrl = this.getTestAudioUrl();
+      } else if (!this.isValidAudioUrl(audioUrl)) {
+        console.warn('⚠️ Invalid audio URL format, using test audio instead');
+        console.log('🔗 Original URL:', audioUrl);
+        audioUrl = this.getTestAudioUrl();
       }
 
       console.log('🎵 Loading track:', track.title);
-      console.log('🔗 Audio URL:', audioUrl);
+      console.log('🔗 Audio URL:', audioUrl.substring(0, 100) + (audioUrl.length > 100 ? '...' : ''));
 
       // Properly stop current audio to prevent abort errors
       this.stopCurrentAudio();
@@ -382,7 +386,7 @@ class AudioManager {
         this.audio?.removeEventListener('canplay', onLoad);
         this.audio?.removeEventListener('loadeddata', onLoad);
         this.audio?.removeEventListener('error', onError);
-        console.log('⚠️ Audio loading timeout, proceeding anyway');
+        console.log('⚠�� Audio loading timeout, proceeding anyway');
         resolve(); // Resolve instead of reject to avoid blocking
       }, 3000); // Reduced to 3 seconds
 
