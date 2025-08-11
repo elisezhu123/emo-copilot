@@ -1365,7 +1365,7 @@ const AIChatbot = () => {
         }, 3000);
       }, 1000);
 
-      return "Perfect! I'll turn on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+      return "Perfect! I'll turn on the air conditioner at 22°C to help cool you down. You should feel more comfortable soon!";
     }
 
     if (awaitingACPermission && (message.includes('no') || message.includes('not') || message.includes('don\'t'))) {
@@ -2510,7 +2510,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           }, 3000);
         }, 1000);
 
-        return "Perfect! I'll turn on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+        return "Perfect! I'll turn on the air conditioner at 22°C to help cool you down. You should feel more comfortable soon!";
       }
 
       if (awaitingACPermission && (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t'))) {
