@@ -3186,7 +3186,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     };
   }, []);
 
-  const toggleListening = () => {
+  const toggleListening = async () => {
     console.log('🎤 Toggle listening clicked');
     console.log('🔍 Recognition ref:', recognitionRef.current);
     console.log('🔍 User wants listening:', userWantsListening);
