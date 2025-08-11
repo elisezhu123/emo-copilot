@@ -160,15 +160,11 @@ class AudioManager {
       console.log('🎵 Loading track:', track.title);
       console.log('🔗 Audio URL:', audioUrl);
 
-      // Stop any current playback
-      if (!this.audio.paused) {
-        this.audio.pause();
-      }
+      // Properly stop current audio to prevent abort errors
+      this.stopCurrentAudio();
 
-      // Reset audio element completely
-      this.audio.src = '';
-      this.audio.load(); // Clear any previous source
-      this.audio.currentTime = 0;
+      // Small delay to let the stop complete
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Set the new source
       this.audio.src = audioUrl;
