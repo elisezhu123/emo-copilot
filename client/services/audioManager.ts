@@ -385,19 +385,36 @@ class AudioManager {
 
   // Play/resume audio
   async play(): Promise<void> {
-    if (!this.audio) return;
+    if (!this.audio) {
+      console.warn('⚠️ Cannot play - audio not initialized');
+      return;
+    }
 
     try {
+      // Check if audio source is valid
+      if (!this.audio.src || this.audio.src === '') {
+        console.warn('⚠️ Cannot play - no audio source');
+        return;
+      }
+
       console.log('🎵 Attempting to play audio...');
       console.log('🎵 Audio state before play:', {
-        src: this.audio.src,
+        src: this.audio.src.substring(0, 50) + '...',
         readyState: this.audio.readyState,
         paused: this.audio.paused,
-        duration: this.audio.duration
+        duration: this.audio.duration || 'Unknown',
+        currentTime: this.audio.currentTime || 0
       });
+
+      // Check if audio is in a valid state to play
+      if (this.audio.error) {
+        console.error('❌ Cannot play - audio element has error:', this.audio.error.message);
+        return;
+      }
 
       await this.audio.play();
       console.log('✅ Audio playing successfully');
+      this.notifyListeners();
     } catch (error) {
       // Don't log AbortError as error - it's normal when switching tracks
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -412,14 +429,23 @@ class AudioManager {
         switch (error.name) {
           case 'NotAllowedError':
             console.error('❌ Audio blocked - user interaction required');
+            console.log('💡 Try clicking on the page first, then play audio');
             break;
           case 'NotSupportedError':
             console.error('❌ Audio format not supported');
+            console.log('💡 Try a different audio source');
+            break;
+          case 'NetworkError':
+            console.error('❌ Network error loading audio');
+            console.log('💡 Check your internet connection');
             break;
           default:
             console.error('❌ Unknown audio error:', error.name, error.message);
         }
       }
+
+      // Notify listeners of the error state
+      this.notifyListeners();
     }
   }
 
