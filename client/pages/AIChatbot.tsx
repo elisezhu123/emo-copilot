@@ -2882,7 +2882,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      console.log('✅ Speech recognition available - will request permission when microphone button is clicked');
+      console.log('��� Speech recognition available - will request permission when microphone button is clicked');
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       console.log('🔍 SpeechRecognition constructor:', SpeechRecognition);
@@ -3080,9 +3080,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   }, []);
 
   const toggleListening = async () => {
+    console.log('🚨 MICROPHONE BUTTON CLICKED! 🚨');
     console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
     console.log('🔍 Recognition available:', !!recognitionRef.current);
     console.log('🔍 Microphone status:', microphoneStatus);
+    console.log('🔍 Browser info:', navigator.userAgent);
+    console.log('🔍 Is HTTPS:', window.location.protocol === 'https:');
+    console.log('🔍 getUserMedia support:', !!navigator.mediaDevices?.getUserMedia);
 
     if (!recognitionRef.current) {
       console.error('❌ Speech recognition not available');
