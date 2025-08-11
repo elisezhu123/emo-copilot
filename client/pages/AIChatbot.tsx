@@ -1487,7 +1487,7 @@ const AIChatbot = () => {
       setTimeout(() => {
         handleTemperatureExceed(currentTemp > 35 ? currentTemp : 37); // Use real temp if hot, otherwise simulate 37°C
       }, 1000);
-      return `Testing temperature trigger! Current temperature: ${temperature || '15°C'}${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C)'}...`;
+      return `Testing temperature trigger! Real API temperature: ${temperature || '15°C'} from OpenWeather${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C for demo)'}...`;
     }
 
     if (message.includes('test snow') || message.includes('simulate snow')) {
@@ -1893,7 +1893,7 @@ ${response}
 • Stay visible (reflective clothing if available)
 
 🚗 COMMON ISSUES:
-• Flat tire: Use spare if you know how, or call roadside assistance
+��� Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
 • Won't start: Check battery connections, fuel level
