@@ -73,14 +73,21 @@ class SimpleMusicService {
   async updateGenres(genres: string[]): Promise<void> {
     try {
       console.log('🎵 Loading music for selected genres:', genres);
-      
+
       // Get tracks for all selected genres
       this.cachedTracks = await freesoundService.getTracksByGenres(genres);
-      
+
       console.log(`✅ Updated with ${this.cachedTracks.length} tracks for genres:`, genres);
+
+      // If no tracks found, ensure we have at least some fallback tracks
+      if (this.cachedTracks.length === 0) {
+        console.log('🎵 No tracks found, initializing with fallback tracks');
+        await this.initialize();
+      }
     } catch (error) {
       console.error('❌ Error updating music for genres:', error);
-      // Keep existing tracks if update fails
+      // Initialize with fallback tracks if update fails
+      await this.initialize();
     }
   }
 
