@@ -3107,14 +3107,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      // Add confirmation message
-      const stopMessage: Message = {
-        id: Date.now().toString(),
-        text: "🔇 Voice recognition stopped. Click the microphone again when you want to talk!",
-        type: 'bot',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, stopMessage]);
+      // No message when stopping
     } else {
       console.log('🎤 User starting speech recognition...');
 
