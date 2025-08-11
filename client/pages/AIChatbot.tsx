@@ -36,7 +36,7 @@ const AIChatbot = () => {
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
+  const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
   const [temperatureTriggered, setTemperatureTriggered] = useState<boolean>(false);
   const [awaitingACPermission, setAwaitingACPermission] = useState<boolean>(false);
   const [currentWeatherCondition, setCurrentWeatherCondition] = useState<WeatherCondition | null>(null);
@@ -1893,7 +1893,7 @@ ${response}
 • Stay visible (reflective clothing if available)
 
 🚗 COMMON ISSUES:
-��� Flat tire: Use spare if you know how, or call roadside assistance
+• Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
 • Won't start: Check battery connections, fuel level
