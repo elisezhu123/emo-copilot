@@ -148,7 +148,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
       }
 
       setTemperature(`${fallbackTemp}°C`);
-      console.log(`🌡️ StatusBar using simulated temperature: ${fallbackTemp}°C`);
+      console.log(`🌡️ StatusBar using simulated temperature: ${fallbackTemp}°C (Limerick realistic range)`);
     }
   };
 
@@ -207,7 +207,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               }
             } else {
               // Simulate realistic temperature - DISABLED high temp simulation
-              const simulatedTemp = 15 + Math.floor(Math.random() * 10); // 15-25°C realistic range
+              const simulatedTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C Limerick realistic range
               setTemperature(`${simulatedTemp}°C`);
               // if (onTemperatureExceed) {
               //   onTemperatureExceed(simulatedTemp);
@@ -247,7 +247,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
           }
         } else {
           // Simulate realistic temperature - DISABLED high temp simulation
-          const simulatedTemp = 15 + Math.floor(Math.random() * 10); // 15-25°C realistic range
+          const simulatedTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C Limerick realistic range
           setTemperature(`${simulatedTemp}°C`);
           // if (onTemperatureExceed) {
           //   onTemperatureExceed(simulatedTemp);
