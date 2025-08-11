@@ -229,9 +229,15 @@ class AudioManager {
         this.notifyListeners();
 
       } catch (playError) {
-        console.warn('⚠️ Immediate playback failed, trying fallback:', playError);
+        console.warn('⚠️ Immediate playback failed:', playError);
+        console.log('🔧 Error details:', {
+          name: playError.name,
+          message: playError.message,
+          code: playError.code
+        });
 
         // If immediate playback fails, try with a test audio URL
+        console.log('🔄 Trying fallback audio sources...');
         await this.tryTestAudio(track);
       }
 
