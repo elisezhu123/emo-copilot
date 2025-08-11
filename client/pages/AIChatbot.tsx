@@ -824,23 +824,26 @@ const AIChatbot = () => {
     );
   };
 
-  // Enhanced alert monitoring system
+  // Enhanced alert monitoring system - DISABLED (alerts only shown when user mentions conditions via voice)
   const monitorDrivingConditions = () => {
-    const currentHour = new Date().getHours();
+    // All automatic time-based alerts disabled - only triggered by voice commands
+    return;
 
-    // Check for fatigue risk during peak drowsiness hours (2-6 AM, 2-4 PM)
-    if ((currentHour >= 2 && currentHour <= 6) || (currentHour >= 14 && currentHour <= 16)) {
-      if (!alertTriggered.fatigueRisk) {
-        triggerFatigueRiskAlert();
-      }
-    }
+    // const currentHour = new Date().getHours();
 
-    // Check for rush hour alerts (7-9 AM, 5-7 PM)
-    if ((currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 19)) {
-      if (!alertTriggered.rushHour) {
-        triggerRushHourAlert();
-      }
-    }
+    // // Check for fatigue risk during peak drowsiness hours (2-6 AM, 2-4 PM)
+    // if ((currentHour >= 2 && currentHour <= 6) || (currentHour >= 14 && currentHour <= 16)) {
+    //   if (!alertTriggered.fatigueRisk) {
+    //     triggerFatigueRiskAlert();
+    //   }
+    // }
+
+    // // Check for rush hour alerts (7-9 AM, 5-7 PM)
+    // if ((currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 19)) {
+    //   if (!alertTriggered.rushHour) {
+    //     triggerRushHourAlert();
+    //   }
+    // }
   };
 
   // Weather-based alert integration - DISABLED (alerts only shown when user mentions weather via voice)
