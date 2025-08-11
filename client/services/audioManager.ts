@@ -286,6 +286,31 @@ class AudioManager {
     return 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEUCjyRzfPBeCkCKYPH8diNOwhZsGJ5';
   }
 
+  // Validate if an audio URL is potentially valid
+  private isValidAudioUrl(url: string): boolean {
+    if (!url || url.trim() === '') {
+      console.warn('⚠️ Empty or null audio URL');
+      return false;
+    }
+
+    // Check for common audio file extensions or data URLs
+    const validPatterns = [
+      /\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i,  // Audio file extensions
+      /^data:audio\//i,                          // Data URLs
+      /^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i, // HTTP(S) audio URLs
+      /cdn\.freesound\.org/i,                    // Freesound CDN
+      /samplelib\.com/i                          // Sample library
+    ];
+
+    const isValid = validPatterns.some(pattern => pattern.test(url));
+
+    if (!isValid) {
+      console.warn('⚠️ Potentially invalid audio URL format:', url.substring(0, 100) + '...');
+    }
+
+    return isValid;
+  }
+
   // Get alternative working audio URLs for testing
   private getWorkingAudioUrls(): string[] {
     return [
