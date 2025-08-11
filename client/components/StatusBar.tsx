@@ -155,12 +155,14 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Get user's location and weather
   useEffect(() => {
     if (navigator.geolocation && showTemperature) {
+      console.log('🌍 Attempting to get user location...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
+          console.log('📍 Location obtained:', location.lat, location.lng);
           setCurrentLocation(location);
           fetchWeather(location.lat, location.lng);
         },
