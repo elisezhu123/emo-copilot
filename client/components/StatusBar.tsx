@@ -117,11 +117,11 @@ const StatusBar: React.FC<StatusBarProps> = ({
       
     } catch (error) {
       console.error('❌ StatusBar weather API error:', error);
-      console.log('🌡️ Using fallback weather data for Limerick area');
+      console.log('🌡️ Real OpenWeather API failed, using fallback temperature');
 
-      // Use realistic Limerick weather instead of random simulation
+      // Only use fallback if real API fails
       const randomValue = Math.random();
-      let fallbackTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C realistic for Limerick
+      let fallbackTemp = 20; // Default Limerick temperature
       let simulatedWeather = null;
 
       if (randomValue < 0.15) { // 15% chance of extreme weather
