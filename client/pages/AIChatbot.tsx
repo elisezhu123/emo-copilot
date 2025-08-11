@@ -3145,85 +3145,85 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         </div>
       ) : showShockEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <ShockFace />
           </div>
         </div>
       ) : showCuteEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <CuteFace />
           </div>
         </div>
       ) : showCryEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <CryFace />
           </div>
         </div>
       ) : showEnjoyEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <EnjoyFace />
           </div>
         </div>
       ) : showACEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <ACFace />
           </div>
         </div>
       ) : showLightingEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <LightingFace />
           </div>
         </div>
       ) : showHappyEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <HappyFace />
           </div>
         </div>
       ) : showSadEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <SadFace />
           </div>
         </div>
       ) : showAlertEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <AlertFace />
           </div>
         </div>
       ) : showYesPermissionEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <YesPermissionFace />
           </div>
         </div>
       ) : showNoPermissionEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <NoPermissionFace />
           </div>
         </div>
       ) : showMusicEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <MusicFace />
           </div>
         </div>
       ) : showHotEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <HotFace />
           </div>
         </div>
       ) : showBreathingEmoji ? (
         <div className="flex items-center justify-center min-h-screen w-full p-4">
-          <div className="animate-spontaneous-pop w-full h-full max-w-[90vw] max-h-[90vh] aspect-square">
+          <div className="animate-spontaneous-pop w-full h-full max-w-[380px] max-h-[179px]">
             <BreathingFace />
           </div>
         </div>
