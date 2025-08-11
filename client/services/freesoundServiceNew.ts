@@ -211,103 +211,318 @@ class FreesoundService {
     return 'Instrumental';
   }
 
-  // Fallback tracks when API is not available - real music tracks
+  // Fallback tracks when API is not available - genre-specific music tracks
   private getFallbackTracks(): Track[] {
     return [
+      // Classical Genre
       {
-        id: 'music_1',
-        title: 'Piano Reflection',
-        artist: 'RutgerMuller',
-        duration: 120,
+        id: 'classical_1',
+        title: 'Piano Sonata in C',
+        artist: 'Classical Ensemble',
+        duration: 180,
         genre: 'Classical',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
       {
-        id: 'music_2',
-        title: 'Gentle Piano',
-        artist: 'RutgerMuller',
-        duration: 180,
+        id: 'classical_2',
+        title: 'Violin Concerto No. 1',
+        artist: 'String Quartet',
+        duration: 240,
         genre: 'Classical',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       },
       {
-        id: 'music_3',
-        title: 'Jazz Evening',
-        artist: 'Demo Jazz Artist',
+        id: 'classical_3',
+        title: 'Chamber Music Suite',
+        artist: 'Orchestra Prima',
         duration: 200,
+        genre: 'Classical',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+
+      // Jazz Genre
+      {
+        id: 'jazz_1',
+        title: 'Smooth Evening',
+        artist: 'Jazz Collective',
+        duration: 270,
+        genre: 'Jazz',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'jazz_2',
+        title: 'Blue Note Cafe',
+        artist: 'Bebop Society',
+        duration: 300,
         genre: 'Jazz',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
       {
-        id: 'music_4',
-        title: 'Electronic Dreams',
-        artist: 'Demo Electronic Artist',
-        duration: 220,
-        genre: 'Electronic',
+        id: 'jazz_3',
+        title: 'Midnight Sax',
+        artist: 'Free Jazz Group',
+        duration: 250,
+        genre: 'Jazz',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       },
+
+      // Ambient Genre
       {
-        id: 'music_5',
-        title: 'Ambient Flow',
-        artist: 'Demo Ambient Artist',
-        duration: 240,
+        id: 'ambient_1',
+        title: 'Ocean Waves',
+        artist: 'Nature Sounds Collective',
+        duration: 300,
         genre: 'Ambient',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
       {
-        id: 'music_6',
-        title: 'Rock Anthem',
-        artist: 'Demo Rock Artist',
-        duration: 180,
+        id: 'ambient_2',
+        title: 'Forest Dawn',
+        artist: 'Peaceful Minds',
+        duration: 420,
+        genre: 'Ambient',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'ambient_3',
+        title: 'Cosmic Drift',
+        artist: 'Space Ambient',
+        duration: 360,
+        genre: 'Ambient',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+
+      // Rock Genre
+      {
+        id: 'rock_1',
+        title: 'Electric Thunder',
+        artist: 'Rock Liberation',
+        duration: 220,
         genre: 'Rock',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       },
       {
-        id: 'music_7',
-        title: 'Pop Sunshine',
-        artist: 'Demo Pop Artist',
-        duration: 190,
-        genre: 'Pop',
+        id: 'rock_2',
+        title: 'Highway Anthem',
+        artist: 'Open Road Band',
+        duration: 240,
+        genre: 'Rock',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
       {
-        id: 'music_8',
-        title: 'Folk Journey',
-        artist: 'Demo Folk Artist',
-        duration: 210,
+        id: 'rock_3',
+        title: 'Rebel Spirit',
+        artist: 'Free Rock Alliance',
+        duration: 200,
+        genre: 'Rock',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+
+      // Folk Genre
+      {
+        id: 'folk_1',
+        title: 'Mountain Song',
+        artist: 'Folk Heritage',
+        duration: 250,
+        genre: 'Folk',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'folk_2',
+        title: 'River Tale',
+        artist: 'Acoustic Storytellers',
+        duration: 280,
         genre: 'Folk',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       },
       {
-        id: 'music_9',
-        title: 'Classical Symphony',
-        artist: 'Demo Classical Artist',
-        duration: 300,
-        genre: 'Classical',
+        id: 'folk_3',
+        title: 'Village Dance',
+        artist: 'Traditional Sounds',
+        duration: 230,
+        genre: 'Folk',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
+
+      // Blues Genre
       {
-        id: 'music_10',
-        title: 'Smooth Jazz',
-        artist: 'Demo Jazz Artist',
-        duration: 160,
-        genre: 'Jazz',
+        id: 'blues_1',
+        title: 'Midnight Blues',
+        artist: 'Blues Foundation',
+        duration: 280,
+        genre: 'Blues',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       },
       {
-        id: 'music_11',
-        title: 'Electronic Pulse',
-        artist: 'Demo Electronic Artist',
-        duration: 170,
-        genre: 'Electronic',
+        id: 'blues_2',
+        title: 'Delta Dreams',
+        artist: 'Mississippi Open',
+        duration: 260,
+        genre: 'Blues',
         url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
       },
       {
-        id: 'music_12',
-        title: 'Peaceful Ambient',
-        artist: 'Demo Ambient Artist',
+        id: 'blues_3',
+        title: 'Electric Sorrow',
+        artist: 'Free Blues Society',
+        duration: 300,
+        genre: 'Blues',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+
+      // Chillout Genre
+      {
+        id: 'chillout_1',
+        title: 'Sunset Lounge',
+        artist: 'Chill Collective',
+        duration: 270,
+        genre: 'Chillout',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'chillout_2',
+        title: 'Lazy Sunday',
+        artist: 'Relaxed Minds',
         duration: 250,
-        genre: 'Ambient',
+        genre: 'Chillout',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'chillout_3',
+        title: 'Coffee Shop Dreams',
+        artist: 'Mellow Beats',
+        duration: 220,
+        genre: 'Chillout',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+
+      // Country Genre
+      {
+        id: 'country_1',
+        title: 'Country Road',
+        artist: 'Folk Guitar',
+        duration: 200,
+        genre: 'Country',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'country_2',
+        title: 'Hometown Blues',
+        artist: 'Americana Collective',
+        duration: 240,
+        genre: 'Country',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'country_3',
+        title: 'Prairie Wind',
+        artist: 'Open Range Band',
+        duration: 210,
+        genre: 'Country',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+
+      // Hip-Pop Genre
+      {
+        id: 'hip_pop_1',
+        title: 'Urban Vibes',
+        artist: 'Free Beat Collective',
+        duration: 210,
+        genre: 'Hip-Pop',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'hip_pop_2',
+        title: 'City Nights',
+        artist: 'Open Source Rap',
+        duration: 180,
+        genre: 'Hip-Pop',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'hip_pop_3',
+        title: 'Street Poetry',
+        artist: 'Creative Commons MC',
+        duration: 195,
+        genre: 'Hip-Pop',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+
+      // Electro Pop Genre
+      {
+        id: 'electro_pop_1',
+        title: 'Neon Nights',
+        artist: 'Synth Wave',
+        duration: 190,
+        genre: 'Electro Pop',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'electro_pop_2',
+        title: 'Digital Heart',
+        artist: 'Electronic Dreams',
+        duration: 210,
+        genre: 'Electro Pop',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'electro_pop_3',
+        title: 'Cyber Love',
+        artist: 'Future Sounds',
+        duration: 180,
+        genre: 'Electro Pop',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+
+      // Downbeat Genre
+      {
+        id: 'downbeat_1',
+        title: 'Slow Motion',
+        artist: 'Trip Hop Collective',
+        duration: 320,
+        genre: 'Downbeat',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'downbeat_2',
+        title: 'Urban Shadows',
+        artist: 'Downtempo Masters',
+        duration: 290,
+        genre: 'Downbeat',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'downbeat_3',
+        title: 'Night Walker',
+        artist: 'Chill Beats',
+        duration: 310,
+        genre: 'Downbeat',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+
+      // New Age Genre
+      {
+        id: 'new_age_1',
+        title: 'Crystal Meditation',
+        artist: 'Spiritual Sounds',
+        duration: 360,
+        genre: 'New Age',
+        url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
+      },
+      {
+        id: 'new_age_2',
+        title: 'Healing Light',
+        artist: 'Inner Peace',
+        duration: 400,
+        genre: 'New Age',
+        url: 'https://cdn.freesound.org/previews/449/449794_179538-hq.mp3'
+      },
+      {
+        id: 'new_age_3',
+        title: 'Chakra Balance',
+        artist: 'Wellness Music',
+        duration: 320,
+        genre: 'New Age',
         url: 'https://cdn.freesound.org/previews/449/449793_179538-hq.mp3'
       }
     ];
