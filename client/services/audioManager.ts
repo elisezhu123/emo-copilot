@@ -343,6 +343,12 @@ class AudioManager {
       await this.audio.play();
       console.log('✅ Audio playing successfully');
     } catch (error) {
+      // Don't log AbortError as error - it's normal when switching tracks
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log('ℹ️ Audio play aborted (normal when switching tracks)');
+        return;
+      }
+
       console.error('❌ Error playing audio:', error);
 
       // Handle common play() rejection reasons
@@ -354,13 +360,30 @@ class AudioManager {
           case 'NotSupportedError':
             console.error('❌ Audio format not supported');
             break;
-          case 'AbortError':
-            console.error('❌ Audio loading aborted');
-            break;
           default:
             console.error('❌ Unknown audio error:', error.name, error.message);
         }
       }
+    }
+  }
+
+  // Properly stop current audio before loading new track
+  private stopCurrentAudio(): void {
+    if (!this.audio) return;
+
+    try {
+      // Pause first to avoid interruption errors
+      if (!this.audio.paused) {
+        this.audio.pause();
+      }
+
+      // Clear the source to stop loading
+      this.audio.src = '';
+      this.audio.load(); // This will abort any ongoing load
+
+    } catch (error) {
+      // Ignore errors when stopping - they're expected
+      console.log('ℹ️ Stopped current audio (ignoring stop errors)');
     }
   }
 
