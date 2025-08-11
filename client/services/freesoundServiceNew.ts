@@ -59,19 +59,29 @@ class FreesoundService {
         mode: 'cors'
       });
 
+      console.log('🎵 Freesound API response status:', response.status);
+      console.log('🎵 Freesound API response headers:', response.headers);
+
       if (!response.ok) {
-        throw new Error(`Freesound API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('❌ Freesound API error response:', errorText);
+        throw new Error(`Freesound API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('✅ Freesound response:', data);
+      console.log('✅ Freesound API response data:', data);
+      console.log('✅ Found', data.count, 'total results,', data.results?.length, 'returned');
 
       if (!data.results || data.results.length === 0) {
-        console.warn('No tracks found, using fallback');
-        return this.getFallbackTracks();
+        console.warn('❌ No tracks found in Freesound API response');
+        console.log('🎵 Query was:', musicQuery);
+        console.log('🎵 Filter was:', `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`);
+        return [];
       }
 
-      return await this.convertToTracks(data.results);
+      const convertedTracks = await this.convertToTracks(data.results);
+      console.log('✅ Converted', convertedTracks.length, 'tracks successfully');
+      return convertedTracks;
     } catch (error) {
       console.error('❌ Error fetching from Freesound:', error);
       return this.getFallbackTracks();
