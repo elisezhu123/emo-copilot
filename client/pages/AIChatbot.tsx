@@ -1355,14 +1355,17 @@ const AIChatbot = () => {
 
       setAwaitingACPermission(false);
 
-      // Turn on AC at cooling temperature
+      // Show AC emoji for 3 seconds first, then turn on AC
       setTimeout(() => {
-        setAirConditioner(20, true);
         setShowACEmoji(true);
-        setTimeout(() => setShowACEmoji(false), 3000);
+        setTimeout(() => {
+          setShowACEmoji(false);
+          // Turn on AC after emoji is shown
+          setAirConditioner(20, true);
+        }, 3000);
       }, 1000);
 
-      return "Perfect! I've turned on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
+      return "Perfect! I'll turn on the air conditioner at 20°C to help cool you down. You should feel more comfortable soon!";
     }
 
     if (awaitingACPermission && (message.includes('no') || message.includes('not') || message.includes('don\'t'))) {
@@ -1905,7 +1908,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-• Won't start: Check battery connections, fuel level
+��� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
