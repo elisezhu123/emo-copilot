@@ -610,28 +610,34 @@ class FreesoundService {
       index === self.findIndex(t => t.id === track.id)
     );
 
-    // If we don't have enough tracks from API, supplement with fallback tracks
-    if (uniqueTracks.length < 10) {
-      console.log(`🎵 Only found ${uniqueTracks.length} tracks, adding fallback tracks`);
-      const fallbackTracks = this.getFallbackTracks();
+    // Always use genre-filtered fallback tracks when API fails or returns insufficient results
+    console.log(`🎵 Using fallback tracks for genres: ${genres.join(', ')}`);
+    const fallbackTracks = this.getFallbackTracks();
 
-      // Filter fallback tracks by selected genres
-      const relevantFallbacks = fallbackTracks.filter(track =>
-        genres.some(genre =>
-          track.genre.toLowerCase() === genre.toLowerCase()
-        )
-      );
+    // Filter fallback tracks by selected genres
+    const relevantFallbacks = fallbackTracks.filter(track =>
+      genres.some(genre =>
+        track.genre.toLowerCase() === genre.toLowerCase()
+      )
+    );
 
-      // If no relevant fallbacks, use all fallbacks
-      const tracksToAdd = relevantFallbacks.length > 0 ? relevantFallbacks : fallbackTracks;
+    console.log(`🎵 Found ${relevantFallbacks.length} genre-specific fallback tracks`);
 
-      // Add fallback tracks until we have at least 10 total
-      for (const track of tracksToAdd) {
-        if (uniqueTracks.length >= 15) break; // Limit to reasonable number
-        if (!uniqueTracks.find(t => t.id === track.id)) {
-          uniqueTracks.push(track);
-        }
+    // Use filtered fallback tracks (prioritize genre-specific tracks)
+    const tracksToAdd = relevantFallbacks.length > 0 ? relevantFallbacks : [];
+
+    // Add fallback tracks, ensuring no duplicates
+    for (const track of tracksToAdd) {
+      if (!uniqueTracks.find(t => t.id === track.id)) {
+        uniqueTracks.push(track);
       }
+    }
+
+    // If no API tracks and no relevant fallbacks, add at least some tracks
+    if (uniqueTracks.length === 0) {
+      console.log('🎵 No genre-specific tracks found, adding default tracks');
+      const defaultTracks = fallbackTracks.slice(0, 6); // Add first 6 tracks as default
+      uniqueTracks.push(...defaultTracks);
     }
 
     console.log(`✅ Total music tracks loaded: ${uniqueTracks.length}`);
