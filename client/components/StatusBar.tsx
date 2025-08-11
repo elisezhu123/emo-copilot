@@ -286,7 +286,20 @@ const StatusBar: React.FC<StatusBarProps> = ({
       {/* Center - Temperature */}
       {showTemperature && temperature && (
         <div className="flex items-center justify-center">
-          <span className="font-medium text-emotion-default">Temperature: {temperature}</span>
+          <span
+            className="font-medium text-emotion-default cursor-pointer hover:text-blue-600"
+            onClick={() => {
+              console.log('🔄 Manual temperature refresh requested');
+              if (currentLocation) {
+                fetchWeather(currentLocation.lat, currentLocation.lng);
+              } else {
+                fetchWeather(52.6638, -8.6267); // Limerick coordinates
+              }
+            }}
+            title="Click to refresh temperature"
+          >
+            Temperature: {temperature}
+          </span>
         </div>
       )}
 
