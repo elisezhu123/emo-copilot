@@ -455,17 +455,17 @@ const AIChatbot = () => {
     setShowSadEmoji(false);
   }, []);
 
-  // Periodic driving condition monitoring for time-based alerts
-  useEffect(() => {
-    const monitoringInterval = setInterval(() => {
-      monitorDrivingConditions();
-    }, 60000); // Check every minute
+  // Automatic driving condition monitoring disabled - alerts only shown when user mentions conditions via voice
+  // useEffect(() => {
+  //   const monitoringInterval = setInterval(() => {
+  //     monitorDrivingConditions();
+  //   }, 60000); // Check every minute
 
-    // Initial check
-    monitorDrivingConditions();
+  //   // Initial check
+  //   monitorDrivingConditions();
 
-    return () => clearInterval(monitoringInterval);
-  }, [alertTriggered]);
+  //   return () => clearInterval(monitoringInterval);
+  // }, [alertTriggered]);
 
   // Breathing exercise and meditation functions - REMOVED
   // These wellness features have been removed as requested
@@ -1072,7 +1072,7 @@ const AIChatbot = () => {
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
         safetyAdvice += "• Take breaks every 2 hours for long trips\n";
-        safetyAdvice += "• Keep phone charged for navigation";
+        safetyAdvice += "��� Keep phone charged for navigation";
       }
       
       return `I'd love to guide you to ${destination}, but I need my navigation system set up. Estimated ${estimatedTime} minutes (${estimatedDistance} miles). For now, use your phone's GPS and I'll provide safety support!${safetyAdvice}`;
@@ -1128,7 +1128,7 @@ const AIChatbot = () => {
       fullResponse += "• Vehicle: Check fuel, tires, lights, wipers\n";
       fullResponse += "• Emergency kit: Water, snacks, first aid, blanket\n";
       fullResponse += "• Communication: Charged phone, share route with family\n";
-      fullResponse += "• Weather: Check forecast and road conditions\n";
+      fullResponse += "�� Weather: Check forecast and road conditions\n";
       fullResponse += "• Rest: Take breaks every 2 hours if long trip";
       
       // Add time-specific advice
@@ -1787,7 +1787,7 @@ Just speak naturally - I understand many variations of these commands!`;
         
         return `🗺️ TRIP PLANNING SAFETY GUIDE:
 
-🛡️ PRE-DEPARTURE CHECKLIST:
+��️ PRE-DEPARTURE CHECKLIST:
 • Vehicle inspection: tires, brakes, lights, fluids
 • Emergency kit: water, snacks, first aid, blanket, flashlight
 • Navigation backup: download offline maps
