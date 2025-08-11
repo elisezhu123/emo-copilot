@@ -206,12 +206,10 @@ class AudioManager {
 
       let audioUrl = track.url;
 
-      if (!audioUrl) {
-        console.warn('⚠️ No audio URL provided, using test audio');
-        audioUrl = this.getTestAudioUrl();
-      } else if (!this.isValidAudioUrl(audioUrl)) {
-        console.warn('⚠️ Invalid audio URL format, using test audio instead');
-        console.log('🔗 Original URL:', audioUrl);
+      // Check if URL is invalid or points to the app routes instead of audio files
+      if (!audioUrl || audioUrl.includes('/music-playlists') || audioUrl.includes('/ai-chatbot') || audioUrl.includes('fly.dev') || !this.isValidAudioUrl(audioUrl)) {
+        console.warn('⚠️ Invalid or missing audio URL detected, using test audio');
+        console.log('🔗 Invalid URL was:', audioUrl);
         audioUrl = this.getTestAudioUrl();
       }
 
