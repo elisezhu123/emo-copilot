@@ -1591,7 +1591,7 @@ const AIChatbot = () => {
       return `I can understand many voice commands! Try saying:
 
 🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-���� Navigation: "go to dashboard", "open playlists", "navigate to music page"
+��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
 ❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
 ⚠️ Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
@@ -3124,8 +3124,6 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       console.log('✅ Microphone permission granted, starting voice recognition...');
 
       setUserWantsListening(true); // User wants continuous listening
-      // Stop wake word listening when main listening starts
-      stopWakeWordListening();
 
       // Add activation message
       const startMessage: Message = {
