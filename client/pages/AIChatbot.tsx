@@ -250,7 +250,7 @@ const AIChatbot = () => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
-        console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
+        console.warn('���️ OpenWeather API key not configured - using Limerick temperature');
         setTemperature('15°C');
         return;
       }
@@ -2810,11 +2810,11 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
 
       if (userLower.includes('turn on lights') || userLower.includes('lights on')) {
-        // Show lighting emoji for 3 seconds first, then turn on lights
+        // Show cute squinting emoji for 3 seconds first, then turn on lights
         setTimeout(() => {
-          setShowLightingEmoji(true);
+          setShowCuteEmoji(true);
           setTimeout(() => {
-            setShowLightingEmoji(false);
+            setShowCuteEmoji(false);
             controlLights(true);
           }, 3000);
         }, 500);
