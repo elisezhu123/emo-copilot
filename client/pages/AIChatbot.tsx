@@ -10,6 +10,12 @@ import ACFace from '../components/ACFace';
 import LightingFace from '../components/LightingFace';
 import HappyFace from '../components/HappyFace';
 import SadFace from '../components/SadFace';
+import AlertFace from '../components/AlertFace';
+import YesPermissionFace from '../components/YesPermissionFace';
+import NoPermissionFace from '../components/NoPermissionFace';
+import MusicFace from '../components/MusicFace';
+import HotFace from '../components/HotFace';
+import BreathingFace from '../components/BreathingFace';
 import { carStateManager } from '../services/carStateManager';
 
 interface Message {
@@ -53,6 +59,14 @@ const AIChatbot = () => {
   const [showLightingEmoji, setShowLightingEmoji] = useState(false);
   const [showHappyEmoji, setShowHappyEmoji] = useState(false);
   const [showSadEmoji, setShowSadEmoji] = useState(false);
+
+  // New scenario-specific emoji states
+  const [showAlertEmoji, setShowAlertEmoji] = useState(false);
+  const [showYesPermissionEmoji, setShowYesPermissionEmoji] = useState(false);
+  const [showNoPermissionEmoji, setShowNoPermissionEmoji] = useState(false);
+  const [showMusicEmoji, setShowMusicEmoji] = useState(false);
+  const [showHotEmoji, setShowHotEmoji] = useState(false);
+  const [showBreathingEmoji, setShowBreathingEmoji] = useState(false);
 
   // Alert system states
   const [activeAlert, setActiveAlert] = useState<string | null>(null);
