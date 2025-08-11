@@ -1934,7 +1934,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-��� Won't start: Check battery connections, fuel level
+���� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
@@ -2810,8 +2810,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
 
       if (userLower.includes('turn on lights') || userLower.includes('lights on')) {
-        controlLights(true);
-        return "Lights turned on for better visibility. Drive safely!";
+        // Show lighting emoji for 3 seconds first, then turn on lights
+        setTimeout(() => {
+          setShowLightingEmoji(true);
+          setTimeout(() => {
+            setShowLightingEmoji(false);
+            controlLights(true);
+          }, 3000);
+        }, 500);
+        return "Lights turning on for better visibility. Drive safely!";
       }
 
       if (userLower.includes('turn off lights') || userLower.includes('lights off')) {
