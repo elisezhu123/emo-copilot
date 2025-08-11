@@ -3130,12 +3130,10 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       setUserWantsListening(true); // User wants continuous listening
 
-      // Start continuous listening
+      // Start continuous listening - remove conditional check to avoid race condition
       setTimeout(() => {
-        if (userWantsListening) {
-          console.log('🎤 Starting continuous listening...');
-          startContinuousListening();
-        }
+        console.log('🎤 Starting continuous listening...');
+        startContinuousListening();
       }, 500);
 
       // No test messages needed
