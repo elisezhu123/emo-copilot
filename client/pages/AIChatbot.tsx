@@ -492,7 +492,11 @@ const AIChatbot = () => {
 
   // Handle temperature exceeding 35��C
   const handleTemperatureExceed = (temp: number) => {
-    if (temperatureTriggered) return; // Prevent multiple triggers
+    console.log(`🌡️ Temperature alert triggered with: ${temp}°C, Status bar shows: ${temperature}`);
+    if (temperatureTriggered) {
+      console.log('🌡️ Temperature alert already triggered, skipping');
+      return; // Prevent multiple triggers
+    }
 
     setTemperatureTriggered(true);
     setAwaitingACPermission(true);
@@ -1046,7 +1050,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠��� Google Maps API key not configured');
+      console.warn('⚠�� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
