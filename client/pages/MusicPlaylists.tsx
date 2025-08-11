@@ -238,8 +238,21 @@ const MusicPlaylists = () => {
         {/* Audio Source Status */}
         <div className="mt-2 text-center">
           {audioState.error && (
-            <p className="text-xs text-flowkit-red mt-1">
-              Audio Error: {audioState.error}
+            <div className="bg-red-50 border border-red-200 rounded-lg p-2 mt-2">
+              <p className="text-xs text-red-600 mb-1">
+                🔊 Audio Issue: {audioState.error}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-xs text-red-700 underline hover:text-red-800"
+              >
+                Click here to refresh and try again
+              </button>
+            </div>
+          )}
+          {audioState.isLoading && (
+            <p className="text-xs text-emotion-default mt-1">
+              🎵 Loading audio...
             </p>
           )}
         </div>
