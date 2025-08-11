@@ -1490,6 +1490,15 @@ const AIChatbot = () => {
       return `Testing temperature trigger! Real API temperature: ${temperature || '15°C'} from OpenWeather${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C for demo)'}...`;
     }
 
+    // Test "too hot" complaint
+    if (message.includes('test too hot')) {
+      console.log('🔥 Testing "too hot" complaint functionality');
+      setTimeout(() => {
+        handleTemperatureExceed(38); // Simulate high temperature for hot complaint
+      }, 1000);
+      return "Testing 'too hot' complaint! Watch for the hot emoji sequence...";
+    }
+
     if (message.includes('test snow') || message.includes('simulate snow')) {
       setTimeout(() => {
         handleExtremeWeather({
