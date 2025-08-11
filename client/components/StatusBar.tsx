@@ -140,11 +140,11 @@ const StatusBar: React.FC<StatusBarProps> = ({
             description: simulatedWeather.description
           });
         }
-      } else if (randomValue < 0.25) { // 10% chance of high temp
-        fallbackTemp = 37;
-        if (onTemperatureExceed) {
-          onTemperatureExceed(fallbackTemp);
-        }
+      } else if (randomValue < 0.25) { // 10% chance of high temp - DISABLED for user experience
+        fallbackTemp = 15 + Math.floor(Math.random() * 10); // Use realistic temperature 15-25°C
+        // if (onTemperatureExceed) {
+        //   onTemperatureExceed(fallbackTemp);
+        // }
       }
 
       setTemperature(`${fallbackTemp}°C`);
