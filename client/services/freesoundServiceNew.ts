@@ -694,17 +694,22 @@ class FreesoundService {
         fields: 'id,name,username,duration,tags,previews,type,license',
         // Target Music category with genre-specific filters
         filter: `type:(wav OR mp3) duration:[30.0 TO 300.0] ${genreFilters}`,
-        sort: 'rating_desc',
-        token: this.apiKey
+        sort: 'rating_desc'
+      });
+
+      // Get authentication parameters
+      const auth = await this.getAuthParams();
+
+      // Add auth params to URLSearchParams
+      Object.entries(auth.params).forEach(([key, value]) => {
+        if (value) params.set(key, value.toString());
       });
 
       console.log('🎵 Searching Freesound Music category:', `${this.baseUrl}/search/text/?${params}`);
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
+        headers: auth.headers,
         mode: 'cors'
       });
 
@@ -735,7 +740,7 @@ class FreesoundService {
     if (!this.isConfigured()) {
       console.error('❌ Freesound API not configured! No music will be available.');
       console.log('🔧 Please set VITE_FREESOUND_API_KEY environment variable');
-      console.log('🔧 Get your free API key at: https://freesound.org/apiv2/apply/');
+      console.log('��� Get your free API key at: https://freesound.org/apiv2/apply/');
       return [];
     }
 
