@@ -52,8 +52,7 @@ class FreesoundService {
       const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Accept': 'application/json'
         },
         mode: 'cors'
       });
@@ -104,8 +103,7 @@ class FreesoundService {
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Accept': 'application/json'
         },
         mode: 'cors'
       });
@@ -612,8 +610,7 @@ class FreesoundService {
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Accept': 'application/json'
         },
         mode: 'cors'
       });
@@ -828,8 +825,7 @@ class FreesoundService {
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Accept': 'application/json'
         },
         mode: 'cors'
       });
