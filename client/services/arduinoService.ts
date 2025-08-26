@@ -8,6 +8,14 @@ interface HRVData {
   timestamp: number;
 }
 
+// SerialPort type declaration for Web Serial API
+type SerialPort = {
+  readable: ReadableStream<Uint8Array> | null;
+  writable: WritableStream<Uint8Array> | null;
+  open: (options: { baudRate: number }) => Promise<void>;
+  close: () => Promise<void>;
+};
+
 class ArduinoService {
   private port: SerialPort | null = null;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
