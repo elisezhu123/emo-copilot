@@ -895,7 +895,7 @@ class FreesoundService {
       // Use simplified search approach to avoid 404 errors
       const params = new URLSearchParams({
         query: `${query} music`,
-        page_size: '20',
+        page_size: '50', // Increased for 15+ minutes per genre
         page: '1', // Start with page 1 to avoid empty results
         fields: 'id,name,username,duration,tags,previews,type,license',
         filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
