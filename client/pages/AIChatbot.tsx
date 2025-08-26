@@ -1404,7 +1404,7 @@ const AIChatbot = () => {
 
     if ((message.includes('forest') || message.includes('magical')) &&
         messages.some(msg => msg.text.includes('magical forest story'))) {
-      const forestStory = "In a gentle, magical forest lived a little bunny named Luna who could make flowers glow with her tiny paws. One day, Luna met a sad owl who had lost his way home. Luna touched the trees one by one, making them sparkle like stars to light the path. Together, they followed the glowing trail through the forest. When they found Owl's cozy tree house, all the forest animals cheered! From that day on, Luna became known as the Forest Light Keeper, helping anyone who needed to find their way. The End. What a kind little bunny!";
+      const forestStory = "Luna the bunny made flowers glow with her paws. She helped a lost owl find home by lighting the forest path. The end!";
       speakText(forestStory);
       return forestStory;
     }
