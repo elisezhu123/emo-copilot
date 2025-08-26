@@ -204,7 +204,7 @@ const MusicPlaylists = () => {
 
         // Test API configuration immediately
         console.log('🎵 Testing API configuration...');
-        console.log('🎵 Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
+        console.log('��� Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
         console.log('🎵 DeepSeek API Key:', import.meta.env.VITE_DEEPSEEK_API_KEY ? 'CONFIGURED' : 'MISSING');
 
         // Store initial genres for comparison in handleFocus
@@ -340,7 +340,7 @@ const MusicPlaylists = () => {
     // Only refresh on focus if genres might have changed
     const handleFocus = () => {
       try {
-        console.log('🔍 Focus event triggered on MusicPlaylists page');
+        console.log('🔄 Auto-update: Page focused, checking for changes...');
 
         if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
           console.error('musicService not available in handleFocus');
@@ -348,19 +348,18 @@ const MusicPlaylists = () => {
         }
 
         const currentGenres = musicService.loadSelectedGenres();
-        console.log('🔍 Current genres from localStorage:', currentGenres);
-        console.log('🔍 Previous genres from ref:', initialGenresRef.current);
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
 
-        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(initialGenresRef.current?.sort());
-        console.log('🔍 Genres changed?', genresChanged);
+        console.log('🔄 Auto-update: Focus check - Current genres:', currentGenres);
+        console.log('🔄 Auto-update: Focus check - Previous genres:', previousGenres);
+        console.log('🔄 Auto-update: Focus check - Changed?', genresChanged);
 
         if (genresChanged) {
-          console.log('🔄 Genres changed - refreshing playlist');
-          // Update ref immediately to prevent duplicate loads
+          console.log('🔄 Auto-update: Focus detected changes - updating automatically');
           initialGenresRef.current = currentGenres || [];
-          loadTracks(true, false); // Pass true to indicate this is an update
-        } else {
-          console.log('⚡ Same genres - keeping current playlist for better UX');
+          setIsUpdating(true);
+          loadTracks(true, false);
         }
       } catch (error) {
         console.error('Error in handleFocus:', error);
