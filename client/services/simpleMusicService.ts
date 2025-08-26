@@ -22,7 +22,7 @@ class SimpleMusicService {
     this.cachedTracks = [];
   }
 
-  // Fallback tracks if Freesound fails - expanded for better UX
+  // Fallback tracks if Freesound fails - complete genre coverage
   private getFallbackTracks(): Track[] {
     return [
       // Classical
@@ -43,7 +43,36 @@ class SimpleMusicService {
 
       // Rock
       { id: 'fallback_rock_1', title: 'Electric Power', artist: 'Rock Demo', duration: 200, genre: 'Rock', url: 'https://www.w3schools.com/html/horse.mp3' },
-      { id: 'fallback_rock_2', title: 'Guitar Anthem', artist: 'Rock Band Demo', duration: 190, genre: 'Rock', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' }
+      { id: 'fallback_rock_2', title: 'Guitar Anthem', artist: 'Rock Band Demo', duration: 190, genre: 'Rock', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+
+      // Downbeat - ADDED MISSING GENRE
+      { id: 'fallback_downbeat_1', title: 'Slow Motion Vibes', artist: 'Trip Hop Demo', duration: 270, genre: 'Downbeat', url: 'https://www.w3schools.com/html/horse.mp3' },
+      { id: 'fallback_downbeat_2', title: 'Urban Shadows', artist: 'Downtempo Demo', duration: 250, genre: 'Downbeat', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_downbeat_3', title: 'Chill Beats', artist: 'Lofi Demo', duration: 280, genre: 'Downbeat', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // Blues
+      { id: 'fallback_blues_1', title: 'Midnight Blues', artist: 'Blues Demo', duration: 220, genre: 'Blues', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_blues_2', title: 'Delta Sounds', artist: 'Blues Heritage Demo', duration: 240, genre: 'Blues', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // Chillout
+      { id: 'fallback_chillout_1', title: 'Sunset Lounge', artist: 'Chill Demo', duration: 260, genre: 'Chillout', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_chillout_2', title: 'Relaxed Vibes', artist: 'Lounge Demo', duration: 245, genre: 'Chillout', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // Country
+      { id: 'fallback_country_1', title: 'Country Roads', artist: 'Country Demo', duration: 210, genre: 'Country', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_country_2', title: 'Hometown Tale', artist: 'Americana Demo', duration: 195, genre: 'Country', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // Hip-Pop
+      { id: 'fallback_hip_pop_1', title: 'Urban Beat', artist: 'Hip-Pop Demo', duration: 180, genre: 'Hip-Pop', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_hip_pop_2', title: 'City Flow', artist: 'Rap Demo', duration: 165, genre: 'Hip-Pop', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // Electro Pop
+      { id: 'fallback_electro_pop_1', title: 'Neon Lights', artist: 'Electro Demo', duration: 200, genre: 'Electro Pop', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_electro_pop_2', title: 'Digital Dreams', artist: 'Synth Demo', duration: 185, genre: 'Electro Pop', url: 'https://www.w3schools.com/html/horse.mp3' },
+
+      // New Age
+      { id: 'fallback_new_age_1', title: 'Crystal Meditation', artist: 'New Age Demo', duration: 300, genre: 'New Age', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3' },
+      { id: 'fallback_new_age_2', title: 'Healing Sounds', artist: 'Spiritual Demo', duration: 320, genre: 'New Age', url: 'https://www.w3schools.com/html/horse.mp3' }
     ];
   }
 
