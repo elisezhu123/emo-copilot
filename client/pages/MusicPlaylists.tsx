@@ -657,14 +657,33 @@ const MusicPlaylists = () => {
 
       {/* Playlists Section - Horizontal Scrolling Layout */}
       <div className="relative flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
-        {/* Playlists Header - Auto-updating */}
+        {/* Playlists Header - Enhanced for multiple genres */}
         <div className="flex items-center justify-between py-2 px-3">
           <div className="flex flex-col">
-            <span className="text-xs font-medium text-black">Playlists</span>
-            {initialGenresRef.current && initialGenresRef.current.length > 0 && (
-              <span className="text-xs text-emotion-default opacity-75">
-                Current: {initialGenresRef.current.join(', ')}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-black">
+                {initialGenresRef.current && initialGenresRef.current.length > 1 ? 'Mixed Playlist' : 'Playlists'}
               </span>
+              {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                <span className="text-xs bg-emotion-orange text-white px-2 py-0.5 rounded-full">
+                  {initialGenresRef.current.length} genres
+                </span>
+              )}
+            </div>
+            {initialGenresRef.current && initialGenresRef.current.length > 0 && (
+              <div className="flex flex-col gap-1 mt-1">
+                <span className="text-xs text-emotion-default opacity-75">
+                  {initialGenresRef.current.length === 1 ? 'Current' : 'Combined'}: {initialGenresRef.current.join(', ')}
+                </span>
+                {initialGenresRef.current.length > 1 && tracks.length > 0 && (
+                  <div className="text-xs text-emotion-default opacity-60">
+                    {initialGenresRef.current.map(genre => {
+                      const genreTracks = tracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+                      return `${genre}: ${genreTracks.length}`;
+                    }).join(' • ')} tracks
+                  </div>
+                )}
+              </div>
             )}
           </div>
           <div className="flex items-center gap-1 text-xs text-emotion-default">
