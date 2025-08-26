@@ -73,11 +73,13 @@ const EmoCopilotDashboard = () => {
         console.log(`🚨 ${newState.driverState} state detected! Starting timer...`);
         setStressStartTime(Date.now());
 
-        // Set timer for 3 minutes (180,000 ms) to trigger navigation
+        // Set timer for 2-5 minutes (120,000 - 300,000 ms) to trigger navigation
+        const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2-4 minutes random
+        const timerDuration = randomMinutes * 60 * 1000;
         const timer = setTimeout(() => {
-          console.log(`⏰ Driver has been ${newState.driverState} for 3 minutes - navigating to AI chatbot`);
+          console.log(`⏰ Driver has been ${newState.driverState} for ${randomMinutes} minutes - navigating to AI chatbot`);
           navigate('/ai-chatbot?prolonged-stress=true');
-        }, 180000); // 3 minutes
+        }, timerDuration);
 
         setStressTimer(timer);
       } else if (wasStressedOrAnxious && !isStressedOrAnxious) {
