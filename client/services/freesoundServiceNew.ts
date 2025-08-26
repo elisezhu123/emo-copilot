@@ -146,8 +146,11 @@ class FreesoundService {
       } else {
         console.error('❌ Error fetching from Freesound:', error);
       }
-      console.log('🔄 FREESOUND ONLY: No fallback tracks available');
-      return [];
+      console.log('🎵 API failed, using fallback tracks for query:', query);
+      return this.getFallbackTracks().filter(track =>
+        track.genre.toLowerCase().includes(query.toLowerCase()) ||
+        query.toLowerCase().includes(track.genre.toLowerCase())
+      );
     }
   }
 
