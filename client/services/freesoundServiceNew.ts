@@ -936,7 +936,16 @@ class FreesoundService {
       console.error('❌ Freesound API key not configured! No music will be available.');
       console.log('🔧 Please set VITE_FREESOUND_API_KEY environment variable');
       console.log('🔧 Get your free API key at: https://freesound.org/apiv2/apply/');
-      return [];
+
+      // Return fallback tracks filtered by requested genres
+      const allFallbackTracks = this.getFallbackTracks();
+      const filteredTracks = allFallbackTracks.filter(track =>
+        genres.some(genre =>
+          track.genre.toLowerCase() === genre.toLowerCase()
+        )
+      );
+      console.log(`🎵 Returning ${filteredTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
+      return this.shuffleArray(filteredTracks);
     }
 
     try {
