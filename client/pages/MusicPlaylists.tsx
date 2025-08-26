@@ -184,7 +184,7 @@ const MusicPlaylists = () => {
       if (savedGenres && savedGenres.length > 0) {
         if (isUpdate) {
           setIsUpdating(true);
-          console.log('�� MusicPlaylists: Setting updating state to true');
+          console.log('🔍 MusicPlaylists: Setting updating state to true');
         } else {
           setIsLoadingTracks(true);
           console.log('🔍 MusicPlaylists: Setting loading state to true');
