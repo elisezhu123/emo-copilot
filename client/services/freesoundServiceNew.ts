@@ -25,6 +25,12 @@ class FreesoundService {
   isConfigured(): boolean {
     const configured = this.apiKey.length > 0;
     console.log('🎵 Freesound API configured:', configured);
+
+    if (!configured) {
+      console.error('❌ Freesound API key missing! Please set VITE_FREESOUND_API_KEY environment variable.');
+      console.log('🔧 Visit https://freesound.org/apiv2/apply/ to get an API key');
+    }
+
     return configured;
   }
 
