@@ -96,6 +96,12 @@ const MusicPlaylists = () => {
       }
 
       try {
+        // Check if musicService is available
+        if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+          console.error('musicService is not available');
+          return;
+        }
+
         // Test API configuration immediately
         console.log('🎵 Testing API configuration...');
         console.log('🎵 Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
