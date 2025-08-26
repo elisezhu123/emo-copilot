@@ -657,7 +657,7 @@ class FreesoundService {
           console.log(`✅ Found ${tracks.length} tracks for ${genre}`);
           return tracks;
         } catch (error) {
-          console.warn(`⚠️ Error loading ${genre}:`, error.message);
+          console.warn(`��️ Error loading ${genre}:`, error.message);
           return []; // Return empty array instead of throwing
         }
       });
@@ -812,7 +812,6 @@ class FreesoundService {
     try {
       // Use simplified search approach to avoid 404 errors
       const params = new URLSearchParams({
-        token: this.apiKey,
         query: `${query} music`,
         page_size: '20',
         page: '1', // Start with page 1 to avoid empty results
@@ -827,6 +826,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
