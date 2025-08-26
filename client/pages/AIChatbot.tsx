@@ -16,6 +16,7 @@ import NoPermissionFace from '../components/NoPermissionFace';
 import MusicFace from '../components/MusicFace';
 import HotFace from '../components/HotFace';
 import BreathingFace from '../components/BreathingFace';
+import LaughFace from '../components/LaughFace';
 import { carStateManager } from '../services/carStateManager';
 import { simpleMusicService } from '../services/simpleMusicService';
 import { audioManager } from '../services/audioManager';
@@ -461,7 +462,7 @@ const AIChatbot = () => {
         // Add message to chat
         const lightMessage = {
           id: Date.now().toString() + '_lights',
-          text: "💡 Lights turned on from dashboard. Better visibility for safe driving!",
+          text: "�� Lights turned on from dashboard. Better visibility for safe driving!",
           type: 'bot' as const,
           timestamp: new Date()
         };
@@ -904,7 +905,7 @@ const AIChatbot = () => {
 
   const triggerRainAlert = () => {
     triggerAlert('rainAlert',
-      '🌧️ RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
+      '🌧��� RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
       4000
     );
   };
