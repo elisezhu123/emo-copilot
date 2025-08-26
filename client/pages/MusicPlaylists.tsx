@@ -35,17 +35,22 @@ const MusicPlaylists = () => {
         const savedGenres = musicService.loadSelectedGenres();
 
         if (savedGenres && savedGenres.length > 0) {
-          console.log('🎲 Loading DYNAMIC music for selected genres:', savedGenres);
+          console.log('⚡ Fast loading music for genres:', savedGenres);
 
-          // Force fresh reload for dynamic playlists
+          // Check if already loading to prevent duplicate requests
+          if (simpleMusicService.isCurrentlyLoading()) {
+            console.log('⚡ Already loading, waiting...');
+            return;
+          }
+
+          // Smart reload (uses cache when appropriate)
           await simpleMusicService.forceFreshReload(savedGenres);
 
           const allTracks = await simpleMusicService.getAllTracks();
-          console.log('🎲 Dynamic tracks loaded:', allTracks.length);
+          console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
           setTracks(allTracks);
 
           if (allTracks.length > 0) {
-            console.log('🎲 Dynamic sample track:', allTracks[0]);
             setCurrentTrack(allTracks[0]);
             audioManager.setPlaylist(allTracks);
           }
@@ -74,10 +79,17 @@ const MusicPlaylists = () => {
       }
     });
 
-    // Refresh playlist when window gains focus (user returns from music selection)
+    // Only refresh on focus if genres might have changed
     const handleFocus = () => {
-      console.log('🎲 Page regained focus - refreshing for dynamic playlist');
-      loadTracks(); // This will trigger fresh dynamic loading
+      const currentGenres = musicService.loadSelectedGenres();
+      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(savedGenres?.sort());
+
+      if (genresChanged) {
+        console.log('🔄 Genres changed - refreshing playlist');
+        loadTracks();
+      } else {
+        console.log('⚡ Same genres - keeping current playlist for better UX');
+      }
     };
 
     window.addEventListener('focus', handleFocus);
@@ -309,9 +321,12 @@ const MusicPlaylists = () => {
             </div>
           )}
           {audioState.isLoading && (
-            <p className="text-xs text-emotion-default mt-1">
-              🎵 Loading audio...
-            </p>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="w-3 h-3 border border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-xs text-emotion-default">
+                ⚡ Loading audio...
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -393,9 +408,17 @@ const MusicPlaylists = () => {
         {tracks.length === 0 && (
           <div className="text-center py-8">
             {isLoadingTracks ? (
-              <p className="text-xs text-gray-500">Loading...</p>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-xs text-gray-500">Fast loading your music...</p>
+              </div>
             ) : (
-              <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+              <div className="flex flex-col items-center gap-2">
+                <svg className="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
+                <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+              </div>
             )}
           </div>
         )}
