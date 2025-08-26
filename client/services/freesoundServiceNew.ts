@@ -602,7 +602,8 @@ class FreesoundService {
         fields: 'id,name,username,duration,tags,previews,type,license',
         // Target Music category with genre-specific filters
         filter: `type:(wav OR mp3) duration:[30.0 TO 300.0] ${genreFilters}`,
-        sort: 'rating_desc'
+        sort: 'rating_desc',
+        token: this.apiKey
       });
 
       console.log('🎵 Searching Freesound Music category:', `${this.baseUrl}/search/text/?${params}`);
