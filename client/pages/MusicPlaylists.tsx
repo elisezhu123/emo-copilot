@@ -53,10 +53,9 @@ const MusicPlaylists = () => {
         }
       }
 
-      // Store initial genres for comparison in handleFocus
-      initialGenresRef.current = savedGenres || [];
-
       if (savedGenres && savedGenres.length > 0) {
+        // Update the ref with current genres for future comparisons
+        initialGenresRef.current = savedGenres;
         console.log('⚡ Fast loading music for genres:', savedGenres);
 
         // Check if already loading to prevent duplicate requests
