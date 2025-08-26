@@ -43,7 +43,6 @@ class FreesoundService {
     try {
       console.log('🔍 Testing Freesound API connection...');
       const testParams = new URLSearchParams({
-        token: this.apiKey,
         query: 'test',
         page_size: '1',
         fields: 'id,name'
@@ -51,7 +50,10 @@ class FreesoundService {
 
       const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
         method: 'GET',
-        headers: { 'Accept': 'application/json' },
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Token ${this.apiKey}`
+        },
         mode: 'cors'
       });
 
