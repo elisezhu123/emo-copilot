@@ -263,7 +263,7 @@ const EmoCopilotDashboard = () => {
         }
 
         try {
-          console.log('�� Attempting to play:', randomTrack.url);
+          console.log('🎵 Attempting to play:', randomTrack.url);
           await audioManager.playTrack(randomTrack);
           setCurrentTrack(randomTrack);
           console.log('✅ Playback started successfully');
