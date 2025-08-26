@@ -302,7 +302,7 @@ const MusicPlaylists = () => {
     const handleVisibilityChange = () => {
       try {
         if (!document.hidden) {
-          console.log('🔄 Auto-update: Page became visible, checking for changes...');
+          console.log('���� Auto-update: Page became visible, checking for changes...');
 
           // Multiple checks with different delays to catch any timing issues
           [50, 150, 300].forEach(delay => {
@@ -721,7 +721,7 @@ const MusicPlaylists = () => {
               <div className="flex flex-col items-center gap-2">
                 <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
                 <p className="text-xs text-gray-500">
-                  {isUpdating ? 'Updating playlists...' : 'Loading your music...'}
+                  {isUpdating ? 'Auto-updating playlists...' : 'Auto-loading your music...'}
                 </p>
               </div>
             ) : (
@@ -730,6 +730,11 @@ const MusicPlaylists = () => {
                   <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
                 <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+                <div className="mt-2 text-xs text-gray-400 space-y-1">
+                  <p>Debug: localStorage check</p>
+                  <p>Stored: {localStorage.getItem('selectedMusicGenres') || 'null'}</p>
+                  <p>Initial ref: {JSON.stringify(initialGenresRef.current)}</p>
+                </div>
               </div>
             )}
           </div>
