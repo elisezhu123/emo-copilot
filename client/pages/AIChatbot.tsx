@@ -381,7 +381,7 @@ const AIChatbot = () => {
     const unsubscribe = carStateManager.subscribe((newState) => {
       // Check if AC was turned on
       if (!previousState.isAcOn && newState.isAcOn) {
-        console.log('❄️ AC turned on from dashboard - showing AC emoji');
+        console.log('��️ AC turned on from dashboard - showing AC emoji');
         setShowACEmoji(true);
         setTimeout(() => setShowACEmoji(false), 3000);
 
@@ -1104,8 +1104,9 @@ const AIChatbot = () => {
   };
 
   const getDirections = async (destination: string): Promise<string> => {
+    // Provide helpful direction guidance even without exact location
     if (!currentLocation) {
-      return "I need your current location to provide directions. Please enable location access in your browser settings.";
+      return `I can help you get to ${destination}! Use your phone's GPS or car navigation system for turn-by-turn directions. I recommend checking traffic conditions and having a backup route planned. Safe travels!`;
     }
 
     // Get safety warnings for current location and route
