@@ -127,9 +127,22 @@ const MusicPlaylists = () => {
           const fallbackTracks = musicService.getFilteredTracks();
           if (fallbackTracks.length > 0) {
             setTracks(fallbackTracks);
-            setCurrentTrack(fallbackTracks[0]);
+            const selectedTrack = fallbackTracks[0];
+            setCurrentTrack(selectedTrack);
             audioManager.setPlaylist(fallbackTracks);
             console.log('🔄 EMERGENCY FALLBACK: Loaded', fallbackTracks.length, 'fallback tracks');
+
+            // Auto-play fallback tracks too
+            console.log('🎵 Auto-play: Starting fallback track playback');
+            setTimeout(async () => {
+              try {
+                await audioManager.playTrack(selectedTrack);
+                console.log('🎵 Auto-play: Successfully started fallback playback');
+              } catch (error) {
+                console.error('🎵 Auto-play: Failed to start fallback playback:', error);
+              }
+            }, 500);
+
             return; // Exit early on successful fallback
           }
         }
