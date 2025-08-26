@@ -463,7 +463,7 @@ const EmoCopilotDashboard = () => {
         title="Emo Copilot"
         showHomeButton={false}
         showTemperature={true}
-        showDriverState={true}
+        showDriverState={false}
       />
 
       {/* Conditional Content - Show emoji dashboard or normal dashboard */}
