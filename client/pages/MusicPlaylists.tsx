@@ -27,6 +27,93 @@ const MusicPlaylists = () => {
     error: null
   });
 
+  // Load tracks from the music service - defined here for proper scope access
+  const loadTracks = async (isUpdate = false) => {
+    try {
+      console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
+
+      // Check if musicService is available
+      if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+        console.error('musicService is not available');
+        return;
+      }
+
+      const savedGenres = musicService.loadSelectedGenres();
+      console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+      console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
+
+      // If we have genres, show loading state
+      if (savedGenres && savedGenres.length > 0) {
+        if (isUpdate) {
+          setIsUpdating(true);
+          console.log('🔍 MusicPlaylists: Setting updating state to true');
+        } else {
+          setIsLoadingTracks(true);
+          console.log('🔍 MusicPlaylists: Setting loading state to true');
+        }
+      }
+
+      // Store initial genres for comparison in handleFocus
+      initialGenresRef.current = savedGenres || [];
+
+      if (savedGenres && savedGenres.length > 0) {
+        console.log('⚡ Fast loading music for genres:', savedGenres);
+
+        // Check if already loading to prevent duplicate requests
+        if (simpleMusicService.isCurrentlyLoading()) {
+          console.log('⚡ Already loading, waiting...');
+          return;
+        }
+
+        // If this is an update (genre change), force clear cache first
+        if (isUpdate) {
+          console.log('🧹 Force clearing cache for genre update');
+          simpleMusicService.clearCache();
+        }
+
+        // Smart reload (uses cache when appropriate)
+        await simpleMusicService.forceFreshReload(savedGenres);
+
+        const allTracks = await simpleMusicService.getAllTracks();
+        console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
+        setTracks(allTracks);
+
+        if (allTracks.length > 0) {
+          // Only set new current track if we don't have one, or if this is not an update
+          if (!currentTrack || !isUpdate) {
+            setCurrentTrack(allTracks[0]);
+          }
+          audioManager.setPlaylist(allTracks);
+        }
+
+        // Update the ref with successfully loaded genres for future focus comparisons
+        initialGenresRef.current = savedGenres;
+        setHasInitiallyLoaded(true);
+      } else {
+        console.log('🔍 MusicPlaylists: No genres selected or empty array');
+        console.log('🔍 MusicPlaylists: savedGenres value:', savedGenres);
+        console.log('🔍 MusicPlaylists: savedGenres type:', typeof savedGenres);
+        setTracks([]);
+        setCurrentTrack(null);
+        // Reset the ref when no genres are selected
+        initialGenresRef.current = [];
+        setHasInitiallyLoaded(false);
+      }
+    } catch (error) {
+      console.error('🔍 MusicPlaylists: Error loading tracks:', error);
+      console.error('🔍 MusicPlaylists: Error stack:', error.stack);
+      setTracks([]);
+      setCurrentTrack(null);
+    } finally {
+      console.log('🔍 MusicPlaylists: Setting loading states to false');
+      // Add a small delay to ensure user sees the loading state
+      setTimeout(() => {
+        setIsLoadingTracks(false);
+        setIsUpdating(false);
+      }, isUpdate ? 800 : 500); // Longer delay for updates
+    }
+  };
+
   // Monitor location changes to detect when user returns from genre selection
   useEffect(() => {
     console.log('🔍 Location changed to:', location.pathname);
