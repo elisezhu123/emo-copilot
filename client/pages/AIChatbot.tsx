@@ -17,6 +17,9 @@ import MusicFace from '../components/MusicFace';
 import HotFace from '../components/HotFace';
 import BreathingFace from '../components/BreathingFace';
 import { carStateManager } from '../services/carStateManager';
+import { simpleMusicService } from '../services/simpleMusicService';
+import { audioManager } from '../services/audioManager';
+import { musicService } from '../services/musicService';
 
 interface Message {
   id: string;
