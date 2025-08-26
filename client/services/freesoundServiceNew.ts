@@ -184,11 +184,14 @@ class FreesoundService {
       } else {
         console.error('❌ Error fetching from Freesound:', error);
       }
-      console.log('🎵 API failed, using fallback tracks for query:', query);
-      return this.getFallbackTracks().filter(track =>
+      // Always provide fallback tracks for a good user experience
+      console.log('🎵 Using high-quality fallback tracks due to API error for:', query);
+      const fallbackTracks = this.getFallbackTracks().filter(track =>
         track.genre.toLowerCase().includes(query.toLowerCase()) ||
         query.toLowerCase().includes(track.genre.toLowerCase())
       );
+      console.log(`🎵 Returning ${fallbackTracks.length} fallback tracks`);
+      return fallbackTracks;
     }
   }
 
