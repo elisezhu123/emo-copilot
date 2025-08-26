@@ -690,11 +690,9 @@ class FreesoundService {
       return randomizedTracks;
 
     } catch (error) {
-      console.error('❌ Parallel loading failed:', error);
-      // Return genre-filtered fallback tracks
-      return this.getFallbackTracks().filter(track =>
-        genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
-      );
+      console.error('❌ Freesound API parallel loading failed:', error);
+      console.log('🎵 FREESOUND ONLY: No fallback tracks available');
+      return [];
     }
   }
 
