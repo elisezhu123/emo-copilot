@@ -948,7 +948,7 @@ class FreesoundService {
           console.warn('Could not read error response text:', textError);
           errorText = `HTTP ${response.status} ${response.statusText}`;
         }
-        console.error(`❌ Freesound API error for ${targetGenre}:`, response.status, errorText);
+        console.error(`��� Freesound API error for ${targetGenre}:`, response.status, errorText);
 
         // Instead of throwing, return empty array and let caller handle fallback
         return [];
@@ -996,18 +996,22 @@ class FreesoundService {
       page_size: '10', // Optimized for fastest loading
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
       filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
-      sort: 'downloads_desc', // Consistent, fast sorting
-      token: this.apiKey
+      sort: 'downloads_desc' // Consistent, fast sorting
     });
 
     console.log(`⚡ Fast search for ${genre}`);
 
+    // Get authentication parameters
+    const auth = await this.getAuthParams();
+
+    // Add auth params to URLSearchParams
+    Object.entries(auth.params).forEach(([key, value]) => {
+      if (value) params.set(key, value.toString());
+    });
+
     const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Token ${this.apiKey}`
-      },
+      headers: auth.headers,
       mode: 'cors'
     });
 
