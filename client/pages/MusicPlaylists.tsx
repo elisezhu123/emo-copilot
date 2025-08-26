@@ -100,8 +100,6 @@ const MusicPlaylists = () => {
         setHasInitiallyLoaded(true);
       } else {
         console.log('🔍 MusicPlaylists: No genres selected or empty array');
-        console.log('🔍 MusicPlaylists: savedGenres value:', savedGenres);
-        console.log('🔍 MusicPlaylists: savedGenres type:', typeof savedGenres);
         setTracks([]);
         setCurrentTrack(null);
         // Reset the ref when no genres are selected
@@ -111,6 +109,25 @@ const MusicPlaylists = () => {
     } catch (error) {
       console.error('🔍 MusicPlaylists: Error loading tracks:', error);
       console.error('🔍 MusicPlaylists: Error stack:', error.stack);
+
+      // Critical fallback: If everything fails, try musicService fallback tracks
+      try {
+        const savedGenres = musicService.loadSelectedGenres();
+        if (savedGenres && savedGenres.length > 0) {
+          console.log('🔄 EMERGENCY FALLBACK: Using musicService tracks after error');
+          const fallbackTracks = musicService.getFilteredTracks();
+          if (fallbackTracks.length > 0) {
+            setTracks(fallbackTracks);
+            setCurrentTrack(fallbackTracks[0]);
+            audioManager.setPlaylist(fallbackTracks);
+            console.log('🔄 EMERGENCY FALLBACK: Loaded', fallbackTracks.length, 'fallback tracks');
+            return; // Exit early on successful fallback
+          }
+        }
+      } catch (fallbackError) {
+        console.error('🔍 MusicPlaylists: Even fallback failed:', fallbackError);
+      }
+
       setTracks([]);
       setCurrentTrack(null);
     } finally {
