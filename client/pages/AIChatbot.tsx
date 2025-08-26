@@ -1411,7 +1411,7 @@ const AIChatbot = () => {
 
     if ((message.includes('animal') || message.includes('funny')) &&
         messages.some(msg => msg.text.includes('funny animal adventure'))) {
-      const animalStory = "There once was a little penguin named Pip who wanted to learn how to fly. Pip watched the birds and flapped their wings, but just slid on their belly instead! Then Pip met a wise old turtle who said, 'Everyone has their own special talent.' So Pip tried swimming and - whoosh! - became the fastest swimmer in the whole arctic! All the other animals cheered as Pip zoomed through the water like a feathered rocket. Pip learned that being different made them extra special! The End. What a fantastic discovery!";
+      const animalStory = "Pip the penguin wanted to fly but discovered swimming was their special talent. They became the fastest arctic swimmer ever! The end!";
       speakText(animalStory);
       return animalStory;
     }
