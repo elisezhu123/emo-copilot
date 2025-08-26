@@ -78,7 +78,7 @@ const MusicPlaylists = () => {
 
     // Load tracks from the music service - same logic as dashboard
     const loadTracks = async (isUpdate = false) => {
-      console.log('�� MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
+      console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
       const savedGenres = musicService.loadSelectedGenres();
       console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
@@ -88,7 +88,7 @@ const MusicPlaylists = () => {
       if (savedGenres && savedGenres.length > 0) {
         if (isUpdate) {
           setIsUpdating(true);
-          console.log('🔍 MusicPlaylists: Setting updating state to true');
+          console.log('�� MusicPlaylists: Setting updating state to true');
         } else {
           setIsLoadingTracks(true);
           console.log('🔍 MusicPlaylists: Setting loading state to true');
@@ -500,8 +500,12 @@ const MusicPlaylists = () => {
                 </button>
                 <button
                   onClick={async () => {
-                    console.log('🎵 Trying next track...');
-                    await playNextTrack();
+                    try {
+                      console.log('🎵 Trying next track...');
+                      await playNextTrack();
+                    } catch (error) {
+                      console.error('Next track failed:', error);
+                    }
                   }}
                   className="text-xs text-green-700 underline hover:text-green-800"
                   disabled={tracks.length <= 1}
