@@ -210,7 +210,23 @@ const MusicPlaylists = () => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         console.log('🔍 Page became visible - checking for genre changes');
-        handleFocus(); // Reuse the same logic
+
+        // Add delay to ensure any localStorage updates have completed
+        setTimeout(() => {
+          const currentGenres = musicService.loadSelectedGenres();
+          const previousGenres = initialGenresRef.current;
+          const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+          console.log('🔍 Visibility - Current genres:', currentGenres);
+          console.log('🔍 Visibility - Previous genres:', previousGenres);
+          console.log('🔍 Visibility - Genres changed?', genresChanged);
+
+          if (genresChanged) {
+            console.log('🔄 Visibility detected genre change - updating playlists');
+            initialGenresRef.current = currentGenres || [];
+            loadTracks(true);
+          }
+        }, 200);
       }
     };
 
