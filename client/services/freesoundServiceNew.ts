@@ -782,17 +782,22 @@ class FreesoundService {
   private async searchMusicCategoryWithGenre(genre: string): Promise<Track[]> {
     try {
       const filter = this.getMusicCategoryFilters(genre);
+      const randomSort = this.getRandomSort();
+      const randomPage = this.getRandomPage();
+      const randomVariations = this.getRandomSearchVariations(genre);
+      const randomQuery = randomVariations[Math.floor(Math.random() * randomVariations.length)];
 
       const params = new URLSearchParams({
         token: this.apiKey,
-        query: `${genre} music`,
-        page_size: '15',
+        query: `${randomQuery} music`,
+        page_size: '20',
+        page: randomPage.toString(),
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
         filter: `type:(wav OR mp3) duration:[30.0 TO 180.0] ${filter}`,
-        sort: 'downloads_desc'
+        sort: randomSort
       });
 
-      console.log('🎵 Searching music category for:', genre);
+      console.log(`🎲 Dynamic music category search for ${genre}: query="${randomQuery}", sort="${randomSort}", page=${randomPage}`);
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
@@ -807,9 +812,10 @@ class FreesoundService {
       }
 
       const data = await response.json();
-      console.log('✅ Music category search found', data.results?.length || 0, 'tracks for', genre);
+      console.log('✅ Dynamic music category search found', data.results?.length || 0, 'tracks for', genre);
 
-      return await this.convertToTracks(data.results || [], genre);
+      const tracks = await this.convertToTracks(data.results || [], genre);
+      return this.shuffleArray(tracks);
     } catch (error) {
       console.error('❌ Music category search failed for', genre, ':', error);
       return [];
