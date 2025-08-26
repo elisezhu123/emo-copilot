@@ -105,7 +105,7 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
 
   // Perform emotional analysis based on heart rate and HRV changes from baseline
   const performEmotionalAnalysis = (heartRate: number, hrv: number, currentTime: number) => {
-    if (baselineHeartRate === null || baselineSDNN === null) return;
+    if (baselineHeartRate === null || baselineSDNN === null || manualOverride) return;
 
     // Calculate changes from baseline
     const hrChange = heartRate - baselineHeartRate;
