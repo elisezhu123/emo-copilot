@@ -293,7 +293,7 @@ class AudioManager {
     const testUrls = [
       'https://www.w3schools.com/html/horse.mp3',
       'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3',
-      'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+      'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
     ];
 
     return testUrls[Math.floor(Math.random() * testUrls.length)];
