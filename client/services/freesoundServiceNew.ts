@@ -52,7 +52,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Authorization': `Bearer ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -103,7 +103,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Authorization': `Bearer ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -611,7 +611,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Authorization': `Bearer ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -826,7 +826,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Token ${this.apiKey}`
+          'Authorization': `Bearer ${this.apiKey}`
         },
         mode: 'cors'
       });
