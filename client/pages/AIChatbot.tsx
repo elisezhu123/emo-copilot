@@ -451,7 +451,7 @@ const AIChatbot = () => {
       } else {
         // Reset focus mode tracking if state changes
         if (focusModeStartTime !== null) {
-          console.log('🎯 Focus mode ended - resetting timer');
+          console.log('�� Focus mode ended - resetting timer');
           setFocusModeStartTime(null);
           setFocusTriggered(false);
         }
@@ -953,8 +953,41 @@ const AIChatbot = () => {
 
   // Enhanced location services with safety integration
   const findNearbyPlaces = async (placeType: string): Promise<string> => {
+    // If location is not available, provide general helpful responses instead of asking for permissions
     if (!currentLocation) {
-      return "I need your location to find nearby places. Please allow location access in your browser settings.";
+      // Use default responses that don't require exact location
+      const fallbackResponses = {
+        'gas station': [
+          `I'll help you find gas stations! Look for major brands like Shell, Chevron, BP, or Exxon along your route. Most highway exits have at least one gas station. Use your car's navigation or a maps app to find the closest ones with current prices.`,
+          `Gas stations are typically found at highway exits and major intersections. Popular chains like Mobil, Texaco, and Costco often have competitive prices. I recommend checking gas price apps for the best deals in your area.`,
+          `For gas stations, try looking for the next highway exit or major road. Most gas station apps like GasBuddy can show you nearby options with current prices. Shell, BP, and Chevron are reliable choices with good coverage.`
+        ],
+        'restaurant': [
+          `I can help you find restaurants! Highway exits typically have fast food options like McDonald's, Subway, or local diners. For sit-down restaurants, try checking near shopping centers or downtown areas in nearby towns.`,
+          `Look for restaurant signs at upcoming exits or use a food delivery app to see what's nearby. Highway travel plazas often have multiple food options in one location.`
+        ],
+        'coffee': [
+          `Coffee shops are usually found at highway exits! Look for Starbucks, Dunkin', or local coffee shops. Many gas stations also have good coffee. Travel centers often have multiple coffee options.`
+        ],
+        'hotel': [
+          `Hotels are typically located at major highway exits. Look for signs for brands like Holiday Inn, Hampton Inn, or Best Western. Booking apps can show availability and prices for your route.`
+        ],
+        'hospital': [
+          `For hospitals, follow signs for "Hospital" or "Medical Center" from major highways. In emergencies, call 911. Most GPS systems can navigate to the nearest hospital quickly.`
+        ],
+        'pharmacy': [
+          `Pharmacies like CVS, Walgreens, and Rite Aid are commonly found in shopping centers and near grocery stores. Many are open late or 24 hours for urgent needs.`
+        ],
+        'rest area': [
+          `Rest areas are marked with blue signs on highways. They typically have restrooms, picnic tables, and parking. Travel plazas offer more amenities like food and fuel.`
+        ]
+      };
+
+      const responses = fallbackResponses[placeType.toLowerCase()] || [
+        `I can help you find ${placeType} locations! Try checking at the next highway exit or use your navigation app to locate nearby options. Most major routes have good coverage for essential services.`
+      ];
+
+      return responses[Math.floor(Math.random() * responses.length)];
     }
 
     // Get safety warnings for current location
