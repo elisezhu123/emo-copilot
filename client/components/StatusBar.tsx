@@ -411,7 +411,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
   // Default design for dashboard
   return (
-    <div className={`flex justify-evenly items-center w-full h-5 px-5 py-5 ${isDraggable ? 'cursor-move' : ''}`} {...dragHandlers}>
+    <div className={`flex justify-between items-center w-full h-5 px-5 py-5 ${isDraggable ? 'cursor-move' : ''}`} {...dragHandlers}>
       {/* Left Side - Active State */}
       <div className="flex justify-center items-center gap-2">
         <svg width="12" height="12" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
