@@ -718,6 +718,96 @@ class FreesoundService {
 
     return filterMap[genre] || `tag:music tag:${genre.toLowerCase()}`;
   }
+
+  // Genre-aware search methods that preserve the target genre
+  private async searchTracksWithGenre(query: string, targetGenre: string, filters: any = {}): Promise<Track[]> {
+    if (!this.isConfigured()) {
+      console.warn('Freesound API key not configured, using fallback tracks');
+      return this.getFallbackTracks();
+    }
+
+    try {
+      // Target Freesound's Music category specifically for proper music playlists
+      const musicQuery = `${query}`;
+
+      const params = new URLSearchParams({
+        token: this.apiKey,
+        query: `${musicQuery} music`,
+        page_size: '15',
+        fields: 'id,name,username,duration,tags,previews,type,channels,license',
+        filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
+        sort: 'rating_desc'
+      });
+
+      console.log('🎵 Searching Freesound with target genre:', targetGenre, `${this.baseUrl}/search/text/?${params}`);
+
+      const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Freesound API error response:', errorText);
+        throw new Error(`Freesound API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Found', data.count, 'total results for', targetGenre);
+
+      if (!data.results || data.results.length === 0) {
+        console.warn('❌ No tracks found in Freesound API response for', targetGenre);
+        return [];
+      }
+
+      const convertedTracks = await this.convertToTracks(data.results, targetGenre);
+      console.log('✅ Converted', convertedTracks.length, 'tracks for genre:', targetGenre);
+      return convertedTracks;
+    } catch (error) {
+      console.error('❌ Error fetching from Freesound:', error);
+      return this.getFallbackTracks();
+    }
+  }
+
+  private async searchMusicCategoryWithGenre(genre: string): Promise<Track[]> {
+    try {
+      const filter = this.getMusicCategoryFilters(genre);
+
+      const params = new URLSearchParams({
+        token: this.apiKey,
+        query: `${genre} music`,
+        page_size: '15',
+        fields: 'id,name,username,duration,tags,previews,type,channels,license',
+        filter: `type:(wav OR mp3) duration:[30.0 TO 180.0] ${filter}`,
+        sort: 'downloads_desc'
+      });
+
+      console.log('🎵 Searching music category for:', genre);
+
+      const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors'
+      });
+
+      if (!response.ok) {
+        throw new Error(`Music category search failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Music category search found', data.results?.length || 0, 'tracks for', genre);
+
+      return await this.convertToTracks(data.results || [], genre);
+    } catch (error) {
+      console.error('❌ Music category search failed for', genre, ':', error);
+      return [];
+    }
+  }
 }
 
 export const freesoundService = FreesoundService.getInstance();
