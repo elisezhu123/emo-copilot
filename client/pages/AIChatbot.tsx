@@ -1961,7 +1961,7 @@ Just speak naturally - I understand many variations of these commands!`;
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
 • Don't drive when drowsy - pull over safely
-��� Keep 3-second following distance (6+ in bad weather)
+���� Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
       }
@@ -2720,6 +2720,19 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
         }, 3000);
 
         return childStoryResponse;
+      }
+
+      // Handle general story confirmation (yes/yeah after story offer)
+      if ((userLower.includes('yes') || userLower.includes('yeah') || userLower.includes('sure') || userLower.includes('ok')) &&
+          messages.slice(-3).some(msg => msg.text.includes('story') || msg.text.includes('tell'))) {
+        const stories = [
+          "Once upon a time, a little star got lost in the sky. A friendly cloud guided it home by creating sparkly raindrops that lit up the path. The star learned that asking for help makes you braver, not weaker!",
+          "There was a brave little mouse who wanted to help a giant elephant. The elephant was scared of a tiny spider! The mouse gently moved the spider to safety, and they all became best friends.",
+          "A magical tree grew candy apples that granted one wish each. A kind girl wished for all the forest animals to have warm homes for winter. Her selfless wish made the tree bloom year-round!"
+        ];
+        const randomStory = stories[Math.floor(Math.random() * stories.length)];
+        speakText(randomStory);
+        return randomStory;
       }
 
       // Handle story selection when user responds to child story offer
