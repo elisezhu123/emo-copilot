@@ -26,6 +26,22 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
   const CALIBRATION_DURATION = 2 * 60 * 1000; // 2 minutes for baseline calibration
 
   useEffect(() => {
+    // Subscribe to car state changes for manual emotion selection
+    const unsubscribeCarState = carStateManager.subscribe((carState) => {
+      if (carState.driverState !== currentState) {
+        console.log('🧠 Manual emotion selection:', carState.driverState);
+        setCurrentState(carState.driverState);
+        setManualOverride(true);
+        setStateStartTime(Date.now());
+
+        // Reset manual override after 5 minutes to allow automatic detection again
+        setTimeout(() => {
+          setManualOverride(false);
+          console.log('🧠 Manual override expired, resuming automatic detection');
+        }, 5 * 60 * 1000);
+      }
+    });
+
     // Subscribe to HRV data changes
     const unsubscribeHRV = arduinoService.subscribeHRV((data: HRVData) => {
       setCurrentHRV(data.value);
@@ -45,23 +61,28 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
           const latestHRValue = data.values.length > 0 ? data.values[data.values.length - 1] : latestHR;
           collectBaselineData(latestHR, latestHRValue);
         } else {
-          // After calibration, perform emotional analysis
+          // After calibration, perform emotional analysis (only if not manually overridden)
           if (calibrationPeriod) {
             setCalibrationPeriod(false);
             console.log('🎯 Calibration complete. Baseline HR:', baselineHeartRate, 'Baseline SDNN:', baselineSDNN);
           }
-          // Use latest HR value from array for HRV analysis
-          const latestHRValue = data.values.length > 0 ? data.values[data.values.length - 1] : latestHR;
-          performEmotionalAnalysis(latestHR, latestHRValue, currentTime);
+
+          // Only perform automatic analysis if not manually overridden
+          if (!manualOverride) {
+            // Use latest HR value from array for HRV analysis
+            const latestHRValue = data.values.length > 0 ? data.values[data.values.length - 1] : latestHR;
+            performEmotionalAnalysis(latestHR, latestHRValue, currentTime);
+          }
         }
       }
     });
 
     return () => {
+      unsubscribeCarState();
       unsubscribeHRV();
       unsubscribeHR();
     };
-  }, [baselineHeartRate, baselineSDNN, calibrationPeriod]);
+  }, [baselineHeartRate, baselineSDNN, calibrationPeriod, currentState, manualOverride]);
 
   // Collect baseline data during calibration period
   const collectBaselineData = (heartRate: number, hrv: number) => {
