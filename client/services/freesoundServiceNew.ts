@@ -926,17 +926,24 @@ class FreesoundService {
         page: '1', // Start with page 1 to avoid empty results
         fields: 'id,name,username,duration,tags,previews,type,license',
         filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
-        sort: 'rating_desc', // Use consistent sorting
-        token: this.apiKey
+        sort: 'rating_desc' // Use consistent sorting
       });
 
-      console.log(`🎵 Simplified search for ${targetGenre}: query="${query}", URL: ${this.baseUrl}/search/text/?${params}`);
+      console.log(`🎵 Simplified search for ${targetGenre}: query="${query}"`);
+
+      // Get authentication parameters
+      const auth = await this.getAuthParams();
+
+      // Add auth params to URLSearchParams
+      Object.entries(auth.params).forEach(([key, value]) => {
+        if (value) params.set(key, value.toString());
+      });
+
+      console.log(`🎵 Final URL: ${this.baseUrl}/search/text/?${params}`);
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
+        headers: auth.headers,
         mode: 'cors'
       });
 
