@@ -260,7 +260,9 @@ const MusicPlaylists = () => {
           </div>
           <div className="flex-1">
             <h4 className="text-base font-medium text-black lg:text-xl">
-              {currentTrack ? currentTrack.title : 'Select music genres first, then click play'}
+              {currentTrack ? currentTrack.title :
+                (isLoadingTracks || isUpdating) ? 'Loading your music...' :
+                'Select music genres first, then click play'}
             </h4>
             <p className="text-xs text-emotion-default lg:text-sm">
               {currentTrack ? (
@@ -273,7 +275,9 @@ const MusicPlaylists = () => {
                   )}
                 </>
               ) : (
-                'Select music genres first to load tracks'
+                (isLoadingTracks || isUpdating) ?
+                  (isUpdating ? 'Updating your playlists...' : 'Loading tracks from your selected genres...') :
+                  'Select music genres first to load tracks'
               )}
             </p>
           </div>
