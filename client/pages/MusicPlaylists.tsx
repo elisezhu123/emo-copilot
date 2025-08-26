@@ -140,45 +140,31 @@ const MusicPlaylists = () => {
     }
   };
 
-  // Enhanced navigation detection for immediate auto-updates
+  // Simplified navigation detection for reliable auto-updates
   useEffect(() => {
     console.log('🔄 Auto-update: Navigation to:', location.pathname);
 
-    // Always check when we're on the playlists page
-    if (location.pathname === '/music-playlists') {
-      console.log('🔄 Auto-update: On playlists page, checking for changes...');
+    // When navigating TO the playlists page from another page
+    if (location.pathname === '/music-playlists' && lastLocationRef.current && lastLocationRef.current !== location.pathname) {
+      console.log('🔄 Auto-update: Returned to playlists, checking for genre changes...');
 
-      // Check for genre changes when on playlists page
-      const checkAndUpdate = () => {
+      // Small delay to ensure localStorage is updated after navigation
+      setTimeout(() => {
         const currentGenres = musicService.loadSelectedGenres();
         const previousGenres = initialGenresRef.current;
         const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
 
-        console.log('🔄 Auto-update: Current genres:', currentGenres);
-        console.log('🔄 Auto-update: Previous genres:', previousGenres);
-        console.log('🔄 Auto-update: Genres changed?', genresChanged);
-        console.log('🔄 Auto-update: Is navigation from other page?', lastLocationRef.current !== location.pathname);
+        console.log('🔄 Auto-update: Navigation check - Current:', currentGenres);
+        console.log('🔄 Auto-update: Navigation check - Previous:', previousGenres);
+        console.log('🔄 Auto-update: Navigation check - Changed?', genresChanged);
 
-        // Update if genres changed OR if we navigated from another page with genres
-        const shouldUpdate = genresChanged ||
-                           (!previousGenres || previousGenres.length === 0) ||
-                           (lastLocationRef.current && lastLocationRef.current !== location.pathname && currentGenres && currentGenres.length > 0);
-
-        if (shouldUpdate) {
-          console.log('🔄 Auto-update: Updating playlists automatically');
-          initialGenresRef.current = currentGenres || [];
-          if (currentGenres && currentGenres.length > 0) {
-            setIsUpdating(true);
-            loadTracks(true, false);
-          }
+        if (genresChanged && currentGenres && currentGenres.length > 0) {
+          console.log('🔄 Auto-update: Genre change detected on navigation - updating automatically');
+          initialGenresRef.current = currentGenres;
+          setIsUpdating(true);
+          loadTracks(true, false);
         }
-      };
-
-      // Check immediately and also after delays to catch any timing issues
-      checkAndUpdate();
-      setTimeout(checkAndUpdate, 100);
-      setTimeout(checkAndUpdate, 300);
-      setTimeout(checkAndUpdate, 600);
+      }, 200);
     }
 
     lastLocationRef.current = location.pathname;
