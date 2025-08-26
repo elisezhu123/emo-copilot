@@ -2240,7 +2240,73 @@ ${response}
   const callDeepSeekAPI = async (userMessage: string): Promise<string> => {
     // Handle comprehensive voice commands for UI interactions
     const userLower = userMessage.toLowerCase();
-    
+
+    // Direct music playback commands - play specific genres without navigation
+    if (userLower.includes('play') && userLower.includes('music')) {
+      let genreToPlay = '';
+      let genreResponse = '';
+
+      if (userLower.includes('rock')) {
+        genreToPlay = 'Rock';
+        genreResponse = "🎸 Starting rock music! Get ready for some energizing beats to power your drive!";
+      } else if (userLower.includes('classical')) {
+        genreToPlay = 'Classical';
+        genreResponse = "🎼 Playing classical music! Perfect for a calm, focused drive with beautiful melodies.";
+      } else if (userLower.includes('jazz')) {
+        genreToPlay = 'Jazz';
+        genreResponse = "🎷 Jazz music starting! Smooth, sophisticated sounds for your journey.";
+      } else if (userLower.includes('ambient') || userLower.includes('chill')) {
+        genreToPlay = 'Ambient';
+        genreResponse = "🌊 Ambient music playing! Relaxing soundscapes to keep you calm and centered.";
+      } else if (userLower.includes('pop')) {
+        genreToPlay = 'Pop';
+        genreResponse = "🎤 Pop music starting! Catchy tunes to make your drive more fun!";
+      } else if (userLower.includes('electronic') || userLower.includes('techno') || userLower.includes('edm')) {
+        genreToPlay = 'Electro Pop';
+        genreResponse = "🎧 Electronic music playing! High-energy beats to energize your drive!";
+      } else if (userLower.includes('country')) {
+        genreToPlay = 'Country';
+        genreResponse = "🤠 Country music starting! Perfect road trip vibes for your journey!";
+      } else if (userLower.includes('blues')) {
+        genreToPlay = 'Blues';
+        genreResponse = "🎸 Blues music playing! Soulful sounds for a smooth drive.";
+      }
+
+      if (genreToPlay) {
+        // Show music emoji
+        setTimeout(() => {
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+        }, 1000);
+
+        // Start playing the requested genre
+        setTimeout(async () => {
+          try {
+            console.log(`🎵 Chatbot: Starting ${genreToPlay} music directly`);
+
+            // Set the genre in localStorage
+            musicService.saveSelectedGenres([genreToPlay]);
+
+            // Load and play tracks
+            await simpleMusicService.forceFreshReload([genreToPlay], true);
+            const tracks = await simpleMusicService.getAllTracks();
+
+            if (tracks.length > 0) {
+              console.log(`🎵 Chatbot: Found ${tracks.length} ${genreToPlay} tracks, starting playback`);
+              audioManager.setPlaylist(tracks);
+              await audioManager.playTrack(tracks[0]);
+            } else {
+              console.warn(`🎵 Chatbot: No ${genreToPlay} tracks found`);
+            }
+          } catch (error) {
+            console.error(`🎵 Chatbot: Error playing ${genreToPlay} music:`, error);
+          }
+        }, 1500);
+
+        return genreResponse;
+      }
+    }
+
     // Music genre selection voice commands
     if (userLower.includes('select') || userLower.includes('choose') || userLower.includes('pick')) {
       // Music genre selection
