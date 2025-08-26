@@ -46,6 +46,41 @@ const StatusBar: React.FC<StatusBarProps> = ({
     return () => clearInterval(timer);
   }, []);
 
+  // Driver state subscription
+  useEffect(() => {
+    if (showDriverState) {
+      const unsubscribe = carStateManager.subscribe((newState) => {
+        setDriverState(newState.driverState);
+      });
+
+      // Initialize with current state
+      const currentState = carStateManager.getState();
+      setDriverState(currentState.driverState);
+
+      return unsubscribe;
+    }
+  }, [showDriverState]);
+
+  // Helper function to get driver state display info
+  const getDriverStateInfo = (state: DriverStateType) => {
+    switch (state) {
+      case 'anxious':
+        return { text: 'Driver State: Anxious', color: '#FF8B7E' };
+      case 'stressed':
+        return { text: 'Driver State: Stressed', color: '#FF8B7E' };
+      case 'neutral':
+        return { text: 'Driver State: Neutral', color: '#FF8B7E' };
+      case 'focused':
+        return { text: 'Driver State: Focused', color: '#FF8B7E' };
+      case 'calm':
+        return { text: 'Driver State: Calm', color: '#FF8B7E' };
+      case 'relaxed':
+        return { text: 'Driver State: Relaxed', color: '#FF8B7E' };
+      default:
+        return { text: 'Driver State: Neutral', color: '#FF8B7E' };
+    }
+  };
+
   // Format time for display
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-US', { 
