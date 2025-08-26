@@ -3552,7 +3552,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
   return (
     <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl flex flex-col h-screen">
       {/* Normal Chat Interface */}
-      {!(showComfortEmoji || showShockEmoji || showCuteEmoji || showCryEmoji || showEnjoyEmoji || showACEmoji || showLightingEmoji || showHappyEmoji || showSadEmoji || showAlertEmoji || showYesPermissionEmoji || showNoPermissionEmoji || showMusicEmoji || showHotEmoji || showBreathingEmoji) && (
+      {!(showComfortEmoji || showShockEmoji || showCuteEmoji || showCryEmoji || showEnjoyEmoji || showACEmoji || showLightingEmoji || showHappyEmoji || showSadEmoji || showAlertEmoji || showYesPermissionEmoji || showNoPermissionEmoji || showMusicEmoji || showHotEmoji || showBreathingEmoji || showLaughEmoji) && (
         <>
           {/* Status Bar */}
           <StatusBar
