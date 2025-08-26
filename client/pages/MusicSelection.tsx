@@ -62,7 +62,8 @@ const MusicSelection = () => {
       {/* Status Bar */}
       <StatusBar
         title="Music Selection"
-        showHomeButton={true}
+        showBackButton={true}
+        showDriverState={true}
         showTemperature={true}
       />
 
