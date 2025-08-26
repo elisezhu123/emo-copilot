@@ -88,7 +88,6 @@ class FreesoundService {
       const musicQuery = randomVariations[Math.floor(Math.random() * randomVariations.length)];
 
       const params = new URLSearchParams({
-        token: this.apiKey,
         query: `${musicQuery} music`,
         page_size: '20', // Increased for more variety
         page: randomPage.toString(),
@@ -104,6 +103,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
