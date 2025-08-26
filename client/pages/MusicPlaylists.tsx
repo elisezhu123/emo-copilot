@@ -26,6 +26,18 @@ const MusicPlaylists = () => {
   });
 
   useEffect(() => {
+    // Immediately check if we have genres to show loading state
+    const immediateGenreCheck = () => {
+      const genres = musicService.loadSelectedGenres();
+      console.log('🔍 Immediate genre check on mount:', genres);
+      if (genres && genres.length > 0) {
+        console.log('🔍 Genres detected, will start loading');
+        setIsLoadingTracks(true);
+      }
+    };
+
+    immediateGenreCheck();
+
     // Load tracks from the music service - same logic as dashboard
     const loadTracks = async (isUpdate = false) => {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
