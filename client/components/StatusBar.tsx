@@ -119,6 +119,20 @@ const StatusBar: React.FC<StatusBarProps> = ({
     }, 100);
   };
 
+  // Expose function globally for direct updates from dashboard
+  useEffect(() => {
+    if (showDriverState) {
+      (window as any).updateStatusBarDriverState = (newState: DriverStateType) => {
+        console.log('🌐 Direct StatusBar driver state update:', newState);
+        setDriverState(newState);
+      };
+
+      return () => {
+        delete (window as any).updateStatusBarDriverState;
+      };
+    }
+  }, [showDriverState]);
+
   // Format time for display
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-US', { 
