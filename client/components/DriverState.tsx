@@ -29,17 +29,13 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
     // Subscribe to car state changes for manual emotion selection
     const unsubscribeCarState = carStateManager.subscribe((carState) => {
       if (carState.driverState !== currentState) {
-        console.log('🧠 Manual emotion selection:', carState.driverState);
+        console.log('🧠 Driver state changed:', carState.driverState);
         setCurrentState(carState.driverState);
-        setManualOverride(true);
         setStateStartTime(Date.now());
-
-        // Reset manual override after 5 minutes to allow automatic detection again
-        setTimeout(() => {
-          setManualOverride(false);
-          console.log('🧠 Manual override expired, resuming automatic detection');
-        }, 5 * 60 * 1000);
       }
+
+      // Update local manual override state from carStateManager
+      setManualOverride(carState.manualOverride || false);
     });
 
     // Subscribe to HRV data changes
