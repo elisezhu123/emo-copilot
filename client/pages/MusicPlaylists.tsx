@@ -35,6 +35,9 @@ const MusicPlaylists = () => {
 
         const savedGenres = musicService.loadSelectedGenres();
 
+        // Store initial genres for comparison in handleFocus
+        initialGenresRef.current = savedGenres || [];
+
         if (savedGenres && savedGenres.length > 0) {
           console.log('⚡ Fast loading music for genres:', savedGenres);
 
