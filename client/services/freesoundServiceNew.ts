@@ -48,11 +48,17 @@ class FreesoundService {
 
       if (tokenResponse.ok) {
         const tokenData = await tokenResponse.json();
+        console.log('🔐 OAuth response data:', tokenData);
         if (tokenData.access_token) {
           this.apiKey = tokenData.access_token;
           console.log('✅ OAuth access token obtained successfully');
           return;
+        } else {
+          console.warn('⚠️ OAuth response missing access_token:', tokenData);
         }
+      } else {
+        const errorText = await tokenResponse.text().catch(() => 'No error details');
+        console.error('❌ OAuth token exchange failed:', tokenResponse.status, tokenResponse.statusText, errorText);
       }
 
       console.warn('⚠️ OAuth token exchange failed, trying direct API key approach');
