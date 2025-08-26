@@ -107,8 +107,11 @@ const MusicPlaylists = () => {
         setCurrentTrack(null);
       } finally {
         console.log('🔍 MusicPlaylists: Setting loading states to false');
-        setIsLoadingTracks(false);
-        setIsUpdating(false);
+        // Add a small delay to ensure user sees the loading state
+        setTimeout(() => {
+          setIsLoadingTracks(false);
+          setIsUpdating(false);
+        }, isUpdate ? 800 : 500); // Longer delay for updates
       }
     };
 
