@@ -75,7 +75,7 @@ const MusicPlaylists = () => {
         console.log('🎵 Force reloading tracks for genres:', savedGenres);
         await simpleMusicService.forceFreshReload(savedGenres, true); // Force fresh reload
 
-        const allTracks = await simpleMusicService.getAllTracks();
+        let allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
 
         // Check if we got tracks from Freesound API
@@ -117,7 +117,7 @@ const MusicPlaylists = () => {
           );
 
           console.log(`🎵 Using ${fallbackTracks.length} fallback tracks`);
-          allTracks.push(...fallbackTracks);
+          allTracks = [...allTracks, ...fallbackTracks];
         }
 
         // Log genre mixing for multiple genres
