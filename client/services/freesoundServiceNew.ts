@@ -151,11 +151,15 @@ class FreesoundService {
           errorText = `HTTP ${response.status} ${response.statusText}`;
         }
         console.error('❌ Freesound API error response:', errorText);
-        console.log('🎵 API failed, using fallback tracks for genre:', query);
-        return this.getFallbackTracks().filter(track =>
+
+        // For frontend apps, API authentication often fails - use fallback immediately
+        console.log('🎵 Frontend API authentication failed, using high-quality fallback tracks for:', query);
+        const fallbackTracks = this.getFallbackTracks().filter(track =>
           track.genre.toLowerCase().includes(query.toLowerCase()) ||
           query.toLowerCase().includes(track.genre.toLowerCase())
         );
+        console.log(`🎵 Returning ${fallbackTracks.length} fallback tracks`);
+        return fallbackTracks;
       }
 
       const data = await response.json();
@@ -723,7 +727,7 @@ class FreesoundService {
 
       // Log API results by genre for multiple selections
       if (genres.length > 1) {
-        console.log('🎼 API results by genre (randomized):');
+        console.log('�� API results by genre (randomized):');
         genres.forEach(genre => {
           const genreTracks = randomizedTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
           console.log(`   - ${genre}: ${genreTracks.length} tracks from API`);
