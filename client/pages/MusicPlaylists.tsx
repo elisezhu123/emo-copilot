@@ -87,11 +87,21 @@ const MusicPlaylists = () => {
         setTracks(finalTracks);
 
         if (finalTracks.length > 0) {
-          // Only set new current track if we don't have one, or if this is not an update
-          if (!currentTrack || !isUpdate) {
-            setCurrentTrack(finalTracks[0]);
-          }
+          // Always use the first track from randomized list for variety
+          const selectedTrack = finalTracks[0];
+          setCurrentTrack(selectedTrack);
           audioManager.setPlaylist(finalTracks);
+
+          // Auto-play: Start playing automatically when tracks load
+          console.log('🎵 Auto-play: Starting automatic playback of:', selectedTrack.title);
+          setTimeout(async () => {
+            try {
+              await audioManager.playTrack(selectedTrack);
+              console.log('🎵 Auto-play: Successfully started playback');
+            } catch (error) {
+              console.error('🎵 Auto-play: Failed to start playback:', error);
+            }
+          }, 500); // Small delay to ensure UI is ready
         }
 
         // Update the ref with successfully loaded genres for future focus comparisons
