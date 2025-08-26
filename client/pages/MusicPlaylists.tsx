@@ -248,18 +248,25 @@ const MusicPlaylists = () => {
 
     // Periodic check for genre changes as a backup mechanism
     const genreCheckInterval = setInterval(() => {
-      const currentGenres = musicService.loadSelectedGenres();
-      const previousGenres = initialGenresRef.current;
-      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+      try {
+        const currentGenres = musicService.loadSelectedGenres();
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
 
-      if (genresChanged) {
-        console.log('🔄 Periodic check detected genre change');
-        console.log('🔄 Periodic - Current genres:', currentGenres);
-        console.log('🔄 Periodic - Previous genres:', previousGenres);
-        initialGenresRef.current = currentGenres || [];
-        loadTracks(true);
+        if (genresChanged) {
+          console.log('🔄 Periodic check detected genre change');
+          console.log('🔄 Periodic - Current genres:', currentGenres);
+          console.log('🔄 Periodic - Previous genres:', previousGenres);
+          initialGenresRef.current = currentGenres || [];
+          // Use setTimeout to prevent blocking the interval
+          setTimeout(() => {
+            loadTracks(true);
+          }, 100);
+        }
+      } catch (error) {
+        console.error('Error in periodic genre check:', error);
       }
-    }, 2000); // Check every 2 seconds
+    }, 3000); // Check every 3 seconds (reduced frequency)
 
     return () => {
       unsubscribe();
