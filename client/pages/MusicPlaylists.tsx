@@ -38,34 +38,9 @@ const MusicPlaylists = () => {
         return;
       }
 
-      // Debug localStorage directly first
-      const rawStored = localStorage.getItem('selectedMusicGenres');
-      console.log('🔍 RAW localStorage check:', rawStored);
-      console.log('🔍 localStorage available:', typeof localStorage !== 'undefined');
-
       const savedGenres = musicService.loadSelectedGenres();
       console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
       console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
-      console.log('🔍 MusicPlaylists: Genres array:', JSON.stringify(savedGenres));
-
-      // TEMPORARY TEST: If no genres, simulate having Classical for testing
-      if (!savedGenres || savedGenres.length === 0) {
-        console.log('🧪 TESTING: No genres found, simulating Classical for testing...');
-        const testGenres = ['Classical'];
-        musicService.saveSelectedGenres(testGenres);
-        console.log('🧪 TESTING: Saved Classical genre for testing');
-        // Reload the genres after saving
-        const reloadedGenres = musicService.loadSelectedGenres();
-        console.log('🧪 TESTING: Reloaded genres after save:', reloadedGenres);
-      }
-
-      // Special debug for Rock and Blues
-      if (savedGenres && (savedGenres.includes('Rock') || savedGenres.includes('Blues'))) {
-        console.log('🎸 ROCK/BLUES DEBUG (main): Selected genres contain Rock or Blues!');
-        console.log('🎸 ROCK/BLUES DEBUG (main): Exact genres:', savedGenres);
-        console.log('🎸 ROCK/BLUES DEBUG (main): Has Rock:', savedGenres.includes('Rock'));
-        console.log('🎸 ROCK/BLUES DEBUG (main): Has Blues:', savedGenres.includes('Blues'));
-      }
 
       // If we have genres, show loading state
       if (savedGenres && savedGenres.length > 0) {
