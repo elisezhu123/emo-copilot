@@ -571,13 +571,22 @@ const MusicPlaylists = () => {
           </div>
           <button
             onClick={() => {
-              console.log('🔄 Manual refresh triggered');
-              const currentGenres = musicService.loadSelectedGenres();
-              console.log('🔄 Manual refresh - Current genres:', currentGenres);
-              if (currentGenres && currentGenres.length > 0) {
-                console.log('🔄 Manual refresh - Updating playlists');
-                initialGenresRef.current = currentGenres;
-                loadTracks(true);
+              try {
+                console.log('🔄 Manual refresh triggered');
+                const currentGenres = musicService.loadSelectedGenres();
+                console.log('🔄 Manual refresh - Current genres:', currentGenres);
+                if (currentGenres && currentGenres.length > 0) {
+                  console.log('🔄 Manual refresh - Updating playlists');
+                  initialGenresRef.current = currentGenres;
+                  // Use setTimeout to prevent blocking the UI
+                  setTimeout(() => {
+                    loadTracks(true);
+                  }, 100);
+                } else {
+                  console.log('🔄 Manual refresh - No genres selected');
+                }
+              } catch (error) {
+                console.error('Error in manual refresh:', error);
               }
             }}
             className="flex items-center gap-1 px-2 py-1 text-xs text-emotion-default hover:text-emotion-orange transition-colors"
