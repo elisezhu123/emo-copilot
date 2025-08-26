@@ -754,21 +754,21 @@ class FreesoundService {
     return searchTermsMap[genre] || [genre.toLowerCase()];
   }
 
-  // Get Music category specific filters for each genre
+  // Get Music category specific filters for each genre - simplified to avoid 404 errors
   private getMusicCategoryFilters(genre: string): string {
     const filterMap: { [key: string]: string } = {
-      'Classical': 'tag:music (tag:classical OR tag:piano OR tag:orchestra OR tag:symphony OR tag:chamber)',
-      'Ambient': 'tag:music (tag:ambient OR tag:atmospheric OR tag:soundscape OR tag:drone)',
-      'Jazz': 'tag:music (tag:jazz OR tag:blues OR tag:swing OR tag:smooth)',
-      'Folk': 'tag:music (tag:folk OR tag:acoustic OR tag:traditional)',
-      'Rock': 'tag:music (tag:rock OR tag:guitar OR tag:electric OR tag:alternative)',
-      'Blues': 'tag:music (tag:blues OR tag:delta OR tag:electric OR tag:guitar)',
-      'Chillout': 'tag:music (tag:chill OR tag:chillout OR tag:downtempo OR tag:lounge OR tag:relaxed)',
-      'Country': 'tag:music (tag:country OR tag:bluegrass OR tag:americana OR tag:western)',
-      'Hip-Pop': 'tag:music (tag:hip OR tag:hop OR tag:rap OR tag:urban OR tag:beats)',
-      'Electro Pop': 'tag:music (tag:electronic OR tag:synth OR tag:electro OR tag:synthpop)',
-      'Downbeat': 'tag:music (tag:downbeat OR tag:trip OR tag:downtempo OR tag:chillhop OR tag:lofi)',
-      'New Age': 'tag:music (tag:new OR tag:age OR tag:meditation OR tag:zen OR tag:spiritual OR tag:healing)'
+      'Classical': 'tag:music tag:classical',
+      'Ambient': 'tag:music tag:ambient',
+      'Jazz': 'tag:music tag:jazz',
+      'Folk': 'tag:music tag:folk',
+      'Rock': 'tag:music tag:rock',
+      'Blues': 'tag:music tag:blues',
+      'Chillout': 'tag:music tag:chill',
+      'Country': 'tag:music tag:country',
+      'Hip-Pop': 'tag:music tag:hip-hop',
+      'Electro Pop': 'tag:music tag:electronic',
+      'Downbeat': 'tag:music tag:downtempo',
+      'New Age': 'tag:music tag:meditation'
     };
 
     return filterMap[genre] || `tag:music tag:${genre.toLowerCase()}`;
@@ -844,24 +844,18 @@ class FreesoundService {
     }
 
     try {
-      // Add randomization for dynamic playlists
-      const randomVariations = this.getRandomSearchVariations(query);
-      const randomSort = this.getRandomSort();
-      const randomPage = this.getRandomPage();
-
-      const musicQuery = randomVariations[Math.floor(Math.random() * randomVariations.length)];
-
+      // Use simplified search approach to avoid 404 errors
       const params = new URLSearchParams({
         token: this.apiKey,
-        query: `${musicQuery} music`,
-        page_size: '20', // Increased for more variety
-        page: randomPage.toString(),
-        fields: 'id,name,username,duration,tags,previews,type,channels,license',
-        filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
-        sort: randomSort
+        query: `${query} music`,
+        page_size: '20',
+        page: '1', // Start with page 1 to avoid empty results
+        fields: 'id,name,username,duration,tags,previews,type,license',
+        filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
+        sort: 'rating_desc' // Use consistent sorting
       });
 
-      console.log(`🎲 Dynamic search for ${targetGenre}: query="${musicQuery}", sort="${randomSort}", page=${randomPage}`);
+      console.log(`🎵 Simplified search for ${targetGenre}: query="${query}", URL: ${this.baseUrl}/search/text/?${params}`);
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
@@ -879,22 +873,23 @@ class FreesoundService {
           console.warn('Could not read error response text:', textError);
           errorText = `HTTP ${response.status} ${response.statusText}`;
         }
-        console.error('❌ Freesound API error response:', errorText);
-        throw new Error(`Freesound API error: ${response.status} ${response.statusText} - ${errorText}`);
+        console.error(`❌ Freesound API error for ${targetGenre}:`, response.status, errorText);
+
+        // Instead of throwing, return empty array and let caller handle fallback
+        return [];
       }
 
       const data = await response.json();
-      console.log('✅ Found', data.count, 'total results for', targetGenre, 'with dynamic search');
+      console.log(`✅ Found ${data.count || 0} total results for ${targetGenre} with simplified search`);
 
       if (!data.results || data.results.length === 0) {
-        console.warn('❌ No tracks found in Freesound API response for', targetGenre);
+        console.warn(`❌ No tracks found in Freesound API response for ${targetGenre}`);
         return [];
       }
 
       const convertedTracks = await this.convertToTracks(data.results, targetGenre);
-      // Shuffle the results for additional randomness
       const shuffledTracks = this.shuffleArray(convertedTracks);
-      console.log('✅ Converted and shuffled', shuffledTracks.length, 'tracks for genre:', targetGenre);
+      console.log(`✅ Converted and shuffled ${shuffledTracks.length} tracks for genre: ${targetGenre}`);
       return shuffledTracks;
     } catch (error) {
       if (error.name === 'AbortError') {
@@ -904,60 +899,127 @@ class FreesoundService {
       } else {
         console.error(`❌ Error fetching from Freesound for genre: ${targetGenre}:`, error);
       }
-      console.log(`🔄 Falling back to local tracks for genre: ${targetGenre}`);
-      return this.shuffleArray(this.getFallbackTracks());
+
+      // Return empty array instead of fallback tracks here to let higher-level methods handle fallbacks
+      return [];
     }
   }
 
   private async searchMusicCategoryWithGenre(genre: string): Promise<Track[]> {
     try {
-      const filter = this.getMusicCategoryFilters(genre);
-      const randomSort = this.getRandomSort();
-      const randomPage = this.getRandomPage();
-      const randomVariations = this.getRandomSearchVariations(genre);
-      const randomQuery = randomVariations[Math.floor(Math.random() * randomVariations.length)];
+      // Try multiple search strategies to avoid 404 errors
+      const strategies = [
+        // Strategy 1: Simple genre tag search
+        () => this.trySimpleGenreSearch(genre),
+        // Strategy 2: Genre keyword search without complex filters
+        () => this.tryGenreKeywordSearch(genre),
+        // Strategy 3: Basic music search with minimal filtering
+        () => this.tryBasicMusicSearch(genre)
+      ];
 
-      const params = new URLSearchParams({
-        token: this.apiKey,
-        query: `${randomQuery} music`,
-        page_size: '20',
-        page: randomPage.toString(),
-        fields: 'id,name,username,duration,tags,previews,type,channels,license',
-        filter: `type:(wav OR mp3) duration:[30.0 TO 180.0] ${filter}`,
-        sort: randomSort
-      });
-
-      console.log(`🎲 Dynamic music category search for ${genre}: query="${randomQuery}", sort="${randomSort}", page=${randomPage}`);
-
-      const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        mode: 'cors'
-      });
-
-      if (!response.ok) {
-        let errorText = 'Unknown error';
+      for (const strategy of strategies) {
         try {
-          errorText = await response.text();
-        } catch (textError) {
-          console.warn('Could not read error response text:', textError);
-          errorText = `HTTP ${response.status} ${response.statusText}`;
+          const tracks = await strategy();
+          if (tracks.length > 0) {
+            console.log(`✅ Found ${tracks.length} tracks for ${genre} using fallback strategy`);
+            return tracks;
+          }
+        } catch (error) {
+          console.warn(`Strategy failed for ${genre}:`, error.message);
+          continue;
         }
-        console.error('❌ Music category search error response:', errorText);
-        throw new Error(`Music category search failed: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('✅ Dynamic music category search found', data.results?.length || 0, 'tracks for', genre);
-
-      const tracks = await this.convertToTracks(data.results || [], genre);
-      return this.shuffleArray(tracks);
+      console.warn(`❌ All search strategies failed for ${genre}`);
+      return [];
     } catch (error) {
       console.error('❌ Music category search failed for', genre, ':', error);
       return [];
     }
+  }
+
+  private async trySimpleGenreSearch(genre: string): Promise<Track[]> {
+    const params = new URLSearchParams({
+      token: this.apiKey,
+      query: `${genre.toLowerCase()} music`,
+      page_size: '20',
+      fields: 'id,name,username,duration,tags,previews,type,license',
+      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0] tag:music`,
+      sort: 'rating_desc'
+    });
+
+    console.log(`🎵 Simple genre search for ${genre}: ${this.baseUrl}/search/text/?${params}`);
+
+    const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      mode: 'cors'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`✅ Simple search found ${data.results?.length || 0} tracks for ${genre}`);
+    return await this.convertToTracks(data.results || [], genre);
+  }
+
+  private async tryGenreKeywordSearch(genre: string): Promise<Track[]> {
+    const searchTerms = this.getGenreSearchTerms(genre);
+    const searchTerm = searchTerms[0]; // Use the first, most basic search term
+
+    const params = new URLSearchParams({
+      token: this.apiKey,
+      query: searchTerm,
+      page_size: '15',
+      fields: 'id,name,username,duration,tags,previews,type,license',
+      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`,
+      sort: 'downloads_desc'
+    });
+
+    console.log(`🎵 Keyword search for ${genre} using term "${searchTerm}": ${this.baseUrl}/search/text/?${params}`);
+
+    const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      mode: 'cors'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`✅ Keyword search found ${data.results?.length || 0} tracks for ${genre}`);
+    return await this.convertToTracks(data.results || [], genre);
+  }
+
+  private async tryBasicMusicSearch(genre: string): Promise<Track[]> {
+    const params = new URLSearchParams({
+      token: this.apiKey,
+      query: 'music',
+      page_size: '10',
+      fields: 'id,name,username,duration,tags,previews,type,license',
+      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`,
+      sort: 'created_desc'
+    });
+
+    console.log(`🎵 Basic music search for ${genre}: ${this.baseUrl}/search/text/?${params}`);
+
+    const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      mode: 'cors'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`✅ Basic search found ${data.results?.length || 0} tracks for ${genre}`);
+    return await this.convertToTracks(data.results || [], genre);
   }
 }
 
