@@ -21,6 +21,7 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
   const [emotionalHistory, setEmotionalHistory] = useState<EmotionalAnalysisData[]>([]);
   const [stateStartTime, setStateStartTime] = useState<number>(Date.now());
   const [calibrationPeriod, setCalibrationPeriod] = useState<boolean>(true);
+  const [manualOverride, setManualOverride] = useState<boolean>(false);
   const calibrationStartTime = useRef<number>(Date.now());
   const CALIBRATION_DURATION = 2 * 60 * 1000; // 2 minutes for baseline calibration
 
