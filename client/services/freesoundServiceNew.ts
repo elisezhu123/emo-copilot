@@ -58,28 +58,10 @@ class FreesoundService {
     }
   }
 
-  // Get authentication parameters for API requests
+  // Get authentication parameters for API requests (simplified for frontend)
   private async getAuthParams(): Promise<{ headers: any, params: any }> {
-    // If no working method found, test the connection first
-    if (!this.workingAuthMethod) {
-      console.log('🔍 Testing API connection for authentication...');
-      const connectionWorking = await this.testApiConnection();
-      if (!connectionWorking) {
-        console.warn('⚠️ API connection test failed - calls will likely fail and use fallbacks');
-      }
-    }
-
-    // Return the working authentication method or fallback
-    if (this.workingAuthMethod) {
-      console.log(`✅ Using working auth method: ${this.workingAuthMethod.name}`);
-      return {
-        headers: { 'Accept': 'application/json', ...this.workingAuthMethod.headers },
-        params: this.workingAuthMethod.params
-      };
-    }
-
-    // Fallback to token parameter method
-    console.log('⚠️ No working auth method found, using fallback token approach');
+    // For frontend apps, use direct client ID as token parameter
+    console.log('🎵 Using direct client ID authentication');
     return {
       headers: { 'Accept': 'application/json' },
       params: { token: this.apiKey }
