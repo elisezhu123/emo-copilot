@@ -904,62 +904,6 @@ class FreesoundService {
     return await this.convertToTracks(data.results || [], genre);
   }
 
-  private async tryGenreKeywordSearch(genre: string): Promise<Track[]> {
-    const searchTerms = this.getGenreSearchTerms(genre);
-    const searchTerm = searchTerms[0]; // Use the first, most basic search term
-
-    const params = new URLSearchParams({
-      token: this.apiKey,
-      query: searchTerm,
-      page_size: '15',
-      fields: 'id,name,username,duration,tags,previews,type,license',
-      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`,
-      sort: 'downloads_desc'
-    });
-
-    console.log(`🎵 Keyword search for ${genre} using term "${searchTerm}": ${this.baseUrl}/search/text/?${params}`);
-
-    const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      mode: 'cors'
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log(`✅ Keyword search found ${data.results?.length || 0} tracks for ${genre}`);
-    return await this.convertToTracks(data.results || [], genre);
-  }
-
-  private async tryBasicMusicSearch(genre: string): Promise<Track[]> {
-    const params = new URLSearchParams({
-      token: this.apiKey,
-      query: 'music',
-      page_size: '10',
-      fields: 'id,name,username,duration,tags,previews,type,license',
-      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`,
-      sort: 'created_desc'
-    });
-
-    console.log(`🎵 Basic music search for ${genre}: ${this.baseUrl}/search/text/?${params}`);
-
-    const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      mode: 'cors'
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log(`✅ Basic search found ${data.results?.length || 0} tracks for ${genre}`);
-    return await this.convertToTracks(data.results || [], genre);
-  }
 }
 
 export const freesoundService = FreesoundService.getInstance();
