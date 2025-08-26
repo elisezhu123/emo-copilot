@@ -884,7 +884,15 @@ class FreesoundService {
       });
 
       if (!response.ok) {
-        throw new Error(`Music category search failed: ${response.status}`);
+        let errorText = 'Unknown error';
+        try {
+          errorText = await response.text();
+        } catch (textError) {
+          console.warn('Could not read error response text:', textError);
+          errorText = `HTTP ${response.status} ${response.statusText}`;
+        }
+        console.error('❌ Music category search error response:', errorText);
+        throw new Error(`Music category search failed: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
