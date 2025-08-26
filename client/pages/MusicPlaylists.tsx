@@ -605,7 +605,14 @@ const MusicPlaylists = () => {
             {tracks.map((track, index) => (
               <button
                 key={track.id}
-                onClick={() => playTrack(track)}
+                onClick={() => {
+                  try {
+                    console.log('🎵 Playing track:', track.title);
+                    playTrack(track);
+                  } catch (error) {
+                    console.error('Error in track onClick:', error);
+                  }
+                }}
                 className="flex items-center gap-2 bg-white border border-emotion-face rounded-lg p-2 hover:bg-gray-50 transition-colors"
               >
                 <div className="w-6 h-6 bg-emotion-orange rounded-lg flex-shrink-0"></div>
