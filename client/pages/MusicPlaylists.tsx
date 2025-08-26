@@ -27,19 +27,29 @@ const MusicPlaylists = () => {
 
   useEffect(() => {
     // Load tracks from the music service - same logic as dashboard
-    const loadTracks = async () => {
-      console.log('🔍 MusicPlaylists: Starting loadTracks function');
-      setIsLoadingTracks(true);
+    const loadTracks = async (isUpdate = false) => {
+      console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
+
+      const savedGenres = musicService.loadSelectedGenres();
+      console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+      console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
+
+      // If we have genres, show loading state
+      if (savedGenres && savedGenres.length > 0) {
+        if (isUpdate) {
+          setIsUpdating(true);
+          console.log('🔍 MusicPlaylists: Setting updating state to true');
+        } else {
+          setIsLoadingTracks(true);
+          console.log('🔍 MusicPlaylists: Setting loading state to true');
+        }
+      }
+
       try {
         // Test API configuration immediately
         console.log('🎵 Testing API configuration...');
         console.log('🎵 Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
         console.log('🎵 DeepSeek API Key:', import.meta.env.VITE_DEEPSEEK_API_KEY ? 'CONFIGURED' : 'MISSING');
-
-        const savedGenres = musicService.loadSelectedGenres();
-        console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
-        console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
-        console.log('🔍 MusicPlaylists: Setting loading state to true');
 
         // Store initial genres for comparison in handleFocus
         initialGenresRef.current = savedGenres || [];
@@ -67,6 +77,7 @@ const MusicPlaylists = () => {
 
           // Update the ref with successfully loaded genres for future focus comparisons
           initialGenresRef.current = savedGenres;
+          setHasInitiallyLoaded(true);
         } else {
           console.log('🔍 MusicPlaylists: No genres selected or empty array');
           console.log('🔍 MusicPlaylists: savedGenres value:', savedGenres);
@@ -75,6 +86,7 @@ const MusicPlaylists = () => {
           setCurrentTrack(null);
           // Reset the ref when no genres are selected
           initialGenresRef.current = [];
+          setHasInitiallyLoaded(false);
         }
       } catch (error) {
         console.error('🔍 MusicPlaylists: Error loading tracks:', error);
@@ -82,8 +94,9 @@ const MusicPlaylists = () => {
         setTracks([]);
         setCurrentTrack(null);
       } finally {
-        console.log('🔍 MusicPlaylists: Setting loading state to false');
+        console.log('🔍 MusicPlaylists: Setting loading states to false');
         setIsLoadingTracks(false);
+        setIsUpdating(false);
       }
     };
 
