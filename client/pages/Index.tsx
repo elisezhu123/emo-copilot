@@ -57,6 +57,7 @@ const EmoCopilotDashboard = () => {
       // Update local states to match global state
       setIsCoolingOn(newState.isAcOn);
       setIsLightingOn(newState.lightsOn);
+      setSelectedEmotion(newState.driverState);
       console.log('🚗 Dashboard synced with global car state:', newState);
       
       // Check if driver state changed to stressed
