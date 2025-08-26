@@ -147,7 +147,8 @@ class FreesoundService {
         }
       }
 
-      console.error('❌ All authentication methods failed');
+      console.error('❌ All authentication methods failed - API will use fallback tracks');
+      // Don't return false, let the system proceed with fallback tracks
       return false;
     } catch (error) {
       console.error('❌ Freesound API connection test failed:', error);
