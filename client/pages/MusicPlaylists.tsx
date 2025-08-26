@@ -86,7 +86,7 @@ const MusicPlaylists = () => {
     // Only refresh on focus if genres might have changed
     const handleFocus = () => {
       const currentGenres = musicService.loadSelectedGenres();
-      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(savedGenres?.sort());
+      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(initialGenresRef.current?.sort());
 
       if (genresChanged) {
         console.log('🔄 Genres changed - refreshing playlist');
