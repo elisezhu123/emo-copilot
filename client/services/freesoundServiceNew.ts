@@ -615,7 +615,7 @@ class FreesoundService {
 
       try {
         // First try Music category search for proper music playlists
-        const musicCategoryTracks = await this.searchMusicCategory(genre);
+        const musicCategoryTracks = await this.searchMusicCategoryWithGenre(genre);
         console.log(`✅ Found ${musicCategoryTracks.length} tracks for ${genre} from music category`);
         allTracks.push(...musicCategoryTracks);
 
@@ -625,7 +625,7 @@ class FreesoundService {
           const genreSearchTerms = this.getGenreSearchTerms(genre);
 
           for (const searchTerm of genreSearchTerms) {
-            const tracks = await this.searchTracks(searchTerm, {
+            const tracks = await this.searchTracksWithGenre(searchTerm, genre, {
               duration: 'duration:[30.0 TO 180.0]'
             });
             console.log(`✅ Found ${tracks.length} additional tracks for search term: ${searchTerm}`);
