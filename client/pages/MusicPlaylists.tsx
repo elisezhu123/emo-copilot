@@ -62,6 +62,9 @@ const MusicPlaylists = () => {
             setCurrentTrack(allTracks[0]);
             audioManager.setPlaylist(allTracks);
           }
+
+          // Update the ref with successfully loaded genres for future focus comparisons
+          initialGenresRef.current = savedGenres;
         } else {
           console.log('🔍 MusicPlaylists: No genres selected or empty array');
           console.log('🔍 MusicPlaylists: savedGenres value:', savedGenres);
