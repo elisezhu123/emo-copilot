@@ -15,6 +15,8 @@ interface StatusBarProps {
   showHomeButton?: boolean;
   isDraggable?: boolean;
   showTemperature?: boolean;
+  showBackButton?: boolean;
+  showDriverState?: boolean;
   onTemperatureExceed?: (temp: number) => void;
   onExtremeWeather?: (weather: WeatherCondition) => void;
 }
