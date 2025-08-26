@@ -1961,7 +1961,7 @@ Just speak naturally - I understand many variations of these commands!`;
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
 • Don't drive when drowsy - pull over safely
-���� Keep 3-second following distance (6+ in bad weather)
+��� Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
       }
@@ -2541,14 +2541,16 @@ ${response}
     // Voice control for closing/dismissing
     if (userLower.includes('close') || userLower.includes('dismiss') || userLower.includes('hide')) {
       if (userLower.includes('chat') || userLower.includes('conversation')) {
-        // Clear conversation
+        // Clear conversation and history
         setTimeout(() => {
-          setMessages([{
+          const freshStart = [{
             id: '1',
             text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
             type: 'bot',
             timestamp: new Date()
-          }]);
+          }];
+          setMessages(freshStart);
+          localStorage.setItem('ai-chatbot-history', JSON.stringify(freshStart));
         }, 500);
         return "Conversation cleared! I'm here whenever you need me.";
       }
