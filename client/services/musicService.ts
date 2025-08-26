@@ -418,11 +418,14 @@ class MusicService {
   // Load selected genres from localStorage
   loadSelectedGenres(): string[] {
     try {
+      console.log('🔍 MusicService: Loading genres from localStorage');
       const stored = localStorage.getItem('selectedMusicGenres');
+      console.log('🔍 MusicService: Raw stored value:', stored);
       this.selectedGenres = stored ? JSON.parse(stored) : [];
+      console.log('🔍 MusicService: Parsed genres:', this.selectedGenres);
       return this.selectedGenres;
     } catch (error) {
-      console.error('Error loading selected genres:', error);
+      console.error('🔍 MusicService: Error loading selected genres:', error);
       this.selectedGenres = [];
       return [];
     }
@@ -431,10 +434,14 @@ class MusicService {
   // Save selected genres to localStorage
   saveSelectedGenres(genres: string[]): void {
     try {
+      console.log('🔍 MusicService: Saving genres to localStorage:', genres);
       this.selectedGenres = genres;
-      localStorage.setItem('selectedMusicGenres', JSON.stringify(genres));
+      const jsonString = JSON.stringify(genres);
+      console.log('🔍 MusicService: Saving as JSON string:', jsonString);
+      localStorage.setItem('selectedMusicGenres', jsonString);
+      console.log('🔍 MusicService: Genres saved successfully');
     } catch (error) {
-      console.error('Error saving selected genres:', error);
+      console.error('🔍 MusicService: Error saving selected genres:', error);
     }
   }
 
