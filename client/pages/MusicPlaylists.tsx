@@ -554,7 +554,14 @@ const MusicPlaylists = () => {
       <div className="relative flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
         {/* Playlists Header - Left Aligned with Refresh Button */}
         <div className="flex items-center justify-between py-2 px-3">
-          <span className="text-xs font-medium text-black">Playlists</span>
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-black">Playlists</span>
+            {initialGenresRef.current && initialGenresRef.current.length > 0 && (
+              <span className="text-xs text-emotion-default opacity-75">
+                Current: {initialGenresRef.current.join(', ')}
+              </span>
+            )}
+          </div>
           <button
             onClick={() => {
               console.log('🔄 Manual refresh triggered');
