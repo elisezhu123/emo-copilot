@@ -322,9 +322,9 @@ const EmoCopilotDashboard = () => {
   };
 
   const handleEmotionSelect = (emotion: DriverStateType) => {
-    console.log('🧠 Emotion selected:', emotion);
+    console.log('🧠 Manual emotion selected:', emotion);
     setSelectedEmotion(emotion);
-    carStateManager.setDriverState(emotion);
+    carStateManager.setDriverState(emotion, true); // Set as manual override
   };
 
   const playNextTrack = async () => {
