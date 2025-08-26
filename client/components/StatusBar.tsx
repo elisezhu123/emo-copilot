@@ -312,8 +312,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
             if (randomValue < 0.1) {
               // Simulate extreme weather
               const extremeWeatherTypes = [
-                { condition: 'snow', temp: -2, description: 'Heavy snow' },
-                { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200 }
+                { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
+                { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 }
               ];
 
               const simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
