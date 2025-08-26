@@ -103,13 +103,20 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
   // Manual sync function to force refresh
   const forceDriverStateSync = () => {
-    // Check localStorage
-    const savedState = localStorage.getItem('carState');
-    console.log('💾 localStorage carState:', savedState ? JSON.parse(savedState) : 'null');
+    // Clear localStorage cache
+    console.log('🧹 Clearing localStorage cache');
+    localStorage.removeItem('carState');
 
-    const freshState = carStateManager.getState();
-    console.log('🔄 Force syncing driver state:', freshState.driverState);
-    setDriverState(freshState.driverState);
+    // Force reset to neutral and then let dashboard component set the correct state
+    console.log('🔄 Resetting to neutral and forcing fresh sync');
+    setDriverState('neutral');
+
+    // Small delay to let dashboard component update if needed
+    setTimeout(() => {
+      const freshState = carStateManager.getState();
+      console.log('🔄 Post-reset driver state:', freshState.driverState);
+      setDriverState(freshState.driverState);
+    }, 100);
   };
 
   // Format time for display
