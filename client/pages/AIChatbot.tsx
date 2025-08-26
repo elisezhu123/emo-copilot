@@ -201,9 +201,11 @@ const AIChatbot = () => {
 
       // Skip initial greeting and immediately provide advice
       const adviceOptions = [
-        "I've noticed you've been feeling stressed for a while. Would you like me to play some calming music or guide you through a quick breathing exercise?",
-        "You've been anxious for some time now. Let me help! I can play relaxing music, tell you a joke, or lead a breathing exercise. What sounds good?",
-        "I see you're still feeling stressed. How about some soothing music therapy or a fun joke to lighten your mood? I'm here to help!"
+        "I've noticed you've been feeling stressed. Would you like calming music, a breathing exercise, or a joke to brighten your mood?",
+        "You've been anxious for a while. Let me help! I can play relaxing music, tell a funny joke, or guide breathing exercises. What sounds good?",
+        "I see you're still feeling stressed. How about soothing music, a quick joke, or a calming breathing exercise to help you relax?",
+        "You've been tense for some time. I'm here to help! Would you prefer calming music, a cheerful joke, or guided breathing to feel better?",
+        "I notice prolonged stress. Let's fix that! I can offer relaxing music, tell jokes, or lead breathing exercises. What would help most?"
       ];
 
       const selectedAdvice = adviceOptions[Math.floor(Math.random() * adviceOptions.length)];
@@ -1222,7 +1224,7 @@ const AIChatbot = () => {
       fullResponse += "• Vehicle: Check fuel, tires, lights, wipers\n";
       fullResponse += "• Emergency kit: Water, snacks, first aid, blanket\n";
       fullResponse += "��� Communication: Charged phone, share route with family\n";
-      fullResponse += "�� Weather: Check forecast and road conditions\n";
+      fullResponse += "��� Weather: Check forecast and road conditions\n";
       fullResponse += "• Rest: Take breaks every 2 hours if long trip";
       
       // Add time-specific advice
