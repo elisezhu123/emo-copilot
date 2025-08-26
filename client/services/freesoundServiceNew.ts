@@ -713,8 +713,15 @@ class FreesoundService {
           console.log(`✅ Found ${tracks.length} tracks for ${genre}`);
           return tracks;
         } catch (error) {
-          console.warn(`��️ Error loading ${genre}:`, error.message);
-          return []; // Return empty array instead of throwing
+          console.warn(`⚠️ Error loading ${genre}:`, error.message);
+          console.log(`🎵 Using fallback tracks for ${genre}`);
+
+          // Return fallback tracks for this specific genre
+          const fallbackTracks = this.getFallbackTracks().filter(track =>
+            track.genre.toLowerCase() === genre.toLowerCase()
+          );
+          console.log(`🎵 Found ${fallbackTracks.length} fallback tracks for ${genre}`);
+          return fallbackTracks;
         }
       });
 
