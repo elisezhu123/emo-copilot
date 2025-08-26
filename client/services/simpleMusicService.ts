@@ -165,7 +165,19 @@ class SimpleMusicService {
         id: `${track.id}_${index}` // Simple unique ID
       }));
 
-      console.log(`⚡ Fast loaded ${this.cachedTracks.length} tracks`);
+      console.log(`⚡ Fast loaded ${this.cachedTracks.length} tracks for genres: ${genres.join(', ')}`);
+
+      // Log genre distribution for multiple genre selections
+      if (genres.length > 1) {
+        console.log('🎼 Multi-genre track distribution:');
+        genres.forEach(genre => {
+          const genreTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+          console.log(`   - ${genre}: ${genreTracks.length} tracks`);
+          if (genreTracks.length > 0) {
+            console.log(`     Sample: "${genreTracks[0].title}" by ${genreTracks[0].artist}`);
+          }
+        });
+      }
 
       // Set cache timeout (5 minutes) for automatic refresh
       this.cacheTimeout = setTimeout(() => {
