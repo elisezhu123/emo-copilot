@@ -52,7 +52,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -73,7 +73,7 @@ class FreesoundService {
   // Search for tracks with proper CORS and redirect handling - now with dynamic randomization
   async searchTracks(query: string, filters: any = {}): Promise<Track[]> {
     if (!this.isConfigured()) {
-      console.error('❌ Freesound API key not configured! No music will be available.');
+      console.error('�� Freesound API key not configured! No music will be available.');
       console.log('🔧 Please set VITE_FREESOUND_API_KEY environment variable');
       console.log('🔧 Get your free API key at: https://freesound.org/apiv2/apply/');
       return [];
@@ -103,7 +103,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -611,7 +611,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
@@ -826,7 +826,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
