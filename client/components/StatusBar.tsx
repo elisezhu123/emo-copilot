@@ -328,7 +328,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
     const driverStateInfo = getDriverStateInfo(driverState);
 
     return (
-      <div className={`flex justify-between items-center w-full h-5 px-5 py-5 ${isDraggable ? 'cursor-move' : ''}`} {...dragHandlers}>
+      <div className={`flex justify-evenly items-center w-full h-5 px-5 py-5 ${isDraggable ? 'cursor-move' : ''}`} {...dragHandlers}>
         {/* Left Side - Back Button */}
         <div className="flex items-center gap-2">
           <button
