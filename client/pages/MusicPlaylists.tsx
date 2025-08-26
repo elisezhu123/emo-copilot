@@ -81,11 +81,11 @@ const MusicPlaylists = () => {
         console.log('🎵 Freesound tracks loaded:', allTracks.length);
         setTracks(allTracks);
 
-        if (finalTracks.length > 0) {
-          // Always use the first track from randomized list for variety
-          const selectedTrack = finalTracks[0];
+        if (allTracks.length > 0) {
+          // Always use the first track from randomized Freesound list for variety
+          const selectedTrack = allTracks[0];
           setCurrentTrack(selectedTrack);
-          audioManager.setPlaylist(finalTracks);
+          audioManager.setPlaylist(allTracks);
 
           // Auto-play: Start playing automatically when tracks load (once per session or genre change)
           if (!hasAutoPlayedRef.current || isUpdate) {
