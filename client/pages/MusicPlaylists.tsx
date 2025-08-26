@@ -144,7 +144,7 @@ const MusicPlaylists = () => {
         console.log('🔄 Genres changed - refreshing playlist');
         // Update ref immediately to prevent duplicate loads
         initialGenresRef.current = currentGenres || [];
-        loadTracks();
+        loadTracks(true); // Pass true to indicate this is an update
       } else {
         console.log('⚡ Same genres - keeping current playlist for better UX');
       }
