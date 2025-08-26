@@ -2559,7 +2559,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Handle story selection when user responds to child story offer
       if ((userLower.includes('adventure') || userLower.includes('explorer')) &&
           messages.some(msg => msg.text.includes('brave little explorer'))) {
-        const adventureStory = "Once upon a time, there was a curious little explorer named Sam who discovered a magical compass in their backyard. The compass pointed to different colors instead of directions! When Sam followed the red arrow, they found a garden full of singing flowers. The blue arrow led to a pond where friendly frogs told jokes. And the golden arrow? Well, that led to the most wonderful treasure of all - a picnic blanket where Sam's family was waiting with their favorite snacks! The End. What an adventure!";
+        const adventureStory = "Sam found a magical compass! Red arrow led to singing flowers, blue to joking frogs, gold to family with snacks. What an adventure!";
         speakText(adventureStory);
         return adventureStory;
       }
