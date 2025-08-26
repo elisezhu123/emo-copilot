@@ -447,6 +447,9 @@ class MusicService {
 
   // Get tracks filtered by selected genres
   getFilteredTracks(): Track[] {
+    // Always load from localStorage first to ensure we have current genres
+    this.loadSelectedGenres();
+
     if (this.selectedGenres.length === 0) {
       // If no genres selected, return empty array
       console.log('⚠️ No genres selected, returning empty tracks');
