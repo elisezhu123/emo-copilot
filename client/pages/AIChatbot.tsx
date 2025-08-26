@@ -120,6 +120,13 @@ const AIChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Auto-scroll during transcription to follow real-time text
+  useEffect(() => {
+    if (pendingTranscript) {
+      scrollToBottom();
+    }
+  }, [pendingTranscript]);
+
   // Save conversation history to localStorage whenever messages change
   useEffect(() => {
     try {
@@ -1057,7 +1064,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠�� Google Maps API key not configured');
+      console.warn('����� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
