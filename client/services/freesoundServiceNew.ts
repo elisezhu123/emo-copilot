@@ -24,45 +24,37 @@ class FreesoundService {
     }
   }
 
-  // Initialize OAuth access token
-  private async initializeOAuthToken(): Promise<void> {
+  // Test direct client ID authentication (no OAuth needed for frontend)
+  private async testDirectAuth(): Promise<boolean> {
     try {
-      console.log('🔐 Attempting OAuth token exchange with Freesound...');
+      console.log('🔍 Testing direct client ID authentication...');
 
-      // For Freesound, try client credentials grant
-      const clientId = this.apiKey;
-      const clientSecret = import.meta.env.VITE_FREESOUND_CLIENT_SECRET || 'GKpwiy5CTi9qxmfraDqDHO1ZWg7PswE5nf5oyZSe';
-
-      const tokenResponse = await fetch('https://freesound.org/apiv2/oauth2/access_token/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-          'client_id': clientId,
-          'client_secret': clientSecret,
-          'grant_type': 'client_credentials'
-        })
+      const testParams = new URLSearchParams({
+        query: 'piano',
+        page_size: '1',
+        fields: 'id,name',
+        token: this.apiKey  // Use client ID directly as token
       });
 
-      if (tokenResponse.ok) {
-        const tokenData = await tokenResponse.json();
-        console.log('🔐 OAuth response data:', tokenData);
-        if (tokenData.access_token) {
-          this.apiKey = tokenData.access_token;
-          console.log('✅ OAuth access token obtained successfully');
-          return;
-        } else {
-          console.warn('⚠️ OAuth response missing access_token:', tokenData);
-        }
-      } else {
-        const errorText = await tokenResponse.text().catch(() => 'No error details');
-        console.error('❌ OAuth token exchange failed:', tokenResponse.status, tokenResponse.statusText, errorText);
-      }
+      const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        },
+        mode: 'cors'
+      });
 
-      console.warn('⚠️ OAuth token exchange failed, trying direct API key approach');
+      if (response.ok) {
+        console.log('✅ Direct client ID authentication successful');
+        return true;
+      } else {
+        const errorText = await response.text().catch(() => 'No error details');
+        console.warn('⚠️ Direct auth failed:', response.status, response.statusText, errorText);
+        return false;
+      }
     } catch (error) {
-      console.warn('⚠️ OAuth initialization failed:', error);
+      console.warn('⚠️ Direct auth test failed:', error);
+      return false;
     }
   }
 
@@ -799,7 +791,7 @@ class FreesoundService {
       // Return Freesound tracks or fallback if empty
       console.log(`✅ Freesound tracks loaded and randomized: ${randomizedTracks.length}`);
       if (randomizedTracks.length === 0) {
-        console.warn('��️ No tracks found from Freesound API for the selected genres, using fallback');
+        console.warn('⚠️ No tracks found from Freesound API for the selected genres, using fallback');
         const allFallbackTracks = this.getFallbackTracks();
         const filteredTracks = allFallbackTracks.filter(track =>
           genres.some(genre =>
