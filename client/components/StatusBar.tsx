@@ -138,6 +138,12 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const handleBackNavigation = () => {
     const currentPath = location.pathname;
 
+    // Stop any ongoing speech synthesis when navigating away
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      console.log('🔇 Stopped Melo speech synthesis on navigation');
+    }
+
     if (currentPath === '/music-playlists') {
       // Music playlists should go back to music selection
       navigate('/music-selection');
