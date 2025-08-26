@@ -28,7 +28,7 @@ const MusicPlaylists = () => {
   });
 
   // Load tracks from the music service - defined here for proper scope access
-  const loadTracks = async (isUpdate = false, forceRefresh = false) => {
+  const loadTracks = async (isUpdate = false, forceRefresh = false, force = false) => {
     try {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
