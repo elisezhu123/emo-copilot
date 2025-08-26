@@ -10,6 +10,7 @@ const MusicPlaylists = () => {
   const navigate = useNavigate();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [isLoadingTracks, setIsLoadingTracks] = useState(false);
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
