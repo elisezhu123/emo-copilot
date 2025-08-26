@@ -700,8 +700,17 @@ class FreesoundService {
 
     } catch (error) {
       console.error('❌ Freesound API parallel loading failed:', error);
-      console.log('🎵 FREESOUND ONLY: No fallback tracks available');
-      return [];
+      console.log('🎵 API failed, using fallback tracks for genres:', genres.join(', '));
+
+      // Return fallback tracks filtered by requested genres
+      const allFallbackTracks = this.getFallbackTracks();
+      const filteredTracks = allFallbackTracks.filter(track =>
+        genres.some(genre =>
+          track.genre.toLowerCase() === genre.toLowerCase()
+        )
+      );
+      console.log(`🎵 Returning ${filteredTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
+      return this.shuffleArray(filteredTracks);
     }
   }
 
