@@ -237,25 +237,38 @@ const MusicPlaylists = () => {
 
     // Visibility change listener as backup for focus events
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('🔍 Page became visible - checking for genre changes');
+      try {
+        if (!document.hidden) {
+          console.log('🔍 Page became visible - checking for genre changes');
 
-        // Add delay to ensure any localStorage updates have completed
-        setTimeout(() => {
-          const currentGenres = musicService.loadSelectedGenres();
-          const previousGenres = initialGenresRef.current;
-          const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+          // Add delay to ensure any localStorage updates have completed
+          setTimeout(() => {
+            try {
+              if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+                console.error('musicService not available in handleVisibilityChange');
+                return;
+              }
 
-          console.log('🔍 Visibility - Current genres:', currentGenres);
-          console.log('🔍 Visibility - Previous genres:', previousGenres);
-          console.log('🔍 Visibility - Genres changed?', genresChanged);
+              const currentGenres = musicService.loadSelectedGenres();
+              const previousGenres = initialGenresRef.current;
+              const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
 
-          if (genresChanged) {
-            console.log('🔄 Visibility detected genre change - updating playlists');
-            initialGenresRef.current = currentGenres || [];
-            loadTracks(true);
-          }
-        }, 200);
+              console.log('🔍 Visibility - Current genres:', currentGenres);
+              console.log('🔍 Visibility - Previous genres:', previousGenres);
+              console.log('🔍 Visibility - Genres changed?', genresChanged);
+
+              if (genresChanged) {
+                console.log('🔄 Visibility detected genre change - updating playlists');
+                initialGenresRef.current = currentGenres || [];
+                loadTracks(true);
+              }
+            } catch (error) {
+              console.error('Error in visibility timeout:', error);
+            }
+          }, 200);
+        }
+      } catch (error) {
+        console.error('Error in handleVisibilityChange:', error);
       }
     };
 
