@@ -98,6 +98,10 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
   // Manual sync function to force refresh
   const forceDriverStateSync = () => {
+    // Check localStorage
+    const savedState = localStorage.getItem('carState');
+    console.log('💾 localStorage carState:', savedState ? JSON.parse(savedState) : 'null');
+
     const freshState = carStateManager.getState();
     console.log('🔄 Force syncing driver state:', freshState.driverState);
     setDriverState(freshState.driverState);
