@@ -114,7 +114,7 @@ const MusicPlaylists = () => {
         if (mountChanged && currentGenres && currentGenres.length > 0) {
           console.log('🔄 Detected genre change after mount, reloading');
           initialGenresRef.current = currentGenres;
-          loadTracks();
+          loadTracks(true); // Pass true to indicate this is an update
         }
       }, 500);
     };
