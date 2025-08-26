@@ -318,7 +318,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
       {/* Right Side - Time + Battery */}
       <div className="flex w-[130px] justify-end items-center gap-2 flex-shrink-0">
-        <span className="text-[#3A2018] text-center font-inter text-sm font-normal leading-normal">
+        <span className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal">
           {formatTime(currentTime)}
         </span>
 
