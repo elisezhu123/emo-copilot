@@ -1904,7 +1904,7 @@ Are you hurt? Do you need medical attention?`;
       return `🚨 DROWSY DRIVING ALERT - IMMEDIATE SAFETY ACTION NEEDED!
 
 ⛔ STOP DRIVING SYMPTOMS DETECTED:
-• Tired/sleepy while driving is EXTREMELY dangerous
+�� Tired/sleepy while driving is EXTREMELY dangerous
 • Microsleep can happen without warning
 • Reaction time severely impaired
 
@@ -3203,7 +3203,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
           {/* Status Bar */}
           <StatusBar
             title="Co-Driver Assistant"
-            showHomeButton={true}
+            showBackButton={true}
+            showDriverState={true}
             showTemperature={true}
             onTemperatureExceed={handleTemperatureExceed}
             onExtremeWeather={handleExtremeWeather}
