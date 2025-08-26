@@ -833,7 +833,7 @@ const AIChatbot = () => {
 
   const triggerFogAlert = (visibility: number) => {
     triggerAlert('fogAlert',
-      `🌫️ FOG ALERT: Low visibility at ${visibility}m! Use fog lights, reduce speed significantly, and avoid lane changes.`,
+      `🌫�� FOG ALERT: Low visibility at ${visibility}m! Use fog lights, reduce speed significantly, and avoid lane changes.`,
       5000
     );
   };
@@ -1149,11 +1149,22 @@ const AIChatbot = () => {
     }
   };
 
+  // Helper function to remove emojis from text
+  const removeEmojis = (text: string): string => {
+    // Remove emojis using Unicode ranges
+    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+               .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{238C}-\u{2454}]|[\u{20D0}-\u{20FF}]/gu, '')
+               .replace(/[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '') // Remove variation selectors and zero-width joiners
+               .trim();
+  };
+
   // Text-to-speech function
   const speakText = (text: string): Promise<void> => {
     return new Promise((resolve) => {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
+        // Clean the text by removing emojis before speaking
+        const cleanedText = removeEmojis(text);
+        const utterance = new SpeechSynthesisUtterance(cleanedText);
         utterance.rate = 1.05;
         utterance.pitch = 1;
         utterance.volume = 0.8;
@@ -1836,7 +1847,7 @@ Just speak naturally - I understand many variations of these commands!`;
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
 • Don't drive when drowsy - pull over safely
-• Keep 3-second following distance (6+ in bad weather)
+��� Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
       }
