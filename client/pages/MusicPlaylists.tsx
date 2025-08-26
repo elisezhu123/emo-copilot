@@ -74,7 +74,18 @@ const MusicPlaylists = () => {
       }
     });
 
-    return unsubscribe;
+    // Refresh playlist when window gains focus (user returns from music selection)
+    const handleFocus = () => {
+      console.log('🎲 Page regained focus - refreshing for dynamic playlist');
+      loadTracks(); // This will trigger fresh dynamic loading
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const togglePlayPause = async () => {
