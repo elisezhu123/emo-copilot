@@ -47,7 +47,7 @@ const MusicPlaylists = () => {
       if (savedGenres && savedGenres.length > 0) {
         if (isUpdate) {
           setIsUpdating(true);
-          console.log('���� MusicPlaylists: Setting updating state to true');
+          console.log('🔍 MusicPlaylists: Setting updating state to true');
         } else {
           setIsLoadingTracks(true);
           console.log('🔍 MusicPlaylists: Setting loading state to true');
@@ -72,7 +72,8 @@ const MusicPlaylists = () => {
         }
 
         // Smart reload (uses cache when appropriate)
-        await simpleMusicService.forceFreshReload(savedGenres, forceRefresh);
+        console.log('🎵 Force reloading tracks for genres:', savedGenres);
+        await simpleMusicService.forceFreshReload(savedGenres, true); // Force fresh reload
 
         const allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
@@ -170,7 +171,7 @@ const MusicPlaylists = () => {
     // ALWAYS load tracks on mount - this fixes the "need to clear storage" issue
     const initialLoad = () => {
       const genres = musicService.loadSelectedGenres();
-      console.log('🔄 Auto-update: Initial load - found genres:', genres);
+      console.log('��� Auto-update: Initial load - found genres:', genres);
       console.log('🔄 Auto-update: Raw localStorage:', localStorage.getItem('selectedMusicGenres'));
 
       // Always show loading state initially - this helps user see something is happening
