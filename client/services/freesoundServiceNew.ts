@@ -691,10 +691,18 @@ class FreesoundService {
         });
       }
 
-      // FREESOUND ONLY: No fallback tracks - return whatever Freesound provides
+      // Return Freesound tracks or fallback if empty
       console.log(`✅ Freesound tracks loaded and randomized: ${randomizedTracks.length}`);
       if (randomizedTracks.length === 0) {
-        console.warn('⚠️ No tracks found from Freesound API for the selected genres');
+        console.warn('⚠️ No tracks found from Freesound API for the selected genres, using fallback');
+        const allFallbackTracks = this.getFallbackTracks();
+        const filteredTracks = allFallbackTracks.filter(track =>
+          genres.some(genre =>
+            track.genre.toLowerCase() === genre.toLowerCase()
+          )
+        );
+        console.log(`🎵 Returning ${filteredTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
+        return this.shuffleArray(filteredTracks);
       }
       return randomizedTracks;
 
