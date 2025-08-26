@@ -49,10 +49,15 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Driver state subscription
   useEffect(() => {
     if (showDriverState) {
-      // Get fresh state and force update
+      // Clear any cached driver state and force fresh sync
+      console.log('🧠 StatusBar - Clearing cache and forcing fresh sync');
+
+      // Reset to neutral first to clear any cached state
+      carStateManager.setDriverState('neutral');
+
+      // Get fresh state immediately after reset
       const currentState = carStateManager.getState();
-      console.log('🧠 StatusBar - Full car state:', currentState);
-      console.log('🧠 StatusBar - Driver state from manager:', currentState.driverState);
+      console.log('🧠 StatusBar - Fresh car state after reset:', currentState);
       setDriverState(currentState.driverState);
 
       const unsubscribe = carStateManager.subscribe((newState) => {
@@ -60,21 +65,21 @@ const StatusBar: React.FC<StatusBarProps> = ({
         setDriverState(newState.driverState);
       });
 
-      // Periodic sync with more frequent updates for debugging
+      // More aggressive sync to force alignment
       const syncInterval = setInterval(() => {
         const latestState = carStateManager.getState();
         if (latestState.driverState !== driverState) {
-          console.log('🧠 StatusBar - Syncing driver state:', latestState.driverState);
+          console.log('🧠 StatusBar - Force syncing driver state:', latestState.driverState);
           setDriverState(latestState.driverState);
         }
-      }, 500); // Check every 500ms
+      }, 200); // Check every 200ms
 
       return () => {
         unsubscribe();
         clearInterval(syncInterval);
       };
     }
-  }, [showDriverState, driverState]);
+  }, [showDriverState]);
 
   // Helper function to get driver state display info
   const getDriverStateInfo = (state: DriverStateType) => {
