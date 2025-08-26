@@ -13,7 +13,7 @@ import HotFace from '../components/HotFace';
 import { Track, musicService } from '../services/musicService';
 import { audioManager, AudioState } from '../services/audioManager';
 import { simpleMusicService } from '../services/simpleMusicService';
-import { carStateManager, type CarState } from '../services/carStateManager';
+import { carStateManager, type CarState, type DriverStateType } from '../services/carStateManager';
 
 const EmoCopilotDashboard = () => {
   const navigate = useNavigate();
