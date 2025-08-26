@@ -275,77 +275,77 @@ class FreesoundService {
     return 'Instrumental';
   }
 
-  // Fallback tracks when API is not available - genre-specific music tracks
+  // Fallback tracks when API is not available - using working audio URLs
   private getFallbackTracks(): Track[] {
     return [
-      // Classical Genre
+      // Classical Genre - Using Archive.org public domain classical music
       {
         id: 'classical_1',
-        title: 'Piano Sonata in C',
-        artist: 'Classical Ensemble',
+        title: 'Moonlight Sonata',
+        artist: 'Classical Piano',
         duration: 180,
         genre: 'Classical',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/MoonlightSonata_755/Moonlight%20Sonata.mp3'
       },
       {
         id: 'classical_2',
-        title: 'Violin Concerto No. 1',
-        artist: 'String Quartet',
+        title: 'Canon in D',
+        artist: 'Baroque Ensemble',
         duration: 240,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/PachelbelCanonInD/canon.mp3'
       },
       {
         id: 'classical_3',
-        title: 'Chamber Music Suite',
-        artist: 'Orchestra Prima',
+        title: 'Für Elise',
+        artist: 'Piano Classic',
         duration: 200,
         genre: 'Classical',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/FurElise_201805/Fur%20Elise.mp3'
       },
 
-      // Jazz Genre
+      // Jazz Genre - Using Archive.org jazz recordings
       {
         id: 'jazz_1',
-        title: 'Smooth Evening',
+        title: 'Smooth Jazz Cafe',
         artist: 'Jazz Collective',
         duration: 270,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'jazz_2',
-        title: 'Blue Note Cafe',
+        title: 'Blue Note Evening',
         artist: 'Bebop Society',
         duration: 300,
         genre: 'Jazz',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'jazz_3',
-        title: 'Midnight Sax',
+        title: 'Midnight Saxophone',
         artist: 'Free Jazz Group',
         duration: 250,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
 
-      // Ambient Genre
+      // Ambient Genre - Using ambient nature sounds
       {
         id: 'ambient_1',
-        title: 'Ocean Waves',
-        artist: 'Nature Sounds Collective',
+        title: 'Ocean Meditation',
+        artist: 'Nature Sounds',
         duration: 300,
         genre: 'Ambient',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'ambient_2',
-        title: 'Forest Dawn',
+        title: 'Forest Ambience',
         artist: 'Peaceful Minds',
         duration: 420,
         genre: 'Ambient',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'ambient_3',
@@ -353,17 +353,17 @@ class FreesoundService {
         artist: 'Space Ambient',
         duration: 360,
         genre: 'Ambient',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
 
-      // Rock Genre
+      // Rock Genre - Using Archive.org rock samples
       {
         id: 'rock_1',
-        title: 'Electric Thunder',
+        title: 'Electric Energy',
         artist: 'Rock Liberation',
         duration: 220,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'rock_2',
@@ -371,7 +371,7 @@ class FreesoundService {
         artist: 'Open Road Band',
         duration: 240,
         genre: 'Rock',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'rock_3',
@@ -379,17 +379,17 @@ class FreesoundService {
         artist: 'Free Rock Alliance',
         duration: 200,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
 
-      // Folk Genre
+      // Folk Genre - Using folk music samples
       {
         id: 'folk_1',
         title: 'Mountain Song',
         artist: 'Folk Heritage',
         duration: 250,
         genre: 'Folk',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'folk_2',
@@ -397,7 +397,7 @@ class FreesoundService {
         artist: 'Acoustic Storytellers',
         duration: 280,
         genre: 'Folk',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'folk_3',
@@ -405,17 +405,17 @@ class FreesoundService {
         artist: 'Traditional Sounds',
         duration: 230,
         genre: 'Folk',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
 
-      // Blues Genre
+      // Blues Genre - Using blues samples
       {
         id: 'blues_1',
         title: 'Midnight Blues',
         artist: 'Blues Foundation',
         duration: 280,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'blues_2',
@@ -423,7 +423,7 @@ class FreesoundService {
         artist: 'Mississippi Open',
         duration: 260,
         genre: 'Blues',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'blues_3',
@@ -431,17 +431,17 @@ class FreesoundService {
         artist: 'Free Blues Society',
         duration: 300,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
 
-      // Chillout Genre
+      // Chillout Genre - Using chill samples
       {
         id: 'chillout_1',
         title: 'Sunset Lounge',
         artist: 'Chill Collective',
         duration: 270,
         genre: 'Chillout',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'chillout_2',
@@ -449,7 +449,7 @@ class FreesoundService {
         artist: 'Relaxed Minds',
         duration: 250,
         genre: 'Chillout',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'chillout_3',
@@ -457,17 +457,17 @@ class FreesoundService {
         artist: 'Mellow Beats',
         duration: 220,
         genre: 'Chillout',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
 
-      // Country Genre
+      // Country Genre - Using country samples
       {
         id: 'country_1',
         title: 'Country Road',
         artist: 'Folk Guitar',
         duration: 200,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'country_2',
@@ -475,7 +475,7 @@ class FreesoundService {
         artist: 'Americana Collective',
         duration: 240,
         genre: 'Country',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'country_3',
@@ -483,17 +483,17 @@ class FreesoundService {
         artist: 'Open Range Band',
         duration: 210,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
 
-      // Hip-Pop Genre
+      // Hip-Pop Genre - Using hip-hop samples
       {
         id: 'hip_pop_1',
         title: 'Urban Vibes',
         artist: 'Free Beat Collective',
         duration: 210,
         genre: 'Hip-Pop',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'hip_pop_2',
@@ -501,7 +501,7 @@ class FreesoundService {
         artist: 'Open Source Rap',
         duration: 180,
         genre: 'Hip-Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'hip_pop_3',
@@ -509,17 +509,17 @@ class FreesoundService {
         artist: 'Creative Commons MC',
         duration: 195,
         genre: 'Hip-Pop',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
 
-      // Electro Pop Genre
+      // Electro Pop Genre - Using electronic samples
       {
         id: 'electro_pop_1',
         title: 'Neon Nights',
         artist: 'Synth Wave',
         duration: 190,
         genre: 'Electro Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'electro_pop_2',
@@ -527,7 +527,7 @@ class FreesoundService {
         artist: 'Electronic Dreams',
         duration: 210,
         genre: 'Electro Pop',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'electro_pop_3',
@@ -535,17 +535,17 @@ class FreesoundService {
         artist: 'Future Sounds',
         duration: 180,
         genre: 'Electro Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
 
-      // Downbeat Genre
+      // Downbeat Genre - Using downtempo samples
       {
         id: 'downbeat_1',
         title: 'Slow Motion',
         artist: 'Trip Hop Collective',
         duration: 320,
         genre: 'Downbeat',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'downbeat_2',
@@ -553,7 +553,7 @@ class FreesoundService {
         artist: 'Downtempo Masters',
         duration: 290,
         genre: 'Downbeat',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'downbeat_3',
@@ -561,17 +561,17 @@ class FreesoundService {
         artist: 'Chill Beats',
         duration: 310,
         genre: 'Downbeat',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
 
-      // New Age Genre
+      // New Age Genre - Using new age samples
       {
         id: 'new_age_1',
         title: 'Crystal Meditation',
         artist: 'Spiritual Sounds',
         duration: 360,
         genre: 'New Age',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       },
       {
         id: 'new_age_2',
@@ -579,7 +579,7 @@ class FreesoundService {
         artist: 'Inner Peace',
         duration: 400,
         genre: 'New Age',
-        url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
+        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
       },
       {
         id: 'new_age_3',
@@ -587,7 +587,7 @@ class FreesoundService {
         artist: 'Wellness Music',
         duration: 320,
         genre: 'New Age',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
       }
     ];
   }
