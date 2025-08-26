@@ -28,7 +28,7 @@ const MusicPlaylists = () => {
   });
 
   // Load tracks from the music service - defined here for proper scope access
-  const loadTracks = async (isUpdate = false) => {
+  const loadTracks = async (isUpdate = false, forceRefresh = false) => {
     try {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
@@ -57,7 +57,7 @@ const MusicPlaylists = () => {
       initialGenresRef.current = savedGenres || [];
 
       if (savedGenres && savedGenres.length > 0) {
-        console.log('⚡ Fast loading music for genres:', savedGenres);
+        console.log('�� Fast loading music for genres:', savedGenres);
 
         // Check if already loading to prevent duplicate requests
         if (simpleMusicService.isCurrentlyLoading()) {
