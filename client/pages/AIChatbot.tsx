@@ -519,7 +519,7 @@ const AIChatbot = () => {
     // Add AI message asking for permission
     const permissionMessage: Message = {
       id: Date.now().toString() + '_temp_trigger',
-      text: `I've detected the temperature is ${temp}��C - quite hot! Would you want me to set the air conditioner on?`,
+      text: `I've detected the temperature is ${temp}���C - quite hot! Would you want me to set the air conditioner on?`,
       type: 'bot',
       timestamp: new Date()
     };
@@ -2987,6 +2987,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
         recognitionRef.current.onsoundstart = () => {
           console.log('🔊 Sound detected by microphone');
+
+          // Interrupt Melo's speech immediately when any sound is detected
+          if (isSpeaking && 'speechSynthesis' in window) {
+            console.log('🔇 Interrupting Melo speech - sound detected from driver');
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+          }
         };
 
         recognitionRef.current.onsoundend = () => {
