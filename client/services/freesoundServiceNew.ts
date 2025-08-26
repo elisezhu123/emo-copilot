@@ -61,6 +61,28 @@ class FreesoundService {
     }
   }
 
+  // Get authentication parameters for API requests
+  private async getAuthParams(): Promise<{ headers: any, params: any }> {
+    // If no working method found, test the connection first
+    if (!this.workingAuthMethod) {
+      await this.testApiConnection();
+    }
+
+    // Return the working authentication method or fallback
+    if (this.workingAuthMethod) {
+      return {
+        headers: { 'Accept': 'application/json', ...this.workingAuthMethod.headers },
+        params: this.workingAuthMethod.params
+      };
+    }
+
+    // Fallback to token parameter method
+    return {
+      headers: { 'Accept': 'application/json' },
+      params: { token: this.apiKey }
+    };
+  }
+
   isConfigured(): boolean {
     const configured = this.apiKey.length > 0;
     console.log('🎵 Freesound API configured:', configured);
