@@ -973,7 +973,7 @@ class FreesoundService {
   private async trySimpleGenreSearch(genre: string): Promise<Track[]> {
     const params = new URLSearchParams({
       query: `${genre.toLowerCase()} music`,
-      page_size: '50', // Increased for 15+ minutes per genre
+      page_size: '25', // Balanced for reliability and content
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
       filter: `type:(wav OR mp3) duration:[60.0 TO 300.0]`, // Prefer longer tracks for more content
       sort: 'downloads_desc' // Consistent, fast sorting
