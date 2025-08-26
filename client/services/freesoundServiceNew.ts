@@ -863,7 +863,14 @@ class FreesoundService {
       console.log('✅ Converted and shuffled', shuffledTracks.length, 'tracks for genre:', targetGenre);
       return shuffledTracks;
     } catch (error) {
-      console.error('❌ Error fetching from Freesound:', error);
+      if (error.name === 'AbortError') {
+        console.error(`❌ Freesound API request timed out for genre: ${targetGenre}`);
+      } else if (error.message.includes('Failed to fetch')) {
+        console.error(`❌ Network error connecting to Freesound API for genre: ${targetGenre} - check internet connection`);
+      } else {
+        console.error(`❌ Error fetching from Freesound for genre: ${targetGenre}:`, error);
+      }
+      console.log(`🔄 Falling back to local tracks for genre: ${targetGenre}`);
       return this.shuffleArray(this.getFallbackTracks());
     }
   }
