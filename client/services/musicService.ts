@@ -465,8 +465,20 @@ class MusicService {
       }
     }
 
-    console.log(`🎵 Filtered tracks for genres [${this.selectedGenres.join(', ')}]:`, filteredTracks.length, 'tracks');
-    return filteredTracks;
+    // Shuffle tracks to ensure random order and avoid repetition
+    const shuffledTracks = this.shuffleArray(filteredTracks);
+    console.log(`🎵 Filtered and randomized tracks for genres [${this.selectedGenres.join(', ')}]:`, shuffledTracks.length, 'tracks');
+    return shuffledTracks;
+  }
+
+  // Fisher-Yates shuffle algorithm for true randomization
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   // Get real tracks from Freesound API by genres
