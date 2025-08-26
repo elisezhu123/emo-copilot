@@ -72,7 +72,7 @@ const MusicPlaylists = () => {
         }
 
         // Smart reload (uses cache when appropriate)
-        await simpleMusicService.forceFreshReload(savedGenres);
+        await simpleMusicService.forceFreshReload(savedGenres, forceRefresh);
 
         const allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
@@ -213,7 +213,7 @@ const MusicPlaylists = () => {
           }
 
           // Smart reload (uses cache when appropriate)
-          await simpleMusicService.forceFreshReload(savedGenres);
+          await simpleMusicService.forceFreshReload(savedGenres, forceRefresh);
 
           const allTracks = await simpleMusicService.getAllTracks();
           console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
