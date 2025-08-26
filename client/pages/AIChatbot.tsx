@@ -1644,7 +1644,7 @@ const AIChatbot = () => {
 ��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
 ❄️ Car Control: "turn on AC", "set temperature to 22", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
-⚠️ Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
+⚠�� Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
 🔧 Alert Control: "reset alerts", "clear alerts"
 
 Just speak naturally - I understand many variations of these commands!`;
@@ -3107,6 +3107,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       setMicrophoneStatus('not-supported');
     }
 
+    // Add event listener to stop speech when user navigates away with browser controls
+    const handleBeforeUnload = () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 Stopped Melo speech synthesis on browser navigation');
+      }
+    };
+
+    // Listen for page unload (browser back/forward/refresh)
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -3124,6 +3136,10 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         console.log('🔇 Stopped Melo speech synthesis on page cleanup');
       }
       setIsSpeaking(false);
+
+      // Remove event listeners
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
     };
   }, []);
 
