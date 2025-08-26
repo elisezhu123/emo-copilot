@@ -450,7 +450,9 @@ const MusicPlaylists = () => {
       unsubscribe();
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('storage', handleStorageChange);
       clearInterval(genreCheckInterval);
+      clearInterval(fastCheckInterval);
     };
   }, []);
 
