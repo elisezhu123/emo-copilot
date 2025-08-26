@@ -77,15 +77,9 @@ const MusicPlaylists = () => {
         const allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
 
-        // Critical fallback: If simpleMusicService returns no tracks, use musicService fallback
-        let finalTracks = allTracks;
-        if (allTracks.length === 0) {
-          console.log('🔄 No tracks from simpleMusicService, falling back to musicService tracks');
-          finalTracks = musicService.getFilteredTracks();
-          console.log('🔄 Fallback tracks found:', finalTracks.length);
-        }
-
-        setTracks(finalTracks);
+        // FREESOUND ONLY: No fallback tracks - only use what Freesound provides
+        console.log('🎵 Freesound tracks loaded:', allTracks.length);
+        setTracks(allTracks);
 
         if (finalTracks.length > 0) {
           // Always use the first track from randomized list for variety
