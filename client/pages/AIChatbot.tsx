@@ -1243,7 +1243,7 @@ const AIChatbot = () => {
       
       let safetyInfo = "";
       if (safetyWarnings.length > 0) {
-        safetyInfo = `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+        safetyInfo = `\n\n��� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
       }
       
       return `I'm having navigation troubles, but safety first! Use your phone's GPS for ${destination}. Drive defensively and trust your instincts!${safetyInfo}`;
@@ -2860,11 +2860,18 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
 
       // Music and entertainment requests (enhanced for stress support)
-      if (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
-          userLower.includes('play') || userLower.includes('listen') || userLower.includes('song')) ||
+      // Only navigate to music selection if no specific genre was mentioned (handled above)
+      const hasSpecificGenre = userLower.includes('rock') || userLower.includes('classical') ||
+                              userLower.includes('jazz') || userLower.includes('ambient') ||
+                              userLower.includes('pop') || userLower.includes('electronic') ||
+                              userLower.includes('country') || userLower.includes('blues');
+
+      if (!hasSpecificGenre &&
+          (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
+          userLower.includes('listen') || userLower.includes('song')) ||
           userLower.includes('yes') && userLower.includes('music') ||
           (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('okay')) &&
-          messages.some(msg => msg.text.includes('calming music'))) {
+          messages.some(msg => msg.text.includes('calming music')))) {
 
         // Show music emoji first
         setTimeout(() => {
@@ -2878,8 +2885,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         }, 3000);
 
         // Check if this is stress-related music request
-        const isStressRelated = userLower.includes('stress') || userLower.includes('calm') || 
-                               userLower.includes('relax') || 
+        const isStressRelated = userLower.includes('stress') || userLower.includes('calm') ||
+                               userLower.includes('relax') ||
                                messages.some(msg => msg.text.includes('stress levels are elevated'));
 
         if (isStressRelated) {
@@ -3385,7 +3392,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
       // No message when stopping
     } else {
-      console.log('🎤 User starting speech recognition...');
+      console.log('�� User starting speech recognition...');
 
       // Always request microphone permission when starting
       console.log('🎤 Requesting microphone permission...');
