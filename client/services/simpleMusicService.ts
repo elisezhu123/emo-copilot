@@ -199,7 +199,19 @@ class SimpleMusicService {
       this.cachedTracks = this.getFallbackTracks().filter(track =>
         genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
       );
-      console.log(`🔄 Using ${this.cachedTracks.length} fallback tracks`);
+      console.log(`🔄 Using ${this.cachedTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
+
+      // Log fallback genre distribution for multiple genre selections
+      if (genres.length > 1) {
+        console.log('🎼 Fallback multi-genre track distribution:');
+        genres.forEach(genre => {
+          const genreTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+          console.log(`   - ${genre}: ${genreTracks.length} fallback tracks`);
+          if (genreTracks.length > 0) {
+            console.log(`     Sample: "${genreTracks[0].title}" by ${genreTracks[0].artist}`);
+          }
+        });
+      }
     } finally {
       this.isLoading = false;
     }
