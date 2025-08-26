@@ -242,8 +242,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
       if (randomValue < 0.15) { // 15% chance of extreme weather
         const extremeWeatherTypes = [
-          { condition: 'snow', temp: -2, description: 'Heavy snow' },
-          { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200 },
+          { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
+          { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 },
           { condition: 'thunderstorm', temp: 18, description: 'Severe thunderstorm', windSpeed: 20 },
           { condition: 'blizzard', temp: -8, description: 'Blizzard conditions', windSpeed: 25 }
         ];
