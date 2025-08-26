@@ -281,7 +281,7 @@ const AIChatbot = () => {
       console.error('❌ Weather API error:', error);
       // Fallback to current Limerick temperature
       setTemperature('15°C');
-      console.log('��️ Using fallback Limerick temperature: 15°C');
+      console.log('🌡️ Using fallback Limerick temperature: 15°C');
     }
   };
 
@@ -331,7 +331,7 @@ const AIChatbot = () => {
                     fetchWeather(location.lat, location.lng);
                   },
                   (retryError) => {
-                    console.error('�� Location retry failed:', retryError.message);
+                    console.error('🔄 Location retry failed:', retryError.message);
                     // Don't add automatic location messages to keep UI clean
                     console.log('Location retry failed, but keeping UI clean');
                   },
@@ -1264,7 +1264,7 @@ const AIChatbot = () => {
     }
 
     try {
-      console.log('��� Starting wake word listening for "Hey Melo"...');
+      console.log('🎤 Starting wake word listening for "Hey Melo"...');
       wakeWordRecognitionRef.current.start();
       setIsWakeWordListening(true);
     } catch (error: any) {
@@ -1904,7 +1904,7 @@ Are you hurt? Do you need medical attention?`;
       return `🚨 DROWSY DRIVING ALERT - IMMEDIATE SAFETY ACTION NEEDED!
 
 ⛔ STOP DRIVING SYMPTOMS DETECTED:
-�� Tired/sleepy while driving is EXTREMELY dangerous
+• Tired/sleepy while driving is EXTREMELY dangerous
 • Microsleep can happen without warning
 • Reaction time severely impaired
 
