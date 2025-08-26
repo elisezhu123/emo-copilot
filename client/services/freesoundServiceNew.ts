@@ -890,7 +890,8 @@ class FreesoundService {
       page_size: '10', // Optimized for fastest loading
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
       filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
-      sort: 'downloads_desc' // Consistent, fast sorting
+      sort: 'downloads_desc', // Consistent, fast sorting
+      token: this.apiKey
     });
 
     console.log(`⚡ Fast search for ${genre}`);
