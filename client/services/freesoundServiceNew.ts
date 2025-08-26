@@ -846,11 +846,11 @@ class FreesoundService {
 
   private getRandomSort(): string {
     const sortOptions = [
+      'duration_desc',    // Longest first (prioritized for longer playlists)
       'rating_desc',      // Highest rated first
       'downloads_desc',   // Most downloaded first
+      'duration_desc',    // Longest first (appears twice for higher chance)
       'created_desc',     // Newest first
-      'duration_desc',    // Longest first
-      'duration_asc',     // Shortest first
       'score',           // Relevance score
       'created_asc'      // Oldest first (for vintage finds)
     ];
