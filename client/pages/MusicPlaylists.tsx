@@ -709,15 +709,16 @@ const MusicPlaylists = () => {
           <button
             onClick={() => {
               try {
-                console.log('🔄 Manual refresh triggered');
+                console.log('🔄 Manual refresh triggered - FORCE REFRESH');
                 const currentGenres = musicService.loadSelectedGenres();
                 console.log('🔄 Manual refresh - Current genres:', currentGenres);
                 if (currentGenres && currentGenres.length > 0) {
-                  console.log('🔄 Manual refresh - Updating playlists');
+                  console.log('🔄 Manual refresh - Force updating playlists with fresh tracks');
                   initialGenresRef.current = currentGenres;
+                  setIsUpdating(true);
                   // Use setTimeout to prevent blocking the UI
                   setTimeout(() => {
-                    loadTracks(true, false);
+                    loadTracks(true, true); // Force refresh for manual refresh
                   }, 100);
                 } else {
                   console.log('🔄 Manual refresh - No genres selected');
