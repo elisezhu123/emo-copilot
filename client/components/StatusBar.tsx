@@ -26,12 +26,16 @@ const StatusBar: React.FC<StatusBarProps> = ({
   showHomeButton = false,
   isDraggable = false,
   showTemperature = true,
+  showBackButton = false,
+  showDriverState = false,
   onTemperatureExceed,
   onExtremeWeather
 }) => {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [driverState, setDriverState] = useState<DriverStateType>('neutral');
 
   // Real-time clock update
   useEffect(() => {
