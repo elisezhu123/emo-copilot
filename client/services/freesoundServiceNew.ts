@@ -825,7 +825,13 @@ class FreesoundService {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
+        let errorText = 'Unknown error';
+        try {
+          errorText = await response.text();
+        } catch (textError) {
+          console.warn('Could not read error response text:', textError);
+          errorText = `HTTP ${response.status} ${response.statusText}`;
+        }
         console.error('❌ Freesound API error response:', errorText);
         throw new Error(`Freesound API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
