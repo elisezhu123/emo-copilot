@@ -113,6 +113,12 @@ const MusicPlaylists = () => {
             return;
           }
 
+          // If this is an update (genre change), force clear cache first
+          if (isUpdate) {
+            console.log('🧹 Force clearing cache for genre update');
+            simpleMusicService.clearCache();
+          }
+
           // Smart reload (uses cache when appropriate)
           await simpleMusicService.forceFreshReload(savedGenres);
 
