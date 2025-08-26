@@ -176,25 +176,31 @@ const MusicPlaylists = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // Immediately check if we have genres to show loading state
+    console.log('🔄 Auto-update: Component mounted, initializing...');
+
+    // Immediately check if we have genres and start loading
     const immediateGenreCheck = () => {
       const genres = musicService.loadSelectedGenres();
-      console.log('🔍 Immediate genre check on mount:', genres);
-      console.log('🔍 Genres array length:', genres?.length || 0);
-      console.log('🔍 Current loading state:', isLoadingTracks);
+      console.log('🔄 Auto-update: Immediate genre check on mount:', genres);
+      console.log('🔄 Auto-update: Genres array length:', genres?.length || 0);
+
       if (genres && genres.length > 0) {
-        console.log('🔍 Genres detected, setting loading state to true');
+        console.log('🔄 Auto-update: Genres detected, starting automatic loading...');
         setIsLoadingTracks(true);
-        console.log('🔍 Loading state should now be true');
+        // Call loadTracks immediately with the detected genres
+        setTimeout(() => {
+          loadTracks(false, false); // Initial load, not an update
+        }, 100);
       } else {
-        console.log('🔍 No genres detected on mount');
+        console.log('🔄 Auto-update: No genres detected on mount');
+        // Still call loadTracks to handle the "no genres" case properly
+        setTimeout(() => {
+          loadTracks(false, false);
+        }, 100);
       }
     };
 
     immediateGenreCheck();
-
-    // Call the main loadTracks function on mount
-    loadTracks();
 
     // Also check for genre changes immediately when component mounts
     // This helps catch cases where user navigated back with new genres
