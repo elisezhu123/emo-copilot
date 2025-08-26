@@ -819,7 +819,8 @@ class FreesoundService {
         page: '1', // Start with page 1 to avoid empty results
         fields: 'id,name,username,duration,tags,previews,type,license',
         filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
-        sort: 'rating_desc' // Use consistent sorting
+        sort: 'rating_desc', // Use consistent sorting
+        token: this.apiKey
       });
 
       console.log(`🎵 Simplified search for ${targetGenre}: query="${query}", URL: ${this.baseUrl}/search/text/?${params}`);
