@@ -27,7 +27,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Public Domain Orchestra',
         duration: 180,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // Free classical-style sample
+        url: 'https://archive.org/download/MoonlightSonata_755/Moonlight%20Sonata.mp3', // Free classical sample
         thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'
       },
       {
