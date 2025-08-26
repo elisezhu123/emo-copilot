@@ -667,7 +667,16 @@ class FreesoundService {
         index === self.findIndex(t => t.id === track.id)
       );
 
-      console.log(`⚡ Fast loading complete: ${uniqueTracks.length} tracks in parallel`);
+      console.log(`⚡ Fast loading complete: ${uniqueTracks.length} tracks in parallel for genres: ${genres.join(', ')}`);
+
+      // Log API results by genre for multiple selections
+      if (genres.length > 1) {
+        console.log('🎼 API results by genre:');
+        genres.forEach(genre => {
+          const genreTracks = uniqueTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+          console.log(`   - ${genre}: ${genreTracks.length} tracks from API`);
+        });
+      }
 
       // Add fallback tracks only if we have very few results
       if (uniqueTracks.length < 5) {
@@ -682,6 +691,7 @@ class FreesoundService {
         );
 
         uniqueTracks.push(...tracksToAdd.slice(0, 10)); // Limit fallbacks
+        console.log(`🔄 Added ${tracksToAdd.length} fallback tracks`);
       }
 
       console.log(`✅ Total tracks loaded: ${uniqueTracks.length}`);
