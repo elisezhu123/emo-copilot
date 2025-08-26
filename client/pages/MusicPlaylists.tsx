@@ -376,91 +376,14 @@ const MusicPlaylists = () => {
           </div>
         </div>
 
-        {/* Show message if no tracks */}
+        {/* Show loading or message if no tracks */}
         {tracks.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-xs text-gray-500 mb-3">Select music genres to load playlists</p>
-            <div className="space-y-2">
-              <button
-                onClick={async () => {
-                  try {
-                    console.log('🔄 Force reloading music with fresh API call...');
-
-                    // Get current selected genres
-                    const savedGenres = musicService.loadSelectedGenres();
-                    if (!savedGenres || savedGenres.length === 0) {
-                      alert('⚠️ No genres selected. Go to Music Selection first.');
-                      return;
-                    }
-
-                    // Force fresh API call
-                    await simpleMusicService.updateGenres(savedGenres);
-                    const freshTracks = await simpleMusicService.getAllTracks();
-
-                    console.log(`🔄 Reloaded ${freshTracks.length} tracks`);
-                    setTracks(freshTracks);
-
-                    if (freshTracks.length > 0) {
-                      setCurrentTrack(freshTracks[0]);
-                      audioManager.setPlaylist(freshTracks);
-                      alert(`✅ Reloaded ${freshTracks.length} tracks successfully!`);
-                    } else {
-                      alert('⚠️ No tracks loaded. Check API configuration.');
-                    }
-                  } catch (error) {
-                    console.error('Reload failed:', error);
-                    alert('❌ Reload failed: ' + error.message);
-                  }
-                }}
-                className="text-xs bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
-              >
-                🔄 Force Reload Music
-              </button>
-
-              <button
-                onClick={async () => {
-                  try {
-                    const testTrack = {
-                      id: 'test_audio',
-                      title: 'Audio Test',
-                      artist: 'System Test',
-                      duration: 3,
-                      genre: 'Test',
-                      url: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3'
-                    };
-                    await playTrack(testTrack);
-                  } catch (error) {
-                    console.error('Test audio failed:', error);
-                    alert('Audio test failed: ' + error.message);
-                  }
-                }}
-                className="text-xs bg-emotion-orange text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
-              >
-                🔊 Test Audio System
-              </button>
-
-              <button
-                onClick={async () => {
-                  try {
-                    console.log('🔍 Testing audio error handling...');
-                    const invalidTrack = {
-                      id: 'error_test',
-                      title: 'Error Test',
-                      artist: 'Debug Test',
-                      duration: 10,
-                      genre: 'Test',
-                      url: 'https://invalid-url-that-should-fail.com/nonexistent.mp3'
-                    };
-                    await playTrack(invalidTrack);
-                  } catch (error) {
-                    console.log('✅ Error handling test completed - check console for detailed error info');
-                  }
-                }}
-                className="text-xs bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-opacity-80 block"
-              >
-                🔍 Test Error Handling
-              </button>
-            </div>
+            {isLoadingTracks ? (
+              <p className="text-xs text-gray-500">Loading...</p>
+            ) : (
+              <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+            )}
           </div>
         )}
       </div>
