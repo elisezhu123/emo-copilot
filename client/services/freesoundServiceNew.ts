@@ -348,30 +348,30 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // Jazz Genre - Using working audio samples
+      // Jazz Genre - Using demo audio
       {
         id: 'jazz_1',
-        title: 'Smooth Jazz Cafe',
-        artist: 'Jazz Collective',
-        duration: 270,
+        title: 'Demo Jazz Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'jazz_2',
-        title: 'Blue Note Evening',
-        artist: 'Bebop Society',
-        duration: 300,
+        title: 'Demo Blues',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'jazz_3',
-        title: 'Midnight Saxophone',
-        artist: 'Free Jazz Group',
-        duration: 250,
+        title: 'Demo Saxophone',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Ambient Genre - Using working audio samples
@@ -381,7 +381,7 @@ class FreesoundService {
         artist: 'Nature Sounds',
         duration: 300,
         genre: 'Ambient',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'ambient_2',
@@ -389,7 +389,7 @@ class FreesoundService {
         artist: 'Peaceful Minds',
         duration: 420,
         genre: 'Ambient',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'ambient_3',
@@ -397,7 +397,7 @@ class FreesoundService {
         artist: 'Space Ambient',
         duration: 360,
         genre: 'Ambient',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Rock Genre - Using Archive.org rock samples
@@ -407,7 +407,7 @@ class FreesoundService {
         artist: 'Rock Liberation',
         duration: 220,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'rock_2',
@@ -415,7 +415,7 @@ class FreesoundService {
         artist: 'Open Road Band',
         duration: 240,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'rock_3',
@@ -423,7 +423,7 @@ class FreesoundService {
         artist: 'Free Rock Alliance',
         duration: 200,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Folk Genre - Using folk music samples
@@ -433,7 +433,7 @@ class FreesoundService {
         artist: 'Folk Heritage',
         duration: 250,
         genre: 'Folk',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'folk_2',
@@ -441,7 +441,7 @@ class FreesoundService {
         artist: 'Acoustic Storytellers',
         duration: 280,
         genre: 'Folk',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'folk_3',
@@ -449,7 +449,7 @@ class FreesoundService {
         artist: 'Traditional Sounds',
         duration: 230,
         genre: 'Folk',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Blues Genre - Using blues samples
@@ -459,7 +459,7 @@ class FreesoundService {
         artist: 'Blues Foundation',
         duration: 280,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'blues_2',
@@ -467,7 +467,7 @@ class FreesoundService {
         artist: 'Mississippi Open',
         duration: 260,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'blues_3',
@@ -475,7 +475,7 @@ class FreesoundService {
         artist: 'Free Blues Society',
         duration: 300,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Chillout Genre - Using chill samples
@@ -485,7 +485,7 @@ class FreesoundService {
         artist: 'Chill Collective',
         duration: 270,
         genre: 'Chillout',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'chillout_2',
@@ -493,7 +493,7 @@ class FreesoundService {
         artist: 'Relaxed Minds',
         duration: 250,
         genre: 'Chillout',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'chillout_3',
@@ -501,7 +501,7 @@ class FreesoundService {
         artist: 'Mellow Beats',
         duration: 220,
         genre: 'Chillout',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Country Genre - Using country samples
@@ -511,7 +511,7 @@ class FreesoundService {
         artist: 'Folk Guitar',
         duration: 200,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'country_2',
@@ -519,7 +519,7 @@ class FreesoundService {
         artist: 'Americana Collective',
         duration: 240,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'country_3',
@@ -527,7 +527,7 @@ class FreesoundService {
         artist: 'Open Range Band',
         duration: 210,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Hip-Pop Genre - Using hip-hop samples
@@ -537,7 +537,7 @@ class FreesoundService {
         artist: 'Free Beat Collective',
         duration: 210,
         genre: 'Hip-Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'hip_pop_2',
@@ -545,7 +545,7 @@ class FreesoundService {
         artist: 'Open Source Rap',
         duration: 180,
         genre: 'Hip-Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'hip_pop_3',
@@ -553,7 +553,7 @@ class FreesoundService {
         artist: 'Creative Commons MC',
         duration: 195,
         genre: 'Hip-Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Electro Pop Genre - Using electronic samples
@@ -563,7 +563,7 @@ class FreesoundService {
         artist: 'Synth Wave',
         duration: 190,
         genre: 'Electro Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'electro_pop_2',
@@ -571,7 +571,7 @@ class FreesoundService {
         artist: 'Electronic Dreams',
         duration: 210,
         genre: 'Electro Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'electro_pop_3',
@@ -579,7 +579,7 @@ class FreesoundService {
         artist: 'Future Sounds',
         duration: 180,
         genre: 'Electro Pop',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Downbeat Genre - Using downtempo samples
@@ -589,7 +589,7 @@ class FreesoundService {
         artist: 'Trip Hop Collective',
         duration: 320,
         genre: 'Downbeat',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'downbeat_2',
@@ -597,7 +597,7 @@ class FreesoundService {
         artist: 'Downtempo Masters',
         duration: 290,
         genre: 'Downbeat',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'downbeat_3',
@@ -605,7 +605,7 @@ class FreesoundService {
         artist: 'Chill Beats',
         duration: 310,
         genre: 'Downbeat',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // New Age Genre - Using new age samples
@@ -615,7 +615,7 @@ class FreesoundService {
         artist: 'Spiritual Sounds',
         duration: 360,
         genre: 'New Age',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'new_age_2',
@@ -623,7 +623,7 @@ class FreesoundService {
         artist: 'Inner Peace',
         duration: 400,
         genre: 'New Age',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'new_age_3',
@@ -631,7 +631,7 @@ class FreesoundService {
         artist: 'Wellness Music',
         duration: 320,
         genre: 'New Age',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       }
     ];
   }
