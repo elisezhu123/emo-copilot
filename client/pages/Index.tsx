@@ -45,6 +45,10 @@ const EmoCopilotDashboard = () => {
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
 
+  // Timer states for tracking prolonged stress/anxiety
+  const [stressStartTime, setStressStartTime] = useState<number | null>(null);
+  const [stressTimer, setStressTimer] = useState<NodeJS.Timeout | null>(null);
+
   // Car state from global manager
   const [globalCarState, setGlobalCarState] = useState<CarState>(carStateManager.getState());
 
