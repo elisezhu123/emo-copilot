@@ -300,7 +300,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
             <circle cx="4.5" cy="4" r="4" fill="#A6DBFF"/>
           </svg>
           <span
-            className="text-[#3A2018] text-center font-inter text-sm font-normal leading-normal cursor-pointer hover:text-blue-600"
+            className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal cursor-pointer hover:text-blue-600"
             onClick={() => {
               console.log('🔄 Manual temperature refresh requested');
               if (currentLocation) {
