@@ -93,12 +93,25 @@ const AIChatbot = () => {
   const [seatHeating, setSeatHeating] = useState(false);
   const [musicVolume, setMusicVolume] = useState(50);
   const [lightsOn, setLightsOn] = useState(false);
-  // Clear any saved conversation and use clean Figma design
+  // Load and preserve conversation history for context
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Clear any existing conversation history for fresh start
-    localStorage.removeItem('ai-chatbot-history');
+    // Try to load existing conversation history
+    const savedHistory = localStorage.getItem('ai-chatbot-history');
 
-    // Return clean default conversation with only Melo's greeting
+    if (savedHistory) {
+      try {
+        const parsedHistory = JSON.parse(savedHistory);
+        console.log('📚 Loaded conversation history:', parsedHistory.length, 'messages');
+        return parsedHistory.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+      } catch (error) {
+        console.warn('Failed to parse conversation history:', error);
+      }
+    }
+
+    // Return default greeting if no history
     return [
       {
         id: '1',
