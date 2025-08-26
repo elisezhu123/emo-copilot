@@ -247,7 +247,7 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (!savedGenres || savedGenres.length === 0) {
-        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
+        alert('请先在音乐选择页面选择您喜欢的音乐类型��\nPlease select your preferred music genres in the Music Selection page first!');
         return;
       }
       
@@ -289,6 +289,11 @@ const EmoCopilotDashboard = () => {
 
   const toggleMute = () => {
     audioManager.toggleMute();
+  };
+
+  const handleEmotionSelect = (emotion: DriverStateType) => {
+    console.log('🧠 Emotion selected:', emotion);
+    carStateManager.setDriverState(emotion);
   };
 
   const playNextTrack = async () => {
