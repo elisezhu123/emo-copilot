@@ -102,6 +102,12 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
       setCurrentState(newState);
       setStateStartTime(currentTime);
       carStateManager.setDriverState(newState);
+
+      // Also directly update StatusBar if function exists
+      if ((window as any).updateStatusBarDriverState) {
+        (window as any).updateStatusBarDriverState(newState);
+      }
+
       console.log(`🧠 Driver state updated: ${currentState} → ${newState}`);
       console.log(`📊 HR change: ${hrChange > 0 ? '+' : ''}${hrChange}bpm, HRV change: ${hrvChangePercent > 0 ? '+' : ''}${hrvChangePercent.toFixed(1)}%`);
     }
