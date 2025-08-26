@@ -66,23 +66,23 @@ const StatusBar: React.FC<StatusBarProps> = ({
     }
   }, [showDriverState]);
 
-  // Helper function to get driver state display info
+  // Helper function to get driver state display info with emotion colors matching dashboard
   const getDriverStateInfo = (state: DriverStateType) => {
     switch (state) {
       case 'anxious':
-        return { text: 'Driver State: Anxious', color: '#FF8B7E' };
+        return { text: 'Driver State: Anxious', color: '#FC5555' }; // flowkit-red
       case 'stressed':
-        return { text: 'Driver State: Stressed', color: '#FF8B7E' };
+        return { text: 'Driver State: Stressed', color: '#FF8B7E' }; // emotion-mouth
       case 'neutral':
-        return { text: 'Driver State: Neutral', color: '#FF8B7E' };
+        return { text: 'Driver State: Neutral', color: '#3A2018' }; // emotion-default
       case 'focused':
-        return { text: 'Driver State: Focused', color: '#FF8B7E' };
+        return { text: 'Driver State: Focused', color: '#FFA680' }; // emotion-orange
       case 'calm':
-        return { text: 'Driver State: Calm', color: '#FF8B7E' };
+        return { text: 'Driver State: Calm', color: '#A6DBFF' }; // emotion-blue
       case 'relaxed':
-        return { text: 'Driver State: Relaxed', color: '#FF8B7E' };
+        return { text: 'Driver State: Relaxed', color: '#29CC6A' }; // flowkit-green
       default:
-        return { text: 'Driver State: Neutral', color: '#FF8B7E' };
+        return { text: 'Driver State: Neutral', color: '#3A2018' }; // emotion-default
     }
   };
 
