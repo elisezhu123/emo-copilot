@@ -64,7 +64,7 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
           }
 
           // Only perform automatic analysis if not manually overridden
-          if (!manualOverride) {
+          if (!carStateManager.isManualOverrideActive()) {
             // Use latest HR value from array for HRV analysis
             const latestHRValue = data.values.length > 0 ? data.values[data.values.length - 1] : latestHR;
             performEmotionalAnalysis(latestHR, latestHRValue, currentTime);
