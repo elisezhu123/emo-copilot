@@ -374,54 +374,54 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // Ambient Genre - Using working audio samples
+      // Ambient Genre - Using demo audio
       {
         id: 'ambient_1',
-        title: 'Ocean Meditation',
-        artist: 'Nature Sounds',
-        duration: 300,
+        title: 'Demo Ambient Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Ambient',
         url: demoAudioUrl
       },
       {
         id: 'ambient_2',
-        title: 'Forest Ambience',
-        artist: 'Peaceful Minds',
-        duration: 420,
+        title: 'Demo Meditation',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Ambient',
         url: demoAudioUrl
       },
       {
         id: 'ambient_3',
-        title: 'Cosmic Drift',
-        artist: 'Space Ambient',
-        duration: 360,
+        title: 'Demo Soundscape',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Ambient',
         url: demoAudioUrl
       },
 
-      // Rock Genre - Using Archive.org rock samples
+      // Rock Genre - Using demo audio
       {
         id: 'rock_1',
-        title: 'Electric Energy',
-        artist: 'Rock Liberation',
-        duration: 220,
+        title: 'Demo Rock Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Rock',
         url: demoAudioUrl
       },
       {
         id: 'rock_2',
-        title: 'Highway Anthem',
-        artist: 'Open Road Band',
-        duration: 240,
+        title: 'Demo Guitar',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Rock',
         url: demoAudioUrl
       },
       {
         id: 'rock_3',
-        title: 'Rebel Spirit',
-        artist: 'Free Rock Alliance',
-        duration: 200,
+        title: 'Demo Electric',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Rock',
         url: demoAudioUrl
       },
