@@ -530,80 +530,80 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // Hip-Pop Genre - Using hip-hop samples
+      // Hip-Pop Genre - Using demo audio
       {
         id: 'hip_pop_1',
-        title: 'Urban Vibes',
-        artist: 'Free Beat Collective',
-        duration: 210,
+        title: 'Demo Hip-Hop Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Hip-Pop',
         url: demoAudioUrl
       },
       {
         id: 'hip_pop_2',
-        title: 'City Nights',
-        artist: 'Open Source Rap',
-        duration: 180,
+        title: 'Demo Urban',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Hip-Pop',
         url: demoAudioUrl
       },
       {
         id: 'hip_pop_3',
-        title: 'Street Poetry',
-        artist: 'Creative Commons MC',
-        duration: 195,
+        title: 'Demo Beats',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Hip-Pop',
         url: demoAudioUrl
       },
 
-      // Electro Pop Genre - Using electronic samples
+      // Electro Pop Genre - Using demo audio
       {
         id: 'electro_pop_1',
-        title: 'Neon Nights',
-        artist: 'Synth Wave',
-        duration: 190,
+        title: 'Demo Electronic Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Electro Pop',
         url: demoAudioUrl
       },
       {
         id: 'electro_pop_2',
-        title: 'Digital Heart',
-        artist: 'Electronic Dreams',
-        duration: 210,
+        title: 'Demo Synth',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Electro Pop',
         url: demoAudioUrl
       },
       {
         id: 'electro_pop_3',
-        title: 'Cyber Love',
-        artist: 'Future Sounds',
-        duration: 180,
+        title: 'Demo Electronic',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Electro Pop',
         url: demoAudioUrl
       },
 
-      // Downbeat Genre - Using downtempo samples
+      // Downbeat Genre - Using demo audio
       {
         id: 'downbeat_1',
-        title: 'Slow Motion',
-        artist: 'Trip Hop Collective',
-        duration: 320,
+        title: 'Demo Downbeat Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Downbeat',
         url: demoAudioUrl
       },
       {
         id: 'downbeat_2',
-        title: 'Urban Shadows',
-        artist: 'Downtempo Masters',
-        duration: 290,
+        title: 'Demo Trip-Hop',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Downbeat',
         url: demoAudioUrl
       },
       {
         id: 'downbeat_3',
-        title: 'Night Walker',
-        artist: 'Chill Beats',
-        duration: 310,
+        title: 'Demo Chill',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Downbeat',
         url: demoAudioUrl
       },
