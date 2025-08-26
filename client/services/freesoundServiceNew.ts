@@ -881,7 +881,7 @@ class FreesoundService {
     const params = new URLSearchParams({
       token: this.apiKey,
       query: `${genre.toLowerCase()} music`,
-      page_size: '15', // Reduced for faster loading
+      page_size: '10', // Optimized for fastest loading
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
       filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
       sort: 'downloads_desc' // Consistent, fast sorting
