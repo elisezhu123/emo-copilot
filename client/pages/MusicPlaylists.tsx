@@ -71,6 +71,8 @@ const MusicPlaylists = () => {
           console.log('🔍 MusicPlaylists: savedGenres type:', typeof savedGenres);
           setTracks([]);
           setCurrentTrack(null);
+          // Reset the ref when no genres are selected
+          initialGenresRef.current = [];
         }
       } catch (error) {
         console.error('🔍 MusicPlaylists: Error loading tracks:', error);
