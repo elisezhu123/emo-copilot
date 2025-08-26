@@ -134,6 +134,27 @@ const StatusBar: React.FC<StatusBarProps> = ({
     }
   }, [showDriverState]);
 
+  // Smart back navigation based on current location
+  const handleBackNavigation = () => {
+    const currentPath = location.pathname;
+
+    if (currentPath === '/music-playlists') {
+      // Music playlists should go back to music selection
+      navigate('/music-selection');
+    } else if (currentPath === '/music-selection') {
+      // Music selection should go back to dashboard
+      navigate('/');
+    } else if (currentPath === '/ai-chatbot') {
+      // AI chatbot should go back to dashboard
+      navigate('/');
+    } else {
+      // Default behavior - use browser history
+      navigate(-1);
+    }
+
+    console.log(`🔙 Back navigation: ${currentPath} → navigating back`);
+  };
+
   // Format time for display
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-US', { 
