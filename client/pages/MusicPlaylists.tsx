@@ -78,8 +78,47 @@ const MusicPlaylists = () => {
         const allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
 
-        // FREESOUND ONLY: No fallback tracks - only use what Freesound provides
+        // Check if we got tracks from Freesound API
         console.log('🎵 Freesound tracks loaded:', allTracks.length);
+
+        // If no tracks loaded but we have genres, provide fallback
+        if (allTracks.length === 0 && savedGenres && savedGenres.length > 0) {
+          console.log('🎵 No tracks from API, providing fallback tracks for genres:', savedGenres);
+
+          const fallbackTracks = [
+            {
+              id: 'fallback_classical_1',
+              title: 'Classical Demo Track',
+              artist: 'Demo Artist',
+              duration: 180,
+              genre: 'Classical',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            },
+            {
+              id: 'fallback_jazz_1',
+              title: 'Jazz Demo Track',
+              artist: 'Demo Artist',
+              duration: 240,
+              genre: 'Jazz',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            },
+            {
+              id: 'fallback_ambient_1',
+              title: 'Ambient Demo Track',
+              artist: 'Demo Artist',
+              duration: 300,
+              genre: 'Ambient',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            }
+          ].filter(track =>
+            savedGenres.some(genre =>
+              track.genre.toLowerCase() === genre.toLowerCase()
+            )
+          );
+
+          console.log(`🎵 Using ${fallbackTracks.length} fallback tracks`);
+          allTracks.push(...fallbackTracks);
+        }
 
         // Log genre mixing for multiple genres
         if (savedGenres.length > 1) {
@@ -262,7 +301,7 @@ const MusicPlaylists = () => {
           console.log(`🔍 Mount check (${delay}ms) - Changed:`, mountChanged);
 
           if (mountChanged && currentGenres && currentGenres.length > 0) {
-            console.log('�� Detected genre change after mount, reloading');
+            console.log('🔄 Detected genre change after mount, reloading');
             initialGenresRef.current = currentGenres;
             loadTracks(true, false, false); // Pass true to indicate this is an update
           }
