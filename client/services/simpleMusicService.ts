@@ -69,18 +69,28 @@ class SimpleMusicService {
     await this.initialize();
   }
 
-  // Update genres and refresh music collection
+  // Update genres and refresh music collection with dynamic playlists
   async updateGenres(genres: string[]): Promise<void> {
     try {
-      console.log('🎵 Loading REAL music from Freesound API for genres:', genres);
+      console.log('🎲 Loading DYNAMIC music from Freesound API for genres:', genres);
 
-      // Force API call - don't use fallback immediately
-      this.cachedTracks = await freesoundService.getTracksByGenres(genres);
+      // Always clear cache first for fresh results every time
+      this.cachedTracks = [];
 
-      console.log(`✅ Loaded ${this.cachedTracks.length} REAL tracks from Freesound API`);
+      // Force fresh API call with dynamic randomization
+      const freshTracks = await freesoundService.getTracksByGenres(genres);
+
+      // Add timestamp to ensure uniqueness even with same genres
+      const timestamp = Date.now();
+      this.cachedTracks = freshTracks.map(track => ({
+        ...track,
+        id: `${track.id}_${timestamp}` // Make IDs unique per session
+      }));
+
+      console.log(`✅ Loaded ${this.cachedTracks.length} DYNAMIC tracks from Freesound API`);
 
       if (this.cachedTracks.length > 0) {
-        console.log('🎵 Sample tracks loaded:');
+        console.log('🎲 Dynamic playlist sample tracks:');
         this.cachedTracks.slice(0, 3).forEach(track => {
           console.log(`   - "${track.title}" by ${track.artist} (${track.genre})`);
           console.log(`     URL: ${track.url?.substring(0, 50)}...`);
@@ -95,7 +105,12 @@ class SimpleMusicService {
 
       // Try once more before giving up
       try {
-        this.cachedTracks = await freesoundService.getTracksByGenres(genres);
+        const retryTracks = await freesoundService.getTracksByGenres(genres);
+        const timestamp = Date.now();
+        this.cachedTracks = retryTracks.map(track => ({
+          ...track,
+          id: `${track.id}_${timestamp}_retry`
+        }));
         console.log(`🎵 Retry successful: ${this.cachedTracks.length} tracks loaded`);
       } catch (retryError) {
         console.error('❌ Freesound API retry also failed:', retryError);
