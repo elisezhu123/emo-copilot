@@ -3795,6 +3795,14 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
           </div>
         </div>
       )}
+
+      {showLaughEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <LaughFace />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
