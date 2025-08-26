@@ -204,7 +204,7 @@ const MusicPlaylists = () => {
 
         // Test API configuration immediately
         console.log('🎵 Testing API configuration...');
-        console.log('��� Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
+        console.log('🎵 Freesound API Key:', import.meta.env.VITE_FREESOUND_API_KEY ? 'CONFIGURED' : 'MISSING');
         console.log('🎵 DeepSeek API Key:', import.meta.env.VITE_DEEPSEEK_API_KEY ? 'CONFIGURED' : 'MISSING');
 
         // Store initial genres for comparison in handleFocus
@@ -366,37 +366,37 @@ const MusicPlaylists = () => {
       }
     };
 
-    // Visibility change listener as backup for focus events
+    // Enhanced visibility change detection for auto-updates
     const handleVisibilityChange = () => {
       try {
         if (!document.hidden) {
-          console.log('🔍 Page became visible - checking for genre changes');
+          console.log('🔄 Auto-update: Page became visible, checking for changes...');
 
-          // Add delay to ensure any localStorage updates have completed
-          setTimeout(() => {
-            try {
-              if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
-                console.error('musicService not available in handleVisibilityChange');
-                return;
+          // Multiple checks with different delays to catch any timing issues
+          [50, 150, 300].forEach(delay => {
+            setTimeout(() => {
+              try {
+                if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+                  return;
+                }
+
+                const currentGenres = musicService.loadSelectedGenres();
+                const previousGenres = initialGenresRef.current;
+                const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+                if (genresChanged) {
+                  console.log(`🔄 Auto-update: Visibility detected changes (${delay}ms check) - updating automatically`);
+                  console.log('🔄 Auto-update: New genres:', currentGenres);
+                  console.log('🔄 Auto-update: Previous genres:', previousGenres);
+                  initialGenresRef.current = currentGenres || [];
+                  setIsUpdating(true);
+                  loadTracks(true, false);
+                }
+              } catch (error) {
+                console.error('Error in visibility timeout:', error);
               }
-
-              const currentGenres = musicService.loadSelectedGenres();
-              const previousGenres = initialGenresRef.current;
-              const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
-
-              console.log('🔍 Visibility - Current genres:', currentGenres);
-              console.log('🔍 Visibility - Previous genres:', previousGenres);
-              console.log('🔍 Visibility - Genres changed?', genresChanged);
-
-              if (genresChanged) {
-                console.log('🔄 Visibility detected genre change - updating playlists');
-                initialGenresRef.current = currentGenres || [];
-                loadTracks(true, false);
-              }
-            } catch (error) {
-              console.error('Error in visibility timeout:', error);
-            }
-          }, 200);
+            }, delay);
+          });
         }
       } catch (error) {
         console.error('Error in handleVisibilityChange:', error);
