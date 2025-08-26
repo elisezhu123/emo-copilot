@@ -210,7 +210,7 @@ const MusicPlaylists = () => {
           if (mountChanged && currentGenres && currentGenres.length > 0) {
             console.log('🔄 Detected genre change after mount, reloading');
             initialGenresRef.current = currentGenres;
-            loadTracks(true, false); // Pass true to indicate this is an update
+            loadTracks(true, false, false); // Pass true to indicate this is an update
           }
         }, delay);
       });
@@ -242,7 +242,7 @@ const MusicPlaylists = () => {
             console.log('🔄 Real-time: Previous genres:', currentGenres);
             initialGenresRef.current = newGenres || [];
             setIsUpdating(true);
-            loadTracks(true, false);
+            loadTracks(true, false, false);
           }
         }, 200); // Small delay to ensure localStorage is fully updated
       }
@@ -303,7 +303,7 @@ const MusicPlaylists = () => {
                   console.log('🔄 Auto-update: Previous genres:', previousGenres);
                   initialGenresRef.current = currentGenres || [];
                   setIsUpdating(true);
-                  loadTracks(true, false);
+                  loadTracks(true, false, false);
                 }
               } catch (error) {
                 console.error('Error in visibility timeout:', error);
