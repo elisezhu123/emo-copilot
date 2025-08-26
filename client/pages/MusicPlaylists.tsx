@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
 import { simpleMusicService } from '../services/simpleMusicService';
 import { audioManager, AudioState } from '../services/audioManager';
@@ -48,7 +48,7 @@ const MusicPlaylists = () => {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
       const savedGenres = musicService.loadSelectedGenres();
-      console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+      console.log('�� MusicPlaylists: Loaded genres from localStorage:', savedGenres);
       console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
 
       // If we have genres, show loading state
