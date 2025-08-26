@@ -27,6 +27,37 @@ const MusicPlaylists = () => {
     error: null
   });
 
+  // Monitor location changes to detect when user returns from genre selection
+  useEffect(() => {
+    console.log('🔍 Location changed to:', location.pathname);
+
+    // If this is a navigation TO the playlists page (not initial mount)
+    if (lastLocationRef.current && lastLocationRef.current !== location.pathname) {
+      console.log('🔍 Detected navigation to playlists page from:', lastLocationRef.current);
+
+      // Check for genre changes when returning to playlists
+      const currentGenres = musicService.loadSelectedGenres();
+      const previousGenres = initialGenresRef.current;
+      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+      console.log('🔍 Navigation - Current genres:', currentGenres);
+      console.log('🔍 Navigation - Previous genres:', previousGenres);
+      console.log('🔍 Navigation - Genres changed?', genresChanged);
+
+      if (genresChanged) {
+        console.log('🔄 Navigation detected genre change - updating playlists');
+        initialGenresRef.current = currentGenres || [];
+        setIsUpdating(true);
+        // Small delay to ensure UI shows updating state
+        setTimeout(() => {
+          loadTracks(true);
+        }, 100);
+      }
+    }
+
+    lastLocationRef.current = location.pathname;
+  }, [location.pathname]);
+
   useEffect(() => {
     // Immediately check if we have genres to show loading state
     const immediateGenreCheck = () => {
