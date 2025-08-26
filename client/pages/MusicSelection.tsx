@@ -10,9 +10,13 @@ const MusicSelection = () => {
 
   // Load saved genres on component mount
   useEffect(() => {
+    console.log('🔍 MusicSelection: Component mounted, loading saved genres');
     const savedGenres = musicService.loadSelectedGenres();
-    console.log('🎵 Loaded saved genres:', savedGenres);
+    console.log('🔍 MusicSelection: Loaded saved genres:', savedGenres);
+    console.log('🔍 MusicSelection: Genres type:', typeof savedGenres);
+    console.log('🔍 MusicSelection: Genres length:', savedGenres?.length || 0);
     setSelectedGenres(savedGenres || []);
+    console.log('🔍 MusicSelection: Set selectedGenres state');
   }, []);
 
   const handleNavigateToPlaylists = () => {
