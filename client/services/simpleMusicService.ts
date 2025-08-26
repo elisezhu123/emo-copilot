@@ -181,26 +181,7 @@ class SimpleMusicService {
         id: `${track.id}_${index}` // Simple unique ID
       }));
 
-      console.log(`⚡ Fast loaded ${this.cachedTracks.length} tracks for genres: ${genres.join(', ')}`);
-
-      // Special debug for Rock and Blues track counts
-      if (genres.includes('Rock') || genres.includes('Blues')) {
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Track loading results:');
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Total tracks loaded:', this.cachedTracks.length);
-
-        const rockTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === 'rock');
-        const bluesTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === 'blues');
-
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Rock tracks found:', rockTracks.length);
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Blues tracks found:', bluesTracks.length);
-
-        if (rockTracks.length > 0) {
-          console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): First Rock track:', rockTracks[0]);
-        }
-        if (bluesTracks.length > 0) {
-          console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): First Blues track:', bluesTracks[0]);
-        }
-      }
+      console.log(`⚡ Loaded ${this.cachedTracks.length} tracks for genres: ${genres.join(', ')}`);
 
       // Log genre distribution for multiple genre selections
       if (genres.length > 1) {
