@@ -16,7 +16,7 @@ class FreesoundService {
   constructor() {
     this.apiKey = import.meta.env.VITE_FREESOUND_API_KEY || '';
     if (this.apiKey) {
-      console.log('🎵 Freesound API configured with key:', this.apiKey.substring(0, 10) + '...');
+      console.log('🎵 Freesound API configured with OAuth client ID:', this.apiKey.substring(0, 10) + '...');
     } else {
       console.warn('⚠️ Freesound API key not found in environment variables');
     }
