@@ -20,6 +20,13 @@ class SimpleMusicService {
   async initialize(): Promise<void> {
     console.log('🎵 SimpleMusicService initialized with no default tracks');
     this.cachedTracks = [];
+
+    // Test fallback tracks for Rock/Blues immediately
+    const testFallback = this.getFallbackTracks();
+    const rockTest = testFallback.filter(track => track.genre.toLowerCase() === 'rock');
+    const bluesTest = testFallback.filter(track => track.genre.toLowerCase() === 'blues');
+    console.log('🎸 INITIALIZATION TEST: Rock fallback tracks:', rockTest.length);
+    console.log('🎸 INITIALIZATION TEST: Blues fallback tracks:', bluesTest.length);
   }
 
   // Fallback tracks if Freesound fails - complete genre coverage
