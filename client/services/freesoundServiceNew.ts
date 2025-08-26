@@ -681,7 +681,7 @@ class FreesoundService {
       }
 
       // Add fallback tracks only if we have very few results
-      if (uniqueTracks.length < 5) {
+      if (randomizedTracks.length < 5) {
         console.log('🔄 Adding fallback tracks for better experience');
         const fallbackTracks = this.getFallbackTracks().filter(track =>
           genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
@@ -689,15 +689,20 @@ class FreesoundService {
 
         // Add fallbacks that don't already exist
         const tracksToAdd = fallbackTracks.filter(fallback =>
-          !uniqueTracks.find(existing => existing.id === fallback.id)
+          !randomizedTracks.find(existing => existing.id === fallback.id)
         );
 
-        uniqueTracks.push(...tracksToAdd.slice(0, 10)); // Limit fallbacks
+        randomizedTracks.push(...tracksToAdd.slice(0, 10)); // Limit fallbacks
         console.log(`🔄 Added ${tracksToAdd.length} fallback tracks`);
+
+        // Re-randomize the final combined result
+        const finalRandomized = this.shuffleArray(randomizedTracks);
+        console.log(`✅ Total tracks loaded and randomized: ${finalRandomized.length}`);
+        return finalRandomized;
       }
 
-      console.log(`✅ Total tracks loaded: ${uniqueTracks.length}`);
-      return uniqueTracks;
+      console.log(`✅ Total tracks loaded and randomized: ${randomizedTracks.length}`);
+      return randomizedTracks;
 
     } catch (error) {
       console.error('❌ Parallel loading failed:', error);
