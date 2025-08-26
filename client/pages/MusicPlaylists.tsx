@@ -76,14 +76,23 @@ const MusicPlaylists = () => {
 
         const allTracks = await simpleMusicService.getAllTracks();
         console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
-        setTracks(allTracks);
 
-        if (allTracks.length > 0) {
+        // Critical fallback: If simpleMusicService returns no tracks, use musicService fallback
+        let finalTracks = allTracks;
+        if (allTracks.length === 0) {
+          console.log('🔄 No tracks from simpleMusicService, falling back to musicService tracks');
+          finalTracks = musicService.getFilteredTracks();
+          console.log('🔄 Fallback tracks found:', finalTracks.length);
+        }
+
+        setTracks(finalTracks);
+
+        if (finalTracks.length > 0) {
           // Only set new current track if we don't have one, or if this is not an update
           if (!currentTrack || !isUpdate) {
-            setCurrentTrack(allTracks[0]);
+            setCurrentTrack(finalTracks[0]);
           }
-          audioManager.setPlaylist(allTracks);
+          audioManager.setPlaylist(finalTracks);
         }
 
         // Update the ref with successfully loaded genres for future focus comparisons
@@ -216,16 +225,25 @@ const MusicPlaylists = () => {
           await simpleMusicService.forceFreshReload(savedGenres, forceRefresh);
 
           const allTracks = await simpleMusicService.getAllTracks();
-          console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
-          setTracks(allTracks);
+        console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
 
-          if (allTracks.length > 0) {
-            // Only set new current track if we don't have one, or if this is not an update
-            if (!currentTrack || !isUpdate) {
-              setCurrentTrack(allTracks[0]);
-            }
-            audioManager.setPlaylist(allTracks);
+        // Critical fallback: If simpleMusicService returns no tracks, use musicService fallback
+        let finalTracks = allTracks;
+        if (allTracks.length === 0) {
+          console.log('🔄 No tracks from simpleMusicService, falling back to musicService tracks');
+          finalTracks = musicService.getFilteredTracks();
+          console.log('🔄 Fallback tracks found:', finalTracks.length);
+        }
+
+        setTracks(finalTracks);
+
+        if (finalTracks.length > 0) {
+          // Only set new current track if we don't have one, or if this is not an update
+          if (!currentTrack || !isUpdate) {
+            setCurrentTrack(finalTracks[0]);
           }
+          audioManager.setPlaylist(finalTracks);
+        }
 
           // Update the ref with successfully loaded genres for future focus comparisons
           initialGenresRef.current = savedGenres;
