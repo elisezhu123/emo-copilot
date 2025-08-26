@@ -691,7 +691,7 @@ const AIChatbot = () => {
     // Add AI message with warning and recommendation
     const weatherMessage: Message = {
       id: Date.now().toString() + '_weather_alert',
-      text: `⚠️ WEATHER ALERT: ${message} ${recommendation}`,
+      text: `���️ WEATHER ALERT: ${message} ${recommendation}`,
       type: 'bot',
       timestamp: new Date()
     };
@@ -2104,7 +2104,7 @@ ${response}
         message.includes('flat tire') || message.includes('engine') || message.includes('overheating')) {
       return `�� VEHICLE BREAKDOWN ASSISTANCE:
 
-🛡️ SAFETY FIRST:
+����️ SAFETY FIRST:
 • Pull over safely (shoulder, parking lot)
 • Turn on hazard lights
 • Exit away from traffic if safe
@@ -2300,6 +2300,59 @@ ${response}
     if (message.includes('test music') || message.includes('test listen music')) {
       setShowHappyEmoji(true);
       setTimeout(() => setShowHappyEmoji(false), 3000);
+      return;
+    }
+
+    // NEW EMOJI TRIGGERS
+
+    // Hot weather mentions → HotFace emoji
+    if (message.includes('so hot') || message.includes('too hot') || message.includes('really hot') ||
+        message.includes('very hot') || message.includes('burning up') || message.includes('boiling') ||
+        message.includes('sweltering') || message.includes('scorching') || message.includes('heat wave') ||
+        message.includes('temperature is high') || message.includes('temperature too high') ||
+        message.includes('weather is hot') || message.includes('it\'s hot') || message.includes('feeling hot')) {
+      setShowHotEmoji(true);
+      setTimeout(() => {
+        setShowHotEmoji(false);
+        // Also trigger AC suggestion after showing hot emoji
+        handleTemperatureExceed(35);
+      }, 3000);
+      return;
+    }
+
+    // Joke requests → CuteFace emoji
+    if (message.includes('tell me a joke') || message.includes('joke please') || message.includes('make me laugh') ||
+        message.includes('something funny') || message.includes('funny story') || message.includes('cheer me up') ||
+        message.includes('need a laugh') || message.includes('entertain me') || message.includes('humor') ||
+        message.includes('funny joke') || message.includes('lighten the mood') || message.includes('brighten my day')) {
+      setShowCuteEmoji(true);
+      setTimeout(() => setShowCuteEmoji(false), 3000);
+      return;
+    }
+
+    // Happy/positive feedback → LaughFace emoji
+    if (message.includes('that\'s so good') || message.includes('i am happy now') || message.includes('that\'s great') ||
+        message.includes('amazing') || message.includes('wonderful') || message.includes('excellent') ||
+        message.includes('fantastic') || message.includes('love it') || message.includes('so funny') ||
+        message.includes('hilarious') || message.includes('made me smile') || message.includes('feel better') ||
+        message.includes('that\'s awesome') || message.includes('brilliant') || message.includes('perfect') ||
+        message.includes('you\'re the best') || message.includes('thank you so much') || message.includes('feel great') ||
+        message.includes('really good') || message.includes('so happy') || message.includes('cheered me up') ||
+        message.includes('feeling good') || message.includes('much better') || message.includes('that helped')) {
+      setShowLaughEmoji(true);
+      setTimeout(() => setShowLaughEmoji(false), 3000);
+      return;
+    }
+
+    // Alert system triggers → ShockFace emoji (enhanced)
+    if (message.includes('emergency') || message.includes('help') || message.includes('urgent') ||
+        message.includes('accident') || message.includes('dangerous') || message.includes('warning') ||
+        message.includes('alert') || message.includes('problem') || message.includes('trouble') ||
+        message.includes('call 911') || message.includes('call police') || message.includes('medical') ||
+        message.includes('hurt') || message.includes('injured') || message.includes('crash') ||
+        message.includes('breakdown') || message.includes('emergency stop') || activeAlert) {
+      setShowShockEmoji(true);
+      setTimeout(() => setShowShockEmoji(false), 4000);
       return;
     }
   };
