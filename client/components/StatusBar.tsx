@@ -143,10 +143,10 @@ const StatusBar: React.FC<StatusBarProps> = ({
       navigate('/music-selection');
     } else if (currentPath === '/music-selection') {
       // Music selection should go back to dashboard
-      navigate('/');
+      navigate('/dashboard');
     } else if (currentPath === '/ai-chatbot') {
       // AI chatbot should go back to dashboard
-      navigate('/');
+      navigate('/dashboard');
     } else {
       // Default behavior - use browser history
       navigate(-1);
