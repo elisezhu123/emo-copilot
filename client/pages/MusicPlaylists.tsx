@@ -80,6 +80,19 @@ const MusicPlaylists = () => {
 
         // FREESOUND ONLY: No fallback tracks - only use what Freesound provides
         console.log('🎵 Freesound tracks loaded:', allTracks.length);
+
+        // Log genre mixing for multiple genres
+        if (savedGenres.length > 1) {
+          console.log('🎭 MIXED PLAYLIST: Combining tracks from', savedGenres.length, 'genres:');
+          savedGenres.forEach(genre => {
+            const genreTracks = allTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+            console.log(`   🎵 ${genre}: ${genreTracks.length} tracks`);
+          });
+          console.log('🎲 Total mixed tracks:', allTracks.length, '(tracks are shuffled together)');
+        } else {
+          console.log('🎵 Single genre playlist:', savedGenres[0] || 'Unknown');
+        }
+
         setTracks(allTracks);
 
         if (allTracks.length > 0) {
