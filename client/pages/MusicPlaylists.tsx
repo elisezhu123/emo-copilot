@@ -123,32 +123,36 @@ const MusicPlaylists = () => {
     }
   };
 
-  // Monitor location changes to detect when user returns from genre selection
+  // Enhanced navigation detection for immediate auto-updates
   useEffect(() => {
-    console.log('🔍 Location changed to:', location.pathname);
+    console.log('🔄 Auto-update: Navigation to:', location.pathname);
 
     // If this is a navigation TO the playlists page (not initial mount)
-    if (lastLocationRef.current && lastLocationRef.current !== location.pathname) {
-      console.log('🔍 Detected navigation to playlists page from:', lastLocationRef.current);
+    if (lastLocationRef.current && lastLocationRef.current !== location.pathname && location.pathname === '/music-playlists') {
+      console.log('🔄 Auto-update: Returned to playlists page, checking for changes...');
 
-      // Check for genre changes when returning to playlists
-      const currentGenres = musicService.loadSelectedGenres();
-      const previousGenres = initialGenresRef.current;
-      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+      // Immediate check for genre changes when returning to playlists
+      const checkAndUpdate = () => {
+        const currentGenres = musicService.loadSelectedGenres();
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
 
-      console.log('🔍 Navigation - Current genres:', currentGenres);
-      console.log('🔍 Navigation - Previous genres:', previousGenres);
-      console.log('🔍 Navigation - Genres changed?', genresChanged);
+        console.log('🔄 Auto-update: Current genres:', currentGenres);
+        console.log('🔄 Auto-update: Previous genres:', previousGenres);
+        console.log('🔄 Auto-update: Genres changed?', genresChanged);
 
-      if (genresChanged) {
-        console.log('🔄 Navigation detected genre change - updating playlists');
-        initialGenresRef.current = currentGenres || [];
-        setIsUpdating(true);
-        // Small delay to ensure UI shows updating state
-        setTimeout(() => {
+        if (genresChanged || !previousGenres || previousGenres.length === 0) {
+          console.log('🔄 Auto-update: Updating playlists automatically');
+          initialGenresRef.current = currentGenres || [];
+          setIsUpdating(true);
           loadTracks(true, false);
-        }, 100);
-      }
+        }
+      };
+
+      // Check immediately and also after a small delay to catch any timing issues
+      checkAndUpdate();
+      setTimeout(checkAndUpdate, 100);
+      setTimeout(checkAndUpdate, 300);
     }
 
     lastLocationRef.current = location.pathname;
