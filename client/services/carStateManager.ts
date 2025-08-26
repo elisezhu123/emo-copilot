@@ -28,7 +28,9 @@ class CarStateManager {
       seatHeating: false,
       musicVolume: 50,
       lightsOn: false,
-      driverState: 'neutral' as DriverStateType
+      driverState: 'neutral' as DriverStateType,
+      manualOverride: false,
+      manualOverrideStartTime: null
     };
   }
 
