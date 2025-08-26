@@ -171,24 +171,10 @@ class SimpleMusicService {
       }
 
     } catch (error) {
-      console.error('❌ Fast loading failed:', error);
-      // Use fallback without retry for better UX
-      this.cachedTracks = this.getFallbackTracks().filter(track =>
-        genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
-      );
-      console.log(`🔄 Using ${this.cachedTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
-
-      // Log fallback genre distribution for multiple genre selections
-      if (genres.length > 1) {
-        console.log('🎼 Fallback multi-genre track distribution:');
-        genres.forEach(genre => {
-          const genreTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
-          console.log(`   - ${genre}: ${genreTracks.length} fallback tracks`);
-          if (genreTracks.length > 0) {
-            console.log(`     Sample: "${genreTracks[0].title}" by ${genreTracks[0].artist}`);
-          }
-        });
-      }
+      console.error('❌ Freesound API loading failed:', error);
+      console.error('🎵 FREESOUND ONLY: No fallback tracks - please check Freesound API connection');
+      // No fallbacks - only Freesound API
+      this.cachedTracks = [];
     } finally {
       this.isLoading = false;
     }
