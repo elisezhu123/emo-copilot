@@ -355,7 +355,6 @@ const MusicPlaylists = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(genreCheckInterval);
-      clearInterval(fastCheckInterval);
     };
   }, []);
 
