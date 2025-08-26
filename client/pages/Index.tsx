@@ -32,6 +32,7 @@ const EmoCopilotDashboard = () => {
   const [showLightingEmoji, setShowLightingEmoji] = useState(false);
   const [musicStartTime, setMusicStartTime] = useState<number | null>(null);
   const [musicTimer, setMusicTimer] = useState<NodeJS.Timeout | null>(null);
+  const [selectedEmotion, setSelectedEmotion] = useState<DriverStateType>('neutral');
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
