@@ -16,6 +16,7 @@ const MusicPlaylists = () => {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const initialGenresRef = useRef<string[]>([]);
   const lastLocationRef = useRef<string>('');
+  const hasAutoPlayedRef = useRef<boolean>(false);
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
