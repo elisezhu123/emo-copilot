@@ -426,54 +426,54 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // Folk Genre - Using folk music samples
+      // Folk Genre - Using demo audio
       {
         id: 'folk_1',
-        title: 'Mountain Song',
-        artist: 'Folk Heritage',
-        duration: 250,
+        title: 'Demo Folk Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Folk',
         url: demoAudioUrl
       },
       {
         id: 'folk_2',
-        title: 'River Tale',
-        artist: 'Acoustic Storytellers',
-        duration: 280,
+        title: 'Demo Acoustic',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Folk',
         url: demoAudioUrl
       },
       {
         id: 'folk_3',
-        title: 'Village Dance',
-        artist: 'Traditional Sounds',
-        duration: 230,
+        title: 'Demo Traditional',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Folk',
         url: demoAudioUrl
       },
 
-      // Blues Genre - Using blues samples
+      // Blues Genre - Using demo audio
       {
         id: 'blues_1',
-        title: 'Midnight Blues',
-        artist: 'Blues Foundation',
-        duration: 280,
+        title: 'Demo Blues Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Blues',
         url: demoAudioUrl
       },
       {
         id: 'blues_2',
-        title: 'Delta Dreams',
-        artist: 'Mississippi Open',
-        duration: 260,
+        title: 'Demo Delta',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Blues',
         url: demoAudioUrl
       },
       {
         id: 'blues_3',
-        title: 'Electric Sorrow',
-        artist: 'Free Blues Society',
-        duration: 300,
+        title: 'Demo Electric Blues',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Blues',
         url: demoAudioUrl
       },
