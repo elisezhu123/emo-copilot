@@ -120,8 +120,8 @@ class FreesoundService {
         page_size: '25', // Balanced for reliability and content
         page: randomPage.toString(),
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
-        // Search for music with better filters - prefer longer tracks
-        filter: `type:(wav OR mp3) duration:[60.0 TO 300.0] tag:music -tag:loop -tag:sfx -tag:effect`,
+        // Search for music with better filters - balanced duration
+        filter: `type:(wav OR mp3) duration:[30.0 TO 300.0] tag:music -tag:loop -tag:sfx -tag:effect`,
         sort: randomSort,
         token: this.apiKey
       });
