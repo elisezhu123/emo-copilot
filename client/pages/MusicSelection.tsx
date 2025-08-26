@@ -37,15 +37,24 @@ const MusicSelection = () => {
   ];
 
   const toggleGenre = async (genreName: string) => {
+    console.log('🔍 MusicSelection: Toggling genre:', genreName);
+    console.log('🔍 MusicSelection: Current selected genres:', selectedGenres);
+
     const newGenres = selectedGenres.includes(genreName)
       ? selectedGenres.filter(genre => genre !== genreName)
       : [...selectedGenres, genreName];
 
+    console.log('🔍 MusicSelection: New genres after toggle:', newGenres);
     setSelectedGenres(newGenres);
-    
+
     // Save to both services
+    console.log('🔍 MusicSelection: Saving genres to localStorage');
     musicService.saveSelectedGenres(newGenres);
-    
+
+    // Verify save worked
+    const savedCheck = musicService.loadSelectedGenres();
+    console.log('🔍 MusicSelection: Verification - genres saved as:', savedCheck);
+
     // Update simple music service with new genres
     if (newGenres.length > 0) {
       console.log('🎵 Updating music selection with genres:', newGenres);
