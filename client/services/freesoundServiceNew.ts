@@ -143,29 +143,10 @@ class FreesoundService {
     }
   }
 
-  // Get direct audio URL and verify it works
-  private async getDirectAudioUrl(previewUrl: string): Promise<string> {
-    try {
-      console.log('🔗 Testing audio URL:', previewUrl);
-      
-      // Test if the URL is accessible
-      const response = await fetch(previewUrl, {
-        method: 'HEAD',
-        mode: 'cors'
-      });
-      
-      if (response.ok) {
-        console.log('✅ Audio URL verified:', previewUrl);
-        return previewUrl;
-      } else {
-        console.warn('⚠️ Audio URL returned status:', response.status);
-        return previewUrl; // Return anyway, might still work
-      }
-    } catch (error) {
-      console.warn('⚠️ Could not verify audio URL:', error);
-      // Return the original URL anyway
-      return previewUrl;
-    }
+  // Get direct audio URL without verification for faster loading
+  private getDirectAudioUrl(previewUrl: string): string {
+    // Skip verification to improve loading speed - return URL directly
+    return previewUrl;
   }
 
   // Convert Freesound data to our Track format with direct URLs
@@ -188,8 +169,8 @@ class FreesoundService {
           continue;
         }
 
-        // Get the direct audio URL by following redirects
-        const directUrl = await this.getDirectAudioUrl(previewUrl);
+        // Get the direct audio URL without verification for speed
+        const directUrl = this.getDirectAudioUrl(previewUrl);
 
         tracks.push({
           id: `freesound_${track.id}`,
@@ -650,88 +631,69 @@ class FreesoundService {
     }
   }
 
-  // Get tracks by specific genres - ensure at least 10 tracks
+  // Get tracks by specific genres - optimized for speed with parallel processing
   async getTracksByGenres(genres: string[]): Promise<Track[]> {
-    console.log('🎵 getTracksByGenres called with:', genres);
+    console.log('🚀 Fast loading for genres:', genres);
     console.log('🎵 API configured:', this.isConfigured());
-    console.log('🎵 API key available:', !!this.apiKey);
 
     if (!this.isConfigured()) {
-      console.error('❌ Freesound API not configured! Cannot fetch real music.');
+      console.error('❌ Freesound API not configured! Using fallback tracks.');
       return this.getFallbackTracks().filter(track =>
         genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
       );
     }
 
-    const allTracks: Track[] = [];
-
-    for (const genre of genres) {
-      console.log(`🎵 Searching Freesound API for ${genre} music...`);
-
-      try {
-        // First try Music category search for proper music playlists
-        const musicCategoryTracks = await this.searchMusicCategoryWithGenre(genre);
-        console.log(`✅ Found ${musicCategoryTracks.length} tracks for ${genre} from music category`);
-        allTracks.push(...musicCategoryTracks);
-
-        // If not enough tracks from music category, try genre-specific search
-        if (musicCategoryTracks.length < 3) {
-          console.log(`🔄 Trying additional search for ${genre}...`);
-          const genreSearchTerms = this.getGenreSearchTerms(genre);
-
-          for (const searchTerm of genreSearchTerms) {
-            const tracks = await this.searchTracksWithGenre(searchTerm, genre, {
-              duration: 'duration:[30.0 TO 180.0]'
-            });
-            console.log(`✅ Found ${tracks.length} additional tracks for search term: ${searchTerm}`);
-            allTracks.push(...tracks);
-
-            // Limit per genre to avoid too many tracks
-            if (allTracks.length >= 30) break;
-          }
+    try {
+      // Process all genres in parallel for faster loading
+      console.log('⚡ Processing all genres in parallel...');
+      const genrePromises = genres.map(async (genre) => {
+        try {
+          // Use optimized single search strategy per genre
+          const tracks = await this.searchMusicCategoryWithGenre(genre);
+          console.log(`✅ Found ${tracks.length} tracks for ${genre}`);
+          return tracks;
+        } catch (error) {
+          console.warn(`⚠️ Error loading ${genre}:`, error.message);
+          return []; // Return empty array instead of throwing
         }
-      } catch (error) {
-        console.error(`❌ Error searching for ${genre}:`, error);
+      });
+
+      // Wait for all genres to complete in parallel
+      const results = await Promise.all(genrePromises);
+      const allTracks = results.flat();
+
+      // Remove duplicates efficiently
+      const uniqueTracks = allTracks.filter((track, index, self) =>
+        index === self.findIndex(t => t.id === track.id)
+      );
+
+      console.log(`⚡ Fast loading complete: ${uniqueTracks.length} tracks in parallel`);
+
+      // Add fallback tracks only if we have very few results
+      if (uniqueTracks.length < 5) {
+        console.log('🔄 Adding fallback tracks for better experience');
+        const fallbackTracks = this.getFallbackTracks().filter(track =>
+          genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
+        );
+
+        // Add fallbacks that don't already exist
+        const tracksToAdd = fallbackTracks.filter(fallback =>
+          !uniqueTracks.find(existing => existing.id === fallback.id)
+        );
+
+        uniqueTracks.push(...tracksToAdd.slice(0, 10)); // Limit fallbacks
       }
+
+      console.log(`✅ Total tracks loaded: ${uniqueTracks.length}`);
+      return uniqueTracks;
+
+    } catch (error) {
+      console.error('❌ Parallel loading failed:', error);
+      // Return genre-filtered fallback tracks
+      return this.getFallbackTracks().filter(track =>
+        genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
+      );
     }
-
-    // Remove duplicates
-    const uniqueTracks = allTracks.filter((track, index, self) =>
-      index === self.findIndex(t => t.id === track.id)
-    );
-
-    // Always use genre-filtered fallback tracks when API fails or returns insufficient results
-    console.log(`🎵 Using fallback tracks for genres: ${genres.join(', ')}`);
-    const fallbackTracks = this.getFallbackTracks();
-
-    // Filter fallback tracks by selected genres
-    const relevantFallbacks = fallbackTracks.filter(track =>
-      genres.some(genre =>
-        track.genre.toLowerCase() === genre.toLowerCase()
-      )
-    );
-
-    console.log(`🎵 Found ${relevantFallbacks.length} genre-specific fallback tracks`);
-
-    // Use filtered fallback tracks (prioritize genre-specific tracks)
-    const tracksToAdd = relevantFallbacks.length > 0 ? relevantFallbacks : [];
-
-    // Add fallback tracks, ensuring no duplicates
-    for (const track of tracksToAdd) {
-      if (!uniqueTracks.find(t => t.id === track.id)) {
-        uniqueTracks.push(track);
-      }
-    }
-
-    // If no API tracks and no relevant fallbacks, add at least some tracks
-    if (uniqueTracks.length === 0) {
-      console.log('🎵 No genre-specific tracks found, adding default tracks');
-      const defaultTracks = fallbackTracks.slice(0, 6); // Add first 6 tracks as default
-      uniqueTracks.push(...defaultTracks);
-    }
-
-    console.log(`✅ Total music tracks loaded: ${uniqueTracks.length}`);
-    return uniqueTracks;
   }
 
   // Get specific search terms for each genre to target Freesound Music category
@@ -907,33 +869,10 @@ class FreesoundService {
 
   private async searchMusicCategoryWithGenre(genre: string): Promise<Track[]> {
     try {
-      // Try multiple search strategies to avoid 404 errors
-      const strategies = [
-        // Strategy 1: Simple genre tag search
-        () => this.trySimpleGenreSearch(genre),
-        // Strategy 2: Genre keyword search without complex filters
-        () => this.tryGenreKeywordSearch(genre),
-        // Strategy 3: Basic music search with minimal filtering
-        () => this.tryBasicMusicSearch(genre)
-      ];
-
-      for (const strategy of strategies) {
-        try {
-          const tracks = await strategy();
-          if (tracks.length > 0) {
-            console.log(`✅ Found ${tracks.length} tracks for ${genre} using fallback strategy`);
-            return tracks;
-          }
-        } catch (error) {
-          console.warn(`Strategy failed for ${genre}:`, error.message);
-          continue;
-        }
-      }
-
-      console.warn(`❌ All search strategies failed for ${genre}`);
-      return [];
+      // Use optimized single strategy for faster loading
+      return await this.trySimpleGenreSearch(genre);
     } catch (error) {
-      console.error('❌ Music category search failed for', genre, ':', error);
+      console.warn(`⚠️ Search failed for ${genre}:`, error.message);
       return [];
     }
   }
@@ -942,13 +881,13 @@ class FreesoundService {
     const params = new URLSearchParams({
       token: this.apiKey,
       query: `${genre.toLowerCase()} music`,
-      page_size: '20',
-      fields: 'id,name,username,duration,tags,previews,type,license',
-      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0] tag:music`,
-      sort: 'rating_desc'
+      page_size: '15', // Reduced for faster loading
+      fields: 'id,name,username,duration,previews', // Minimal fields for speed
+      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
+      sort: 'downloads_desc' // Consistent, fast sorting
     });
 
-    console.log(`🎵 Simple genre search for ${genre}: ${this.baseUrl}/search/text/?${params}`);
+    console.log(`⚡ Fast search for ${genre}`);
 
     const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
       method: 'GET',
@@ -961,7 +900,7 @@ class FreesoundService {
     }
 
     const data = await response.json();
-    console.log(`✅ Simple search found ${data.results?.length || 0} tracks for ${genre}`);
+    console.log(`⚡ Found ${data.results?.length || 0} tracks for ${genre}`);
     return await this.convertToTracks(data.results || [], genre);
   }
 
