@@ -493,6 +493,16 @@ const MusicPlaylists = () => {
           </div>
         )}
       </div>
+
+      {/* Show updating overlay if tracks exist but we're updating */}
+      {isUpdating && tracks.length > 0 && (
+        <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center rounded-xl">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs text-gray-500">Updating playlists...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
