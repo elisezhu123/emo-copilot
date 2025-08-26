@@ -99,8 +99,14 @@ const EmoCopilotDashboard = () => {
     setIsCoolingOn(currentState.isAcOn);
     setIsLightingOn(currentState.lightsOn);
 
-    return unsubscribe;
-  }, [navigate]);
+    return () => {
+      unsubscribe();
+      // Clean up stress timer if it exists
+      if (stressTimer) {
+        clearTimeout(stressTimer);
+      }
+    };
+  }, [navigate, stressTimer]);
 
   // Wake word recognition ref removed - no longer using microphone on dashboard
 
