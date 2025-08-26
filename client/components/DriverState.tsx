@@ -245,13 +245,6 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
       {/* HRV Display */}
       <div className="text-xs text-gray-500 text-center">
         <div>HRV: {currentHRV}ms</div>
-        {!calibrationPeriod && (
-          <div>
-            <div>HR: {currentHeartRate} ({baselineHeartRate ? (currentHeartRate - baselineHeartRate > 0 ? '+' : '') + (currentHeartRate - baselineHeartRate) : '?'})</div>
-            <div>Change: {baselineSDNN ? ((currentHRV - baselineSDNN) / baselineSDNN * 100 > 0 ? '+' : '') + ((currentHRV - baselineSDNN) / baselineSDNN * 100).toFixed(0) + '%' : '?'}</div>
-            <div>Time: {Math.floor((Date.now() - stateStartTime) / 60000)}:{Math.floor(((Date.now() - stateStartTime) % 60000) / 1000).toString().padStart(2, '0')}</div>
-          </div>
-        )}
       </div>
     </div>
   );
