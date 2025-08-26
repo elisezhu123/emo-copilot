@@ -57,7 +57,7 @@ const MusicPlaylists = () => {
       initialGenresRef.current = savedGenres || [];
 
       if (savedGenres && savedGenres.length > 0) {
-        console.log('�� Fast loading music for genres:', savedGenres);
+        console.log('⚡ Fast loading music for genres:', savedGenres);
 
         // Check if already loading to prevent duplicate requests
         if (simpleMusicService.isCurrentlyLoading()) {
