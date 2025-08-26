@@ -543,6 +543,7 @@ const AIChatbot = () => {
     setShowMusicEmoji(false);
     setShowHotEmoji(false);
     setShowBreathingEmoji(false);
+    setShowLaughEmoji(false);
 
     // Reset temperature and weather triggered states for clean start
     setTemperatureTriggered(false);
@@ -1951,7 +1952,7 @@ Just speak naturally - I understand many variations of these commands!`;
         const safetyWarnings = await checkRoadSafety(currentLocation.lat, currentLocation.lng);
         let safetyInfo = "";
         if (safetyWarnings.length > 0) {
-          safetyInfo = `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+          safetyInfo = `\n\n�� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
         }
         
         return `🗺️ TRIP PLANNING SAFETY GUIDE:
