@@ -160,6 +160,7 @@ const AIChatbot = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const isStressNavigation = urlParams.get('stress') === 'true';
+    const isProlongedStressNavigation = urlParams.get('prolonged-stress') === 'true';
     const isWeatherNavigation = urlParams.get('weather') === 'extreme';
 
     if (isStressNavigation) {
