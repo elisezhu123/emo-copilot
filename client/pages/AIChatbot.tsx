@@ -553,6 +553,54 @@ const AIChatbot = () => {
     console.log('🌡️ Reset temperature and weather trigger states');
   }, []);
 
+  // Music listening timer - show emoji after 5 minutes
+  useEffect(() => {
+    const unsubscribe = audioManager.subscribe((state) => {
+      // Start timer when music starts playing
+      if (state.isPlaying && !musicStartTime) {
+        const startTime = Date.now();
+        setMusicStartTime(startTime);
+        console.log('🎵 Music started - starting 5-minute timer');
+
+        // Set 5-minute timer (300,000 ms)
+        const timer = setTimeout(() => {
+          console.log('🎵 Music has been playing for 5 minutes - showing music emoji');
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+
+          // Add a message about music enjoyment
+          const musicMessage = {
+            id: Date.now().toString() + '_music_5min',
+            text: "I can see you're really enjoying the music! You've been listening for 5 minutes straight. Music can really enhance your driving experience!",
+            type: 'bot' as const,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, musicMessage]);
+          speakText("I can see you're really enjoying the music! You've been listening for 5 minutes straight.");
+        }, 300000); // 5 minutes
+
+        setMusicTimer(timer);
+      }
+
+      // Clear timer when music stops
+      if (!state.isPlaying && musicStartTime) {
+        console.log('🎵 Music stopped - clearing timer');
+        if (musicTimer) {
+          clearTimeout(musicTimer);
+          setMusicTimer(null);
+        }
+        setMusicStartTime(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      if (musicTimer) {
+        clearTimeout(musicTimer);
+      }
+    };
+  }, [musicStartTime, musicTimer]);
+
   // Automatic driving condition monitoring disabled - alerts only shown when user mentions conditions via voice
   // useEffect(() => {
   //   const monitoringInterval = setInterval(() => {
