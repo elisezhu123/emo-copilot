@@ -97,7 +97,14 @@ class FreesoundService {
       console.log('✅ Converted and shuffled', shuffledTracks.length, 'tracks successfully');
       return shuffledTracks;
     } catch (error) {
-      console.error('❌ Error fetching from Freesound:', error);
+      if (error.name === 'AbortError') {
+        console.error('❌ Freesound API request timed out');
+      } else if (error.message.includes('Failed to fetch')) {
+        console.error('❌ Network error connecting to Freesound API - check internet connection');
+      } else {
+        console.error('❌ Error fetching from Freesound:', error);
+      }
+      console.log('🔄 Falling back to local tracks due to API error');
       return this.shuffleArray(this.getFallbackTracks());
     }
   }
