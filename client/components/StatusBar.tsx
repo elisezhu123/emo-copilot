@@ -353,7 +353,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         </div>
 
         {/* Center - Temperature and Driver State */}
-        <div className="flex items-center gap-20">
+        <div className="flex items-center gap-30">
           {/* Temperature */}
           {showTemperature && temperature && (
             <div className="flex justify-center items-center gap-2">
