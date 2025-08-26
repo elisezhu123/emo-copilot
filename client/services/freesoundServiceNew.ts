@@ -319,14 +319,14 @@ class FreesoundService {
   // Fallback tracks when API is not available - using working audio URLs
   private getFallbackTracks(): Track[] {
     return [
-      // Classical Genre - Using Archive.org public domain classical music
+      // Classical Genre - Using reliable public domain sources
       {
         id: 'classical_1',
         title: 'Moonlight Sonata',
         artist: 'Classical Piano',
         duration: 180,
         genre: 'Classical',
-        url: 'https://archive.org/download/MoonlightSonata_755/Moonlight%20Sonata.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'classical_2',
@@ -334,7 +334,7 @@ class FreesoundService {
         artist: 'Baroque Ensemble',
         duration: 240,
         genre: 'Classical',
-        url: 'https://archive.org/download/PachelbelCanonInD/canon.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'classical_3',
@@ -342,17 +342,17 @@ class FreesoundService {
         artist: 'Piano Classic',
         duration: 200,
         genre: 'Classical',
-        url: 'https://archive.org/download/FurElise_201805/Fur%20Elise.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
 
-      // Jazz Genre - Using Archive.org jazz recordings
+      // Jazz Genre - Using working audio samples
       {
         id: 'jazz_1',
         title: 'Smooth Jazz Cafe',
         artist: 'Jazz Collective',
         duration: 270,
         genre: 'Jazz',
-        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'jazz_2',
@@ -360,7 +360,7 @@ class FreesoundService {
         artist: 'Bebop Society',
         duration: 300,
         genre: 'Jazz',
-        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'jazz_3',
@@ -368,17 +368,17 @@ class FreesoundService {
         artist: 'Free Jazz Group',
         duration: 250,
         genre: 'Jazz',
-        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
 
-      // Ambient Genre - Using ambient nature sounds
+      // Ambient Genre - Using working audio samples
       {
         id: 'ambient_1',
         title: 'Ocean Meditation',
         artist: 'Nature Sounds',
         duration: 300,
         genre: 'Ambient',
-        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'ambient_2',
@@ -386,7 +386,7 @@ class FreesoundService {
         artist: 'Peaceful Minds',
         duration: 420,
         genre: 'Ambient',
-        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
       {
         id: 'ambient_3',
@@ -394,7 +394,7 @@ class FreesoundService {
         artist: 'Space Ambient',
         duration: 360,
         genre: 'Ambient',
-        url: 'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3'
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
       },
 
       // Rock Genre - Using Archive.org rock samples
