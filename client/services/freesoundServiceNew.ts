@@ -667,13 +667,15 @@ class FreesoundService {
         index === self.findIndex(t => t.id === track.id)
       );
 
-      console.log(`⚡ Fast loading complete: ${uniqueTracks.length} tracks in parallel for genres: ${genres.join(', ')}`);
+      // Randomize track order to avoid repetition on repeated requests
+      const randomizedTracks = this.shuffleArray(uniqueTracks);
+      console.log(`⚡ Fast loading complete: ${randomizedTracks.length} tracks randomized for genres: ${genres.join(', ')}`);
 
       // Log API results by genre for multiple selections
       if (genres.length > 1) {
-        console.log('🎼 API results by genre:');
+        console.log('🎼 API results by genre (randomized):');
         genres.forEach(genre => {
-          const genreTracks = uniqueTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+          const genreTracks = randomizedTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
           console.log(`   - ${genre}: ${genreTracks.length} tracks from API`);
         });
       }
