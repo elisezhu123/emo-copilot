@@ -41,14 +41,14 @@ const DriverState: React.FC<DriverStateProps> = ({ className = '' }) => {
 
         if (isCalibrating) {
           // During calibration, collect baseline data
-          collectBaselineData(latestHR, data.value);
+          collectBaselineData(latestHR, data.values);
         } else {
           // After calibration, perform emotional analysis
           if (calibrationPeriod) {
             setCalibrationPeriod(false);
             console.log('🎯 Calibration complete. Baseline HR:', baselineHeartRate, 'Baseline SDNN:', baselineSDNN);
           }
-          performEmotionalAnalysis(latestHR, data.value, currentTime);
+          performEmotionalAnalysis(latestHR, data.values, currentTime);
         }
       }
     });
