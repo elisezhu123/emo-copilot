@@ -134,7 +134,42 @@ class SimpleMusicService {
       }
 
       // Load tracks with optimized parallel processing
-      const freshTracks = await freesoundService.getTracksByGenres(genres);
+      let freshTracks = await freesoundService.getTracksByGenres(genres);
+
+      // If no tracks from API, use fallback tracks
+      if (!freshTracks || freshTracks.length === 0) {
+        console.log('🎵 No tracks from Freesound API, using fallback tracks for Classical...');
+        freshTracks = [
+          {
+            id: 'classical_fallback_1',
+            title: 'Moonlight Sonata',
+            artist: 'Classical Piano',
+            duration: 180,
+            genre: 'Classical',
+            url: 'https://archive.org/download/MoonlightSonata_755/Moonlight%20Sonata.mp3'
+          },
+          {
+            id: 'classical_fallback_2',
+            title: 'Canon in D',
+            artist: 'Baroque Ensemble',
+            duration: 240,
+            genre: 'Classical',
+            url: 'https://archive.org/download/PachelbelCanonInD/canon.mp3'
+          },
+          {
+            id: 'classical_fallback_3',
+            title: 'Für Elise',
+            artist: 'Piano Classic',
+            duration: 200,
+            genre: 'Classical',
+            url: 'https://archive.org/download/FurElise_201805/Fur%20Elise.mp3'
+          }
+        ].filter(track =>
+          genres.some(genre =>
+            track.genre.toLowerCase() === genre.toLowerCase()
+          )
+        );
+      }
 
       // Simple ID assignment for better performance
       this.cachedTracks = freshTracks.map((track, index) => ({
