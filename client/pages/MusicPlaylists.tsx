@@ -708,10 +708,23 @@ const MusicPlaylists = () => {
                 }}
                 className="flex items-center gap-2 bg-white border border-emotion-face rounded-lg p-2 hover:bg-gray-50 transition-colors"
               >
-                <div className="w-6 h-6 bg-emotion-orange rounded-lg flex-shrink-0"></div>
+                <div className="w-6 h-6 bg-emotion-orange rounded-lg flex-shrink-0 flex items-center justify-center">
+                  {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                    <span className="text-xs text-white font-bold">
+                      {track.genre.charAt(0)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0 py-1">
                   <p className="text-xs font-medium text-emotion-default truncate text-left">{track.title}</p>
-                  <p className="text-xs text-emotion-default truncate opacity-75 text-left">{track.artist}</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs text-emotion-default truncate opacity-75 text-left">{track.artist}</p>
+                    {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                      <span className="text-xs bg-gray-100 text-gray-600 px-1 rounded text-left flex-shrink-0">
+                        {track.genre}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <span className="text-xs text-emotion-default w-10 text-right flex-shrink-0">{formatTime(track.duration)}</span>
               </button>
