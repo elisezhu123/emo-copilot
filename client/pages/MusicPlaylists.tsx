@@ -35,15 +35,17 @@ const MusicPlaylists = () => {
         const savedGenres = musicService.loadSelectedGenres();
 
         if (savedGenres && savedGenres.length > 0) {
-          console.log('🎵 Loading music for selected genres:', savedGenres);
-          await simpleMusicService.updateGenres(savedGenres);
+          console.log('🎲 Loading DYNAMIC music for selected genres:', savedGenres);
+
+          // Force fresh reload for dynamic playlists
+          await simpleMusicService.forceFreshReload(savedGenres);
 
           const allTracks = await simpleMusicService.getAllTracks();
-          console.log('🎵 Final tracks loaded:', allTracks.length);
+          console.log('🎲 Dynamic tracks loaded:', allTracks.length);
           setTracks(allTracks);
 
           if (allTracks.length > 0) {
-            console.log('🎵 Sample track:', allTracks[0]);
+            console.log('🎲 Dynamic sample track:', allTracks[0]);
             setCurrentTrack(allTracks[0]);
             audioManager.setPlaylist(allTracks);
           }
