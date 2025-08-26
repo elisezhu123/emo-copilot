@@ -312,7 +312,7 @@ class AudioManager {
       /^data:audio\//i,                          // Data URLs
       /^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i, // HTTP(S) audio URLs
       /cdn\.freesound\.org/i,                    // Freesound CDN
-      /samplelib\.com/i                          // Sample library
+      /archive\.org/i                            // Archive.org audio files
     ];
 
     const isValid = validPatterns.some(pattern => pattern.test(url));
