@@ -820,8 +820,10 @@ class FreesoundService {
   // Genre-aware search methods that preserve the target genre with dynamic randomization
   private async searchTracksWithGenre(query: string, targetGenre: string, filters: any = {}): Promise<Track[]> {
     if (!this.isConfigured()) {
-      console.warn('Freesound API key not configured, using fallback tracks');
-      return this.shuffleArray(this.getFallbackTracks());
+      console.error('❌ Freesound API key not configured! No music will be available.');
+      console.log('🔧 Please set VITE_FREESOUND_API_KEY environment variable');
+      console.log('🔧 Get your free API key at: https://freesound.org/apiv2/apply/');
+      return [];
     }
 
     try {
