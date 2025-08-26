@@ -96,6 +96,13 @@ const StatusBar: React.FC<StatusBarProps> = ({
     }
   };
 
+  // Manual sync function to force refresh
+  const forceDriverStateSync = () => {
+    const freshState = carStateManager.getState();
+    console.log('🔄 Force syncing driver state:', freshState.driverState);
+    setDriverState(freshState.driverState);
+  };
+
   // Format time for display
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString('en-US', { 
