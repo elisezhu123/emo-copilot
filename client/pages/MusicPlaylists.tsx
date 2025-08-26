@@ -26,6 +26,7 @@ const MusicPlaylists = () => {
   useEffect(() => {
     // Load tracks from the music service - same logic as dashboard
     const loadTracks = async () => {
+      console.log('🔍 MusicPlaylists: Starting loadTracks function');
       setIsLoadingTracks(true);
       try {
         // Test API configuration immediately
@@ -34,6 +35,9 @@ const MusicPlaylists = () => {
         console.log('🎵 DeepSeek API Key:', import.meta.env.VITE_DEEPSEEK_API_KEY ? 'CONFIGURED' : 'MISSING');
 
         const savedGenres = musicService.loadSelectedGenres();
+        console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+        console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
+        console.log('🔍 MusicPlaylists: Setting loading state to true');
 
         // Store initial genres for comparison in handleFocus
         initialGenresRef.current = savedGenres || [];
