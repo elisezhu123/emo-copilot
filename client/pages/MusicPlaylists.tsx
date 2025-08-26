@@ -78,7 +78,7 @@ const MusicPlaylists = () => {
 
     // Load tracks from the music service - same logic as dashboard
     const loadTracks = async (isUpdate = false) => {
-      console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
+      console.log('�� MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
       const savedGenres = musicService.loadSelectedGenres();
       console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
@@ -483,13 +483,15 @@ const MusicPlaylists = () => {
               <div className="flex gap-2 justify-center">
                 <button
                   onClick={async () => {
-                    if (currentTrack) {
-                      console.log('🔄 Retrying current track:', currentTrack.title);
-                      try {
+                    try {
+                      if (currentTrack) {
+                        console.log('🔄 Retrying current track:', currentTrack.title);
                         await playTrack(currentTrack);
-                      } catch (error) {
-                        console.error('Retry failed:', error);
+                      } else {
+                        console.log('🔄 No current track to retry');
                       }
+                    } catch (error) {
+                      console.error('Retry failed:', error);
                     }
                   }}
                   className="text-xs text-blue-700 underline hover:text-blue-800"
