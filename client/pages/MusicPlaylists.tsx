@@ -329,7 +329,7 @@ const MusicPlaylists = () => {
     window.addEventListener('focus', handleFocus);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Enhanced periodic check for genre changes - more frequent for better responsiveness
+    // Simplified periodic check for genre changes
     const genreCheckInterval = setInterval(() => {
       try {
         const currentGenres = musicService.loadSelectedGenres();
@@ -338,39 +338,16 @@ const MusicPlaylists = () => {
 
         if (genresChanged) {
           console.log('🔄 Auto-update: Periodic check detected genre change');
-          console.log('🔄 Auto-update: Current genres:', currentGenres);
+          console.log('🔄 Auto-update: New genres:', currentGenres);
           console.log('🔄 Auto-update: Previous genres:', previousGenres);
           initialGenresRef.current = currentGenres || [];
           setIsUpdating(true);
-          // Use setTimeout to prevent blocking the interval
-          setTimeout(() => {
-            loadTracks(true, false);
-          }, 50); // Faster response
+          loadTracks(true, false);
         }
       } catch (error) {
         console.error('Error in periodic genre check:', error);
       }
-    }, 1000); // Check every 1 second for more responsive auto-updates
-
-    // Additional faster check when page is visible and focused
-    const fastCheckInterval = setInterval(() => {
-      if (!document.hidden && document.hasFocus()) {
-        try {
-          const currentGenres = musicService.loadSelectedGenres();
-          const previousGenres = initialGenresRef.current;
-          const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
-
-          if (genresChanged) {
-            console.log('🔄 Auto-update: Fast check detected genre change while page focused');
-            initialGenresRef.current = currentGenres || [];
-            setIsUpdating(true);
-            loadTracks(true, false);
-          }
-        } catch (error) {
-          console.error('Error in fast genre check:', error);
-        }
-      }
-    }, 500); // Very fast check when page is active
+    }, 2000); // Check every 2 seconds - reliable but not too frequent
 
     return () => {
       unsubscribe();
