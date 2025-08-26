@@ -1243,7 +1243,7 @@ const AIChatbot = () => {
       
       let safetyInfo = "";
       if (safetyWarnings.length > 0) {
-        safetyInfo = `\n\n��� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+        safetyInfo = `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
       }
       
       return `I'm having navigation troubles, but safety first! Use your phone's GPS for ${destination}. Drive defensively and trust your instincts!${safetyInfo}`;
@@ -2304,6 +2304,40 @@ ${response}
         }, 1500);
 
         return genreResponse;
+      }
+
+      // Handle general "play music" without specific genre - start default music
+      if ((userLower.includes('play music') || userLower.includes('start music')) && !genreToPlay) {
+        // Show music emoji
+        setTimeout(() => {
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+        }, 1000);
+
+        // Start playing default genre (Rock for energy)
+        setTimeout(async () => {
+          try {
+            console.log('🎵 Chatbot: Starting default music (Rock)');
+            const defaultGenre = 'Rock';
+
+            // Set the genre in localStorage
+            musicService.saveSelectedGenres([defaultGenre]);
+
+            // Load and play tracks
+            await simpleMusicService.forceFreshReload([defaultGenre], true);
+            const tracks = await simpleMusicService.getAllTracks();
+
+            if (tracks.length > 0) {
+              console.log(`🎵 Chatbot: Found ${tracks.length} tracks, starting playback`);
+              audioManager.setPlaylist(tracks);
+              await audioManager.playTrack(tracks[0]);
+            }
+          } catch (error) {
+            console.error('🎵 Chatbot: Error playing default music:', error);
+          }
+        }, 1500);
+
+        return "🎵 Starting music! I've chosen some energizing rock tracks to enhance your drive. Say 'play [genre] music' if you want a specific style!";
       }
     }
 
@@ -3392,7 +3426,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
       // No message when stopping
     } else {
-      console.log('�� User starting speech recognition...');
+      console.log('🎤 User starting speech recognition...');
 
       // Always request microphone permission when starting
       console.log('🎤 Requesting microphone permission...');
