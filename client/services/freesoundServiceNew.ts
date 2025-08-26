@@ -5,6 +5,7 @@ class FreesoundService {
   private static instance: FreesoundService;
   private apiKey: string;
   private baseUrl = 'https://freesound.org/apiv2';
+  private workingAuthMethod: any = null;
 
   static getInstance(): FreesoundService {
     if (!FreesoundService.instance) {
