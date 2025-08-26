@@ -17,9 +17,8 @@ class FreesoundService {
   constructor() {
     this.apiKey = import.meta.env.VITE_FREESOUND_API_KEY || '';
     if (this.apiKey) {
-      console.log('🎵 Freesound API configured with client credentials:', this.apiKey.substring(0, 10) + '...');
-      // Try to get OAuth access token
-      this.initializeOAuthToken();
+      console.log('🎵 Freesound API configured with client ID:', this.apiKey.substring(0, 10) + '...');
+      console.log('🎵 Using direct client ID authentication for frontend app');
     } else {
       console.warn('⚠️ Freesound API key not found in environment variables');
     }
@@ -800,7 +799,7 @@ class FreesoundService {
       // Return Freesound tracks or fallback if empty
       console.log(`✅ Freesound tracks loaded and randomized: ${randomizedTracks.length}`);
       if (randomizedTracks.length === 0) {
-        console.warn('⚠️ No tracks found from Freesound API for the selected genres, using fallback');
+        console.warn('��️ No tracks found from Freesound API for the selected genres, using fallback');
         const allFallbackTracks = this.getFallbackTracks();
         const filteredTracks = allFallbackTracks.filter(track =>
           genres.some(genre =>
