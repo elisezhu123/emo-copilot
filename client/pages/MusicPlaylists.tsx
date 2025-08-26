@@ -240,10 +240,26 @@ const MusicPlaylists = () => {
     window.addEventListener('focus', handleFocus);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    // Periodic check for genre changes as a backup mechanism
+    const genreCheckInterval = setInterval(() => {
+      const currentGenres = musicService.loadSelectedGenres();
+      const previousGenres = initialGenresRef.current;
+      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+      if (genresChanged) {
+        console.log('🔄 Periodic check detected genre change');
+        console.log('🔄 Periodic - Current genres:', currentGenres);
+        console.log('🔄 Periodic - Previous genres:', previousGenres);
+        initialGenresRef.current = currentGenres || [];
+        loadTracks(true);
+      }
+    }, 2000); // Check every 2 seconds
+
     return () => {
       unsubscribe();
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(genreCheckInterval);
     };
   }, []);
 
