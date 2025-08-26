@@ -316,33 +316,36 @@ class FreesoundService {
     return 'Instrumental';
   }
 
-  // Fallback tracks when API is not available - using working audio URLs
+  // Fallback tracks when API is not available - using working demo audio
   private getFallbackTracks(): Track[] {
+    // Simple demo audio data URL that works in all browsers
+    const demoAudioUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+
     return [
-      // Classical Genre - Using reliable public domain sources
+      // Classical Genre - Using demo audio
       {
         id: 'classical_1',
-        title: 'Moonlight Sonata',
-        artist: 'Classical Piano',
-        duration: 180,
+        title: 'Demo Classical Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'classical_2',
-        title: 'Canon in D',
-        artist: 'Baroque Ensemble',
-        duration: 240,
+        title: 'Demo Piano',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
       {
         id: 'classical_3',
-        title: 'Für Elise',
-        artist: 'Piano Classic',
-        duration: 200,
+        title: 'Demo Symphony',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        url: demoAudioUrl
       },
 
       // Jazz Genre - Using working audio samples
