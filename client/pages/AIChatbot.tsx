@@ -314,7 +314,7 @@ const AIChatbot = () => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
-        console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
+        console.warn('⚠��� OpenWeather API key not configured - using Limerick temperature');
         setTemperature('15°C');
         return;
       }
@@ -438,7 +438,7 @@ const AIChatbot = () => {
     const unsubscribe = carStateManager.subscribe((newState) => {
       // Check if AC was turned on
       if (!previousState.isAcOn && newState.isAcOn) {
-        console.log('��️ AC turned on from dashboard - showing AC emoji');
+        console.log('���� AC turned on from dashboard - showing AC emoji');
         setShowACEmoji(true);
         setTimeout(() => setShowACEmoji(false), 3000);
 
@@ -1351,7 +1351,7 @@ const AIChatbot = () => {
   const startContinuousListening = () => {
     console.log('🎤 startContinuousListening called');
     console.log('🔍 recognitionRef.current:', recognitionRef.current);
-    console.log('🔍 isListening:', isListening);
+    console.log('���� isListening:', isListening);
     console.log('🔍 userWantsListening:', userWantsListening);
 
     if (!recognitionRef.current) {
@@ -2615,6 +2615,7 @@ PERSONALITY TRAITS:
 - Show genuine care and concern
 - Use encouraging and uplifting language
 - Express emotions through your responses to trigger appropriate emoji reactions
+- Leverage your full conversational abilities as DeepSeek
 
 CAPABILITIES:
 - Navigation and directions (integrated with Google Maps)
@@ -2650,8 +2651,13 @@ EMOTIONAL RESPONSES:
 - Express excitement and joy for happy moments to trigger enjoy emoji
 
 RESPONSE STYLE:
-- CRITICAL: Be very CONCISE - maximum 15-20 words per response for safety while driving
-- EXCEPTION: Only provide longer responses when user specifically asks for stories, jokes, or detailed explanations
+- Prioritize safety while driving - keep responses focused and relevant
+- ADAPTIVE LENGTH: Adjust response length based on context and user needs
+  * Quick responses (10-15 words) for simple confirmations, controls, or urgent safety matters
+  * Natural responses (20-50 words) for conversations, explanations, emotional support
+  * Detailed responses (50+ words) for stories, complex explanations, or when user explicitly asks for more detail
+- Use your full DeepSeek conversational abilities - don't always give standardized responses
+- Vary your response style naturally based on the conversation flow
 - Remember what we've talked about and reference it naturally
 - Use our conversation history to provide contextual responses
 - Ask follow-up questions to show you care
@@ -2659,10 +2665,11 @@ RESPONSE STYLE:
 - Be proactive about safety and wellbeing
 - Use a caring, friend-like tone
 - Include emotional words that match the context (comfort, shock, cute, empathy, joy)
+- Be authentic and engaging rather than robotic or templated
 
 ${locationContext}
 
-Always prioritize driver safety and emotional wellbeing. Remember our conversation history and build upon it naturally.`
+Always prioritize driver safety and emotional wellbeing. Remember our conversation history and build upon it naturally. Use your full capabilities as DeepSeek to provide genuine, helpful, and varied responses.`
             },
             // Include recent conversation history (last 6 messages for context)
             ...messages.slice(-6).map(msg => ({
