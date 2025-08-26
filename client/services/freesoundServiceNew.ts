@@ -682,28 +682,11 @@ class FreesoundService {
         });
       }
 
-      // Add fallback tracks only if we have very few results
-      if (randomizedTracks.length < 5) {
-        console.log('🔄 Adding fallback tracks for better experience');
-        const fallbackTracks = this.getFallbackTracks().filter(track =>
-          genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
-        );
-
-        // Add fallbacks that don't already exist
-        const tracksToAdd = fallbackTracks.filter(fallback =>
-          !randomizedTracks.find(existing => existing.id === fallback.id)
-        );
-
-        randomizedTracks.push(...tracksToAdd.slice(0, 10)); // Limit fallbacks
-        console.log(`🔄 Added ${tracksToAdd.length} fallback tracks`);
-
-        // Re-randomize the final combined result
-        const finalRandomized = this.shuffleArray(randomizedTracks);
-        console.log(`✅ Total tracks loaded and randomized: ${finalRandomized.length}`);
-        return finalRandomized;
+      // FREESOUND ONLY: No fallback tracks - return whatever Freesound provides
+      console.log(`✅ Freesound tracks loaded and randomized: ${randomizedTracks.length}`);
+      if (randomizedTracks.length === 0) {
+        console.warn('⚠️ No tracks found from Freesound API for the selected genres');
       }
-
-      console.log(`✅ Total tracks loaded and randomized: ${randomizedTracks.length}`);
       return randomizedTracks;
 
     } catch (error) {
