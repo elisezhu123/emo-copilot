@@ -446,7 +446,7 @@ const MusicPlaylists = () => {
       </div>
 
       {/* Playlists Section - Horizontal Scrolling Layout */}
-      <div className="flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
+      <div className="relative flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
         {/* Playlists Header - Left Aligned */}
         <div className="flex items-center py-2 px-3">
           <span className="text-xs font-medium text-black">Playlists</span>
