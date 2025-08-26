@@ -157,11 +157,26 @@ class FreesoundService {
 
       console.log(`🎲 Dynamic Freesound search: query="${musicQuery}", sort="${randomSort}", page=${randomPage}`);
 
-      const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
+      // Use working authentication method if available
+      let authHeaders = { 'Accept': 'application/json' };
+      let authParams = params;
+
+      if (this.workingAuthMethod) {
+        authHeaders = { ...authHeaders, ...this.workingAuthMethod.headers };
+        if (this.workingAuthMethod.params.token) {
+          // Token already added to params above
+        }
+      } else {
+        // Default fallback - test connection first
+        await this.testApiConnection();
+        if (this.workingAuthMethod) {
+          authHeaders = { ...authHeaders, ...this.workingAuthMethod.headers };
+        }
+      }
+
+      const response = await fetch(`${this.baseUrl}/search/text/?${authParams}`, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
+        headers: authHeaders,
         mode: 'cors'
       });
 
