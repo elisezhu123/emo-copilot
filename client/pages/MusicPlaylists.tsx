@@ -727,7 +727,7 @@ const MusicPlaylists = () => {
                   {isUpdating ? 'Auto-updating playlists...' : 'Loading your music...'}
                 </p>
                 <p className="text-xs text-gray-400">
-                  System is checking for selected genres
+                  Music will start playing automatically
                 </p>
               </div>
             ) : (
