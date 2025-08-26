@@ -144,11 +144,11 @@ const MusicPlaylists = () => {
   useEffect(() => {
     console.log('🔄 Auto-update: Navigation to:', location.pathname);
 
-    // If this is a navigation TO the playlists page (not initial mount)
-    if (lastLocationRef.current && lastLocationRef.current !== location.pathname && location.pathname === '/music-playlists') {
-      console.log('🔄 Auto-update: Returned to playlists page, checking for changes...');
+    // Always check when we're on the playlists page
+    if (location.pathname === '/music-playlists') {
+      console.log('🔄 Auto-update: On playlists page, checking for changes...');
 
-      // Immediate check for genre changes when returning to playlists
+      // Check for genre changes when on playlists page
       const checkAndUpdate = () => {
         const currentGenres = musicService.loadSelectedGenres();
         const previousGenres = initialGenresRef.current;
@@ -157,19 +157,28 @@ const MusicPlaylists = () => {
         console.log('🔄 Auto-update: Current genres:', currentGenres);
         console.log('🔄 Auto-update: Previous genres:', previousGenres);
         console.log('🔄 Auto-update: Genres changed?', genresChanged);
+        console.log('🔄 Auto-update: Is navigation from other page?', lastLocationRef.current !== location.pathname);
 
-        if (genresChanged || !previousGenres || previousGenres.length === 0) {
+        // Update if genres changed OR if we navigated from another page with genres
+        const shouldUpdate = genresChanged ||
+                           (!previousGenres || previousGenres.length === 0) ||
+                           (lastLocationRef.current && lastLocationRef.current !== location.pathname && currentGenres && currentGenres.length > 0);
+
+        if (shouldUpdate) {
           console.log('🔄 Auto-update: Updating playlists automatically');
           initialGenresRef.current = currentGenres || [];
-          setIsUpdating(true);
-          loadTracks(true, false);
+          if (currentGenres && currentGenres.length > 0) {
+            setIsUpdating(true);
+            loadTracks(true, false);
+          }
         }
       };
 
-      // Check immediately and also after a small delay to catch any timing issues
+      // Check immediately and also after delays to catch any timing issues
       checkAndUpdate();
       setTimeout(checkAndUpdate, 100);
       setTimeout(checkAndUpdate, 300);
+      setTimeout(checkAndUpdate, 600);
     }
 
     lastLocationRef.current = location.pathname;
