@@ -34,6 +34,40 @@ class FreesoundService {
     return configured;
   }
 
+  // Test API connectivity and key validity
+  async testApiConnection(): Promise<boolean> {
+    if (!this.isConfigured()) {
+      return false;
+    }
+
+    try {
+      console.log('🔍 Testing Freesound API connection...');
+      const testParams = new URLSearchParams({
+        token: this.apiKey,
+        query: 'test',
+        page_size: '1',
+        fields: 'id,name'
+      });
+
+      const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        mode: 'cors'
+      });
+
+      if (response.ok) {
+        console.log('✅ Freesound API connection successful');
+        return true;
+      } else {
+        console.error('❌ Freesound API test failed:', response.status, response.statusText);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Freesound API connection test failed:', error);
+      return false;
+    }
+  }
+
   // Search for tracks with proper CORS and redirect handling - now with dynamic randomization
   async searchTracks(query: string, filters: any = {}): Promise<Track[]> {
     if (!this.isConfigured()) {
