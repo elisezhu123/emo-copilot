@@ -451,7 +451,7 @@ const AIChatbot = () => {
       } else {
         // Reset focus mode tracking if state changes
         if (focusModeStartTime !== null) {
-          console.log('�� Focus mode ended - resetting timer');
+          console.log('🎯 Focus mode ended - resetting timer');
           setFocusModeStartTime(null);
           setFocusTriggered(false);
         }
@@ -1048,8 +1048,24 @@ const AIChatbot = () => {
 
   // Enhanced Google Maps API functions with safety integration
   const searchNearbyPlaces = async (query: string, type: string = ''): Promise<string> => {
+    // Provide helpful responses even without exact location
     if (!currentLocation) {
-      return "I need your location to help with navigation. Please allow location access in your browser settings.";
+      const fallbackResponses = {
+        'gas': `I'll help you find gas stations! Look for major brands like Shell, Chevron, BP, or Exxon along your route. Check highway exits or use gas price apps like GasBuddy for the best nearby options.`,
+        'restaurant': `For restaurants, check the next highway exit or nearby shopping areas. Fast food chains are common at exits, while local diners often offer great road trip meals.`,
+        'coffee': `Coffee shops are usually at highway exits or in town centers. Look for Starbucks, Dunkin', or local cafes. Many gas stations also serve good coffee.`,
+        'hospital': `For medical facilities, follow blue hospital signs from highways. In emergencies, call 911. Most navigation apps can quickly route to the nearest hospital.`,
+        'pharmacy': `Pharmacies like CVS, Walgreens, and Rite Aid are in most towns. Check shopping centers or ask at gas stations for directions to the nearest one.`
+      };
+
+      const placeType = type.toLowerCase() || query.toLowerCase();
+      for (const [key, response] of Object.entries(fallbackResponses)) {
+        if (placeType.includes(key)) {
+          return response;
+        }
+      }
+
+      return `I can help you find ${query}! Try checking at highway exits or use your navigation app. Most essential services are well-marked along major routes.`;
     }
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -1145,7 +1161,7 @@ const AIChatbot = () => {
       
       // Mountain/hill warnings for certain routes
       if (destination.toLowerCase().includes('mountain') || Math.random() > 0.85) {
-        routeDangers.push("⛰️ STEEP GRADES: Mountain roads ahead. Check brakes, use lower gears, watch for overheating.");
+        routeDangers.push("��️ STEEP GRADES: Mountain roads ahead. Check brakes, use lower gears, watch for overheating.");
       }
 
       let baseResponse = `Excellent! ${destination} is ${estimatedDistance} miles away, approximately ${estimatedTime} minutes. Route looks good overall!`;
