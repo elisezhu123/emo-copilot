@@ -597,7 +597,6 @@ class FreesoundService {
       const genreFilters = this.getMusicCategoryFilters(query);
 
       const params = new URLSearchParams({
-        token: this.apiKey,
         query: query,
         page_size: '25',
         fields: 'id,name,username,duration,tags,previews,type,license',
@@ -612,6 +611,7 @@ class FreesoundService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Token ${this.apiKey}`
         },
         mode: 'cors'
       });
