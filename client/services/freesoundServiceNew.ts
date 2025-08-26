@@ -28,28 +28,33 @@ class FreesoundService {
     return configured;
   }
 
-  // Search for tracks with proper CORS and redirect handling
+  // Search for tracks with proper CORS and redirect handling - now with dynamic randomization
   async searchTracks(query: string, filters: any = {}): Promise<Track[]> {
     if (!this.isConfigured()) {
       console.warn('Freesound API key not configured, using fallback tracks');
-      return this.getFallbackTracks();
+      return this.shuffleArray(this.getFallbackTracks());
     }
 
     try {
-      // Target Freesound's Music category specifically for proper music playlists
-      const musicQuery = `${query}`;
+      // Add randomization for dynamic playlists
+      const randomVariations = this.getRandomSearchVariations(query);
+      const randomSort = this.getRandomSort();
+      const randomPage = this.getRandomPage();
+
+      const musicQuery = randomVariations[Math.floor(Math.random() * randomVariations.length)];
 
       const params = new URLSearchParams({
         token: this.apiKey,
         query: `${musicQuery} music`,
-        page_size: '15',
+        page_size: '20', // Increased for more variety
+        page: randomPage.toString(),
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
         // Search for music with better filters
         filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
-        sort: 'rating_desc'
+        sort: randomSort
       });
 
-      console.log('🎵 Searching Freesound:', `${this.baseUrl}/search/text/?${params}`);
+      console.log(`🎲 Dynamic Freesound search: query="${musicQuery}", sort="${randomSort}", page=${randomPage}`);
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
@@ -59,9 +64,6 @@ class FreesoundService {
         mode: 'cors'
       });
 
-      console.log('🎵 Freesound API response status:', response.status);
-      console.log('🎵 Freesound API response headers:', response.headers);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('❌ Freesound API error response:', errorText);
@@ -69,22 +71,22 @@ class FreesoundService {
       }
 
       const data = await response.json();
-      console.log('✅ Freesound API response data:', data);
-      console.log('✅ Found', data.count, 'total results,', data.results?.length, 'returned');
+      console.log('✅ Dynamic Freesound search found', data.count, 'total results,', data.results?.length, 'returned');
 
       if (!data.results || data.results.length === 0) {
         console.warn('❌ No tracks found in Freesound API response');
         console.log('🎵 Query was:', musicQuery);
-        console.log('🎵 Filter was:', `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`);
         return [];
       }
 
       const convertedTracks = await this.convertToTracks(data.results);
-      console.log('✅ Converted', convertedTracks.length, 'tracks successfully');
-      return convertedTracks;
+      // Shuffle the results for additional randomness
+      const shuffledTracks = this.shuffleArray(convertedTracks);
+      console.log('✅ Converted and shuffled', shuffledTracks.length, 'tracks successfully');
+      return shuffledTracks;
     } catch (error) {
       console.error('❌ Error fetching from Freesound:', error);
-      return this.getFallbackTracks();
+      return this.shuffleArray(this.getFallbackTracks());
     }
   }
 
