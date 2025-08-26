@@ -12,7 +12,12 @@ interface HRVData {
 type SerialPort = {
   readable: ReadableStream<Uint8Array> | null;
   writable: WritableStream<Uint8Array> | null;
-  open: (options: { baudRate: number }) => Promise<void>;
+  open: (options: {
+    baudRate: number;
+    dataBits?: number;
+    stopBits?: number;
+    parity?: 'none' | 'even' | 'odd';
+  }) => Promise<void>;
   close: () => Promise<void>;
 };
 
@@ -149,7 +154,7 @@ class ArduinoService {
           const heartRate = parseInt(hrMatch[1]);
           if (!isNaN(heartRate) && heartRate > 30 && heartRate < 200) {
             this.addHeartRateValue(heartRate);
-            console.log(`💓 Heart Rate: ${heartRate} BPM`);
+            console.log(`���� Heart Rate: ${heartRate} BPM`);
           }
         }
       } else if (line.includes('HRV:')) {
