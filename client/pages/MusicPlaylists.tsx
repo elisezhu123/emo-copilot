@@ -186,7 +186,7 @@ const MusicPlaylists = () => {
       // ALWAYS call loadTracks on mount, regardless of genre comparison
       // This ensures tracks load even if genres were previously set
       setTimeout(() => {
-        loadTracks(false, false); // Initial load - not an update
+        loadTracks(false, false, true); // Initial load - not an update, but forced
       }, 50);
     };
 
