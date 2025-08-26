@@ -217,33 +217,6 @@ class SimpleMusicService {
       );
       console.log(`🔄 Using ${this.cachedTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
 
-      // Special debug for Rock and Blues fallback
-      if (genres.includes('Rock') || genres.includes('Blues')) {
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): API failed, using fallback tracks');
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): Total fallback tracks:', this.cachedTracks.length);
-
-        const rockTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === 'rock');
-        const bluesTracks = this.cachedTracks.filter(track => track.genre.toLowerCase() === 'blues');
-
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): Rock fallback tracks:', rockTracks.length);
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): Blues fallback tracks:', bluesTracks.length);
-
-        if (rockTracks.length > 0) {
-          console.log('🎸 ROCK/BLUES DEBUG (fallback): First Rock fallback:', rockTracks[0]);
-        }
-        if (bluesTracks.length > 0) {
-          console.log('🎸 ROCK/BLUES DEBUG (fallback): First Blues fallback:', bluesTracks[0]);
-        }
-
-        // Also debug the raw fallback tracks before filtering
-        const allFallback = this.getFallbackTracks();
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): All fallback tracks count:', allFallback.length);
-        const allRockFallback = allFallback.filter(track => track.genre.toLowerCase() === 'rock');
-        const allBluesFallback = allFallback.filter(track => track.genre.toLowerCase() === 'blues');
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): All Rock in fallback:', allRockFallback.length);
-        console.log('🎸 ROCK/BLUES DEBUG (fallback): All Blues in fallback:', allBluesFallback.length);
-      }
-
       // Log fallback genre distribution for multiple genre selections
       if (genres.length > 1) {
         console.log('🎼 Fallback multi-genre track distribution:');
