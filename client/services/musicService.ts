@@ -36,7 +36,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Open Music Ensemble',
         duration: 240,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
       },
       {
@@ -45,7 +45,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Free Classical Group',
         duration: 200,
         genre: 'Classical',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
       }
     ]
@@ -123,7 +123,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Chill Collective',
         duration: 270,
         genre: 'Chillout',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
       },
       {
@@ -164,7 +164,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Americana Collective',
         duration: 240,
         genre: 'Country',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
       },
       {
@@ -205,7 +205,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Free Blues Society',
         duration: 300,
         genre: 'Blues',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
       }
     ]
@@ -251,7 +251,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Trip Hop Collective',
         duration: 320,
         genre: 'Downbeat',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
       },
       {
@@ -292,7 +292,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Open Road Band',
         duration: 240,
         genre: 'Rock',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=100&h=100&fit=crop'
       },
       {
@@ -333,7 +333,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Traditional Sounds',
         duration: 230,
         genre: 'Folk',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=100&h=100&fit=crop'
       }
     ]
@@ -379,7 +379,7 @@ const mockMusicDatabase: MusicGenre[] = [
         artist: 'Jazz Collective',
         duration: 270,
         genre: 'Jazz',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        url: 'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
         thumbnail: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=100&h=100&fit=crop'
       },
       {
@@ -526,7 +526,7 @@ class MusicService {
   // Get a random track from API
   async getRandomTrackFromAPI(): Promise<Track | null> {
     try {
-      console.log('🎵 Getting tracks from API for selected genres:', this.selectedGenres);
+      console.log('�� Getting tracks from API for selected genres:', this.selectedGenres);
       const tracks = await this.getFilteredTracksFromAPI();
 
       if (tracks.length === 0) {
