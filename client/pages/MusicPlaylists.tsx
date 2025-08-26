@@ -207,21 +207,31 @@ const MusicPlaylists = () => {
 
     // Only refresh on focus if genres might have changed
     const handleFocus = () => {
-      console.log('🔍 Focus event triggered on MusicPlaylists page');
-      const currentGenres = musicService.loadSelectedGenres();
-      console.log('🔍 Current genres from localStorage:', currentGenres);
-      console.log('🔍 Previous genres from ref:', initialGenresRef.current);
+      try {
+        console.log('🔍 Focus event triggered on MusicPlaylists page');
 
-      const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(initialGenresRef.current?.sort());
-      console.log('🔍 Genres changed?', genresChanged);
+        if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+          console.error('musicService not available in handleFocus');
+          return;
+        }
 
-      if (genresChanged) {
-        console.log('🔄 Genres changed - refreshing playlist');
-        // Update ref immediately to prevent duplicate loads
-        initialGenresRef.current = currentGenres || [];
-        loadTracks(true); // Pass true to indicate this is an update
-      } else {
-        console.log('⚡ Same genres - keeping current playlist for better UX');
+        const currentGenres = musicService.loadSelectedGenres();
+        console.log('🔍 Current genres from localStorage:', currentGenres);
+        console.log('🔍 Previous genres from ref:', initialGenresRef.current);
+
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(initialGenresRef.current?.sort());
+        console.log('🔍 Genres changed?', genresChanged);
+
+        if (genresChanged) {
+          console.log('🔄 Genres changed - refreshing playlist');
+          // Update ref immediately to prevent duplicate loads
+          initialGenresRef.current = currentGenres || [];
+          loadTracks(true); // Pass true to indicate this is an update
+        } else {
+          console.log('⚡ Same genres - keeping current playlist for better UX');
+        }
+      } catch (error) {
+        console.error('Error in handleFocus:', error);
       }
     };
 
