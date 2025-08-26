@@ -310,6 +310,29 @@ const MusicPlaylists = () => {
       }
     });
 
+    // Listen for localStorage changes (real-time genre updates)
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'selectedMusicGenres') {
+        console.log('🔄 Real-time: localStorage changed, updating playlists automatically');
+        setTimeout(() => {
+          const newGenres = musicService.loadSelectedGenres();
+          const currentGenres = initialGenresRef.current;
+          const genresChanged = JSON.stringify(newGenres?.sort()) !== JSON.stringify(currentGenres?.sort());
+
+          if (genresChanged) {
+            console.log('🔄 Real-time: Genre change detected via localStorage event');
+            console.log('🔄 Real-time: New genres:', newGenres);
+            console.log('🔄 Real-time: Previous genres:', currentGenres);
+            initialGenresRef.current = newGenres || [];
+            setIsUpdating(true);
+            loadTracks(true, false);
+          }
+        }, 200); // Small delay to ensure localStorage is fully updated
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
     // Only refresh on focus if genres might have changed
     const handleFocus = () => {
       try {
