@@ -883,7 +883,6 @@ class FreesoundService {
 
   private async trySimpleGenreSearch(genre: string): Promise<Track[]> {
     const params = new URLSearchParams({
-      token: this.apiKey,
       query: `${genre.toLowerCase()} music`,
       page_size: '10', // Optimized for fastest loading
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
@@ -895,7 +894,10 @@ class FreesoundService {
 
     const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Token ${this.apiKey}`
+      },
       mode: 'cors'
     });
 
