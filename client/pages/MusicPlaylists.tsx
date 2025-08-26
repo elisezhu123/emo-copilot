@@ -8,12 +8,14 @@ import MusicProgressBar from '../components/MusicProgressBar';
 
 const MusicPlaylists = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const initialGenresRef = useRef<string[]>([]);
+  const lastLocationRef = useRef<string>('');
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
@@ -48,7 +50,7 @@ const MusicPlaylists = () => {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
       const savedGenres = musicService.loadSelectedGenres();
-      console.log('�� MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+      console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
       console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
 
       // If we have genres, show loading state
