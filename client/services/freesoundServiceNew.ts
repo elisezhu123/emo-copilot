@@ -117,7 +117,11 @@ class FreesoundService {
           errorText = `HTTP ${response.status} ${response.statusText}`;
         }
         console.error('❌ Freesound API error response:', errorText);
-        throw new Error(`Freesound API error: ${response.status} ${response.statusText} - ${errorText}`);
+        console.log('🎵 API failed, using fallback tracks for genre:', query);
+        return this.getFallbackTracks().filter(track =>
+          track.genre.toLowerCase().includes(query.toLowerCase()) ||
+          query.toLowerCase().includes(track.genre.toLowerCase())
+        );
       }
 
       const data = await response.json();
