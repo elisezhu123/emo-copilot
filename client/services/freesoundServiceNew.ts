@@ -80,28 +80,46 @@ class FreesoundService {
 
     try {
       console.log('🔍 Testing Freesound API connection...');
-      const testParams = new URLSearchParams({
-        query: 'test',
-        page_size: '1',
-        fields: 'id,name',
-        token: this.apiKey
-      });
 
-      const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
-        mode: 'cors'
-      });
+      // Try multiple authentication methods
+      const authMethods = [
+        { name: 'URL token parameter', headers: {}, params: { token: this.apiKey } },
+        { name: 'Authorization header', headers: { 'Authorization': `Token ${this.apiKey}` }, params: {} },
+        { name: 'Bearer token', headers: { 'Authorization': `Bearer ${this.apiKey}` }, params: {} }
+      ];
 
-      if (response.ok) {
-        console.log('✅ Freesound API connection successful');
-        return true;
-      } else {
-        console.error('❌ Freesound API test failed:', response.status, response.statusText);
-        return false;
+      for (const method of authMethods) {
+        console.log(`🔍 Trying ${method.name}...`);
+
+        const testParams = new URLSearchParams({
+          query: 'test',
+          page_size: '1',
+          fields: 'id,name',
+          ...method.params
+        });
+
+        const response = await fetch(`${this.baseUrl}/search/text/?${testParams}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            ...method.headers
+          },
+          mode: 'cors'
+        });
+
+        if (response.ok) {
+          console.log(`✅ Freesound API connection successful with ${method.name}`);
+          // Store the working method for future requests
+          this.workingAuthMethod = method;
+          return true;
+        } else {
+          const errorText = await response.text().catch(() => 'No error details');
+          console.warn(`❌ ${method.name} failed:`, response.status, response.statusText, errorText);
+        }
       }
+
+      console.error('❌ All authentication methods failed');
+      return false;
     } catch (error) {
       console.error('❌ Freesound API connection test failed:', error);
       return false;
