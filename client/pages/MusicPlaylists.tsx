@@ -164,7 +164,7 @@ const MusicPlaylists = () => {
     immediateGenreCheck();
 
     // Load tracks from the music service - same logic as dashboard
-    const loadTracks = async (isUpdate = false) => {
+    const loadTracks = async (isUpdate = false, forceRefresh = false) => {
       console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
 
       const savedGenres = musicService.loadSelectedGenres();
