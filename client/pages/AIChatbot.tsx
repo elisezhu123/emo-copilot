@@ -1154,7 +1154,7 @@ const AIChatbot = () => {
     return new Promise((resolve) => {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9;
+        utterance.rate = 1.2;
         utterance.pitch = 1;
         utterance.volume = 0.8;
 
@@ -3147,7 +3147,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
     console.log('🔍 Recognition available:', !!recognitionRef.current);
     console.log('🔍 Microphone status:', microphoneStatus);
     console.log('🔍 Browser info:', navigator.userAgent);
-    console.log('🔍 Is HTTPS:', window.location.protocol === 'https:');
+    console.log('�� Is HTTPS:', window.location.protocol === 'https:');
     console.log('🔍 getUserMedia support:', !!navigator.mediaDevices?.getUserMedia);
 
     if (!recognitionRef.current) {
