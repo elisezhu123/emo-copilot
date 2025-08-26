@@ -294,6 +294,7 @@ const EmoCopilotDashboard = () => {
 
   const handleEmotionSelect = (emotion: DriverStateType) => {
     console.log('🧠 Emotion selected:', emotion);
+    setSelectedEmotion(emotion);
     carStateManager.setDriverState(emotion);
   };
 
