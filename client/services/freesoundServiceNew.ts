@@ -136,7 +136,7 @@ class FreesoundService {
       if (error.name === 'AbortError') {
         console.error('❌ Freesound API request timed out');
       } else if (error.message.includes('Failed to fetch')) {
-        console.error('❌ Network error connecting to Freesound API - check internet connection');
+        console.error('��� Network error connecting to Freesound API - check internet connection');
       } else {
         console.error('❌ Error fetching from Freesound:', error);
       }
@@ -639,10 +639,10 @@ class FreesoundService {
     console.log('🎵 API configured:', this.isConfigured());
 
     if (!this.isConfigured()) {
-      console.error('❌ Freesound API not configured! Using fallback tracks.');
-      return this.getFallbackTracks().filter(track =>
-        genres.some(genre => track.genre.toLowerCase() === genre.toLowerCase())
-      );
+      console.error('❌ Freesound API not configured! No music will be available.');
+      console.log('🔧 Please set VITE_FREESOUND_API_KEY environment variable');
+      console.log('🔧 Get your free API key at: https://freesound.org/apiv2/apply/');
+      return [];
     }
 
     try {
