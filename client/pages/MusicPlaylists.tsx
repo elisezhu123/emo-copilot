@@ -63,15 +63,19 @@ const MusicPlaylists = () => {
             audioManager.setPlaylist(allTracks);
           }
         } else {
-          console.log('🎵 No genres selected');
+          console.log('🔍 MusicPlaylists: No genres selected or empty array');
+          console.log('🔍 MusicPlaylists: savedGenres value:', savedGenres);
+          console.log('🔍 MusicPlaylists: savedGenres type:', typeof savedGenres);
           setTracks([]);
           setCurrentTrack(null);
         }
       } catch (error) {
-        console.error('🎵 Error loading tracks:', error);
+        console.error('🔍 MusicPlaylists: Error loading tracks:', error);
+        console.error('🔍 MusicPlaylists: Error stack:', error.stack);
         setTracks([]);
         setCurrentTrack(null);
       } finally {
+        console.log('🔍 MusicPlaylists: Setting loading state to false');
         setIsLoadingTracks(false);
       }
     };
