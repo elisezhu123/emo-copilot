@@ -93,16 +93,21 @@ const MusicPlaylists = () => {
           setCurrentTrack(selectedTrack);
           audioManager.setPlaylist(finalTracks);
 
-          // Auto-play: Start playing automatically when tracks load
-          console.log('🎵 Auto-play: Starting automatic playback of:', selectedTrack.title);
-          setTimeout(async () => {
-            try {
-              await audioManager.playTrack(selectedTrack);
-              console.log('🎵 Auto-play: Successfully started playback');
-            } catch (error) {
-              console.error('🎵 Auto-play: Failed to start playback:', error);
-            }
-          }, 500); // Small delay to ensure UI is ready
+          // Auto-play: Start playing automatically when tracks load (once per session or genre change)
+          if (!hasAutoPlayedRef.current || isUpdate) {
+            console.log('🎵 Auto-play: Starting automatic playback of:', selectedTrack.title);
+            hasAutoPlayedRef.current = true;
+            setTimeout(async () => {
+              try {
+                await audioManager.playTrack(selectedTrack);
+                console.log('🎵 Auto-play: Successfully started playback');
+              } catch (error) {
+                console.error('🎵 Auto-play: Failed to start playback:', error);
+              }
+            }, 800); // Longer delay to ensure everything is ready
+          } else {
+            console.log('🎵 Auto-play: Skipped (already played this session)');
+          }
         }
 
         // Update the ref with successfully loaded genres for future focus comparisons
@@ -133,16 +138,19 @@ const MusicPlaylists = () => {
             audioManager.setPlaylist(fallbackTracks);
             console.log('🔄 EMERGENCY FALLBACK: Loaded', fallbackTracks.length, 'fallback tracks');
 
-            // Auto-play fallback tracks too
-            console.log('🎵 Auto-play: Starting fallback track playback');
-            setTimeout(async () => {
-              try {
-                await audioManager.playTrack(selectedTrack);
-                console.log('🎵 Auto-play: Successfully started fallback playback');
-              } catch (error) {
-                console.error('🎵 Auto-play: Failed to start fallback playback:', error);
-              }
-            }, 500);
+            // Auto-play fallback tracks too (with same session logic)
+            if (!hasAutoPlayedRef.current) {
+              console.log('🎵 Auto-play: Starting fallback track playback');
+              hasAutoPlayedRef.current = true;
+              setTimeout(async () => {
+                try {
+                  await audioManager.playTrack(selectedTrack);
+                  console.log('🎵 Auto-play: Successfully started fallback playback');
+                } catch (error) {
+                  console.error('🎵 Auto-play: Failed to start fallback playback:', error);
+                }
+              }, 800);
+            }
 
             return; // Exit early on successful fallback
           }
