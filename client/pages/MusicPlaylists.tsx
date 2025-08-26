@@ -730,39 +730,6 @@ const MusicPlaylists = () => {
                   <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
                 <p className="text-xs text-gray-500">Select music genres to load playlists</p>
-                <div className="mt-2 text-xs text-gray-400 space-y-1">
-                  <p>Debug: localStorage check</p>
-                  <p>Stored: {localStorage.getItem('selectedMusicGenres') || 'null'}</p>
-                  <p>Initial ref: {JSON.stringify(initialGenresRef.current)}</p>
-                </div>
-                <div className="mt-3 space-y-2">
-                  <button
-                    onClick={() => {
-                      console.log('🧪 TEST: Manual genre setup for testing...');
-                      musicService.saveSelectedGenres(['Classical']);
-                      console.log('🧪 TEST: Saved Classical genre');
-                      setTimeout(() => {
-                        console.log('🧪 TEST: Triggering auto-update...');
-                        loadTracks(true, false);
-                      }, 100);
-                    }}
-                    className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    🧪 Test: Set Classical Genre
-                  </button>
-                  <button
-                    onClick={() => {
-                      console.log('🧪 TEST: Clearing localStorage...');
-                      localStorage.removeItem('selectedMusicGenres');
-                      initialGenresRef.current = [];
-                      setTracks([]);
-                      setCurrentTrack(null);
-                    }}
-                    className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 ml-2"
-                  >
-                    🧪 Clear Storage
-                  </button>
-                </div>
               </div>
             )}
           </div>
