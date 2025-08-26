@@ -9,6 +9,8 @@ interface CarState {
   musicVolume: number;
   lightsOn: boolean;
   driverState: DriverStateType;
+  manualOverride: boolean;
+  manualOverrideStartTime: number | null;
 }
 
 class CarStateManager {
