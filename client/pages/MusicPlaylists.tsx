@@ -171,14 +171,6 @@ const MusicPlaylists = () => {
       console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
       console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
 
-      // Special debug for Rock and Blues
-      if (savedGenres && (savedGenres.includes('Rock') || savedGenres.includes('Blues'))) {
-        console.log('🎸 ROCK/BLUES DEBUG (useEffect): Selected genres contain Rock or Blues!');
-        console.log('🎸 ROCK/BLUES DEBUG (useEffect): Exact genres:', savedGenres);
-        console.log('🎸 ROCK/BLUES DEBUG (useEffect): Has Rock:', savedGenres.includes('Rock'));
-        console.log('🎸 ROCK/BLUES DEBUG (useEffect): Has Blues:', savedGenres.includes('Blues'));
-      }
-
       // If we have genres, show loading state
       if (savedGenres && savedGenres.length > 0) {
         if (isUpdate) {
