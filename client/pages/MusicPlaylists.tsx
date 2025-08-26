@@ -137,7 +137,7 @@ const MusicPlaylists = () => {
         setIsUpdating(true);
         // Small delay to ensure UI shows updating state
         setTimeout(() => {
-          loadTracks(true);
+          loadTracks(true, false);
         }, 100);
       }
     }
@@ -275,7 +275,7 @@ const MusicPlaylists = () => {
           if (mountChanged && currentGenres && currentGenres.length > 0) {
             console.log('🔄 Detected genre change after mount, reloading');
             initialGenresRef.current = currentGenres;
-            loadTracks(true); // Pass true to indicate this is an update
+            loadTracks(true, false); // Pass true to indicate this is an update
           }
         }, delay);
       });
@@ -313,7 +313,7 @@ const MusicPlaylists = () => {
           console.log('🔄 Genres changed - refreshing playlist');
           // Update ref immediately to prevent duplicate loads
           initialGenresRef.current = currentGenres || [];
-          loadTracks(true); // Pass true to indicate this is an update
+          loadTracks(true, false); // Pass true to indicate this is an update
         } else {
           console.log('⚡ Same genres - keeping current playlist for better UX');
         }
@@ -347,7 +347,7 @@ const MusicPlaylists = () => {
               if (genresChanged) {
                 console.log('🔄 Visibility detected genre change - updating playlists');
                 initialGenresRef.current = currentGenres || [];
-                loadTracks(true);
+                loadTracks(true, false);
               }
             } catch (error) {
               console.error('Error in visibility timeout:', error);
@@ -376,7 +376,7 @@ const MusicPlaylists = () => {
           initialGenresRef.current = currentGenres || [];
           // Use setTimeout to prevent blocking the interval
           setTimeout(() => {
-            loadTracks(true);
+            loadTracks(true, false);
           }, 100);
         }
       } catch (error) {
@@ -717,7 +717,7 @@ const MusicPlaylists = () => {
                   initialGenresRef.current = currentGenres;
                   // Use setTimeout to prevent blocking the UI
                   setTimeout(() => {
-                    loadTracks(true);
+                    loadTracks(true, false);
                   }, 100);
                 } else {
                   console.log('🔄 Manual refresh - No genres selected');
