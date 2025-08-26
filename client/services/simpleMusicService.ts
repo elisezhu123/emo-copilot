@@ -207,9 +207,51 @@ class SimpleMusicService {
 
     } catch (error) {
       console.error('❌ Freesound API loading failed:', error);
-      console.error('🎵 FREESOUND ONLY: No fallback tracks - please check Freesound API connection');
-      // No fallbacks - only Freesound API
-      this.cachedTracks = [];
+      console.log('🎵 Using fallback tracks for better user experience');
+
+      // Use fallback tracks filtered by requested genres
+      const fallbackTracks = [
+        // Classical fallback tracks
+        {
+          id: 'classical_fallback_1',
+          title: 'Demo Classical Track',
+          artist: 'Demo Artist',
+          duration: 30,
+          genre: 'Classical',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'jazz_fallback_1',
+          title: 'Demo Jazz Track',
+          artist: 'Demo Artist',
+          duration: 30,
+          genre: 'Jazz',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'ambient_fallback_1',
+          title: 'Demo Ambient Track',
+          artist: 'Demo Artist',
+          duration: 30,
+          genre: 'Ambient',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'rock_fallback_1',
+          title: 'Demo Rock Track',
+          artist: 'Demo Artist',
+          duration: 30,
+          genre: 'Rock',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        }
+      ].filter(track =>
+        genres.some(genre =>
+          track.genre.toLowerCase() === genre.toLowerCase()
+        )
+      );
+
+      this.cachedTracks = fallbackTracks;
+      console.log(`🎵 Using ${fallbackTracks.length} fallback tracks for genres: ${genres.join(', ')}`);
     } finally {
       this.isLoading = false;
     }
