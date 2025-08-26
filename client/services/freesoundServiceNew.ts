@@ -182,8 +182,10 @@ class FreesoundService {
       // Get authentication parameters
       const auth = await this.getAuthParams();
 
-      // Merge auth params with search params
-      Object.assign(params, auth.params);
+      // Add auth params to URLSearchParams
+      Object.entries(auth.params).forEach(([key, value]) => {
+        if (value) params.set(key, value.toString());
+      });
 
       const response = await fetch(`${this.baseUrl}/search/text/?${params}`, {
         method: 'GET',
