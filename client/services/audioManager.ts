@@ -327,9 +327,9 @@ class AudioManager {
   // Get alternative working audio URLs for testing
   private getWorkingAudioUrls(): string[] {
     return [
-      // GitHub hosted audio files (more reliable)
-      'https://samplelib.com/lib/preview/mp3/sample-3s.mp3',
-      'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+      // Archive.org hosted audio files (more reliable)
+      'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
+      'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3',
       // Data URL as ultimate fallback
       this.getTestAudioUrl()
     ];
