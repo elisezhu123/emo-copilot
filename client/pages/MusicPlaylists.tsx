@@ -813,21 +813,6 @@ const MusicPlaylists = () => {
                   <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
                 <p className="text-xs text-gray-500">Select music genres to load playlists</p>
-                <button
-                  onClick={() => {
-                    console.log('🧪 EMERGENCY TEST: Trying to force load demo tracks...');
-                    const demoTracks = [
-                      { id: 'demo1', title: 'Demo Song 1', artist: 'Demo Artist', duration: 180, genre: 'Demo', url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav' },
-                      { id: 'demo2', title: 'Demo Song 2', artist: 'Demo Artist', duration: 200, genre: 'Demo', url: 'https://www.w3schools.com/html/horse.mp3' }
-                    ];
-                    setTracks(demoTracks);
-                    setCurrentTrack(demoTracks[0]);
-                    console.log('🧪 EMERGENCY TEST: Demo tracks loaded:', demoTracks);
-                  }}
-                  className="mt-2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  🧪 Load Demo Tracks (Test)
-                </button>
               </div>
             )}
           </div>
