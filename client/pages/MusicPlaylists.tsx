@@ -11,6 +11,7 @@ const MusicPlaylists = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
+  const initialGenresRef = useRef<string[]>([]);
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
