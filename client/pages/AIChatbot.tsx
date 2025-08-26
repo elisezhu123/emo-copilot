@@ -519,7 +519,7 @@ const AIChatbot = () => {
     // Add AI message asking for permission
     const permissionMessage: Message = {
       id: Date.now().toString() + '_temp_trigger',
-      text: `I've detected the temperature is ${temp}°C - quite hot! Would you want me to set the air conditioner on?`,
+      text: `I've detected the temperature is ${temp}��C - quite hot! Would you want me to set the air conditioner on?`,
       type: 'bot',
       timestamp: new Date()
     };
@@ -1154,7 +1154,7 @@ const AIChatbot = () => {
     return new Promise((resolve) => {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.2;
+        utterance.rate = 1.05;
         utterance.pitch = 1;
         utterance.volume = 0.8;
 
