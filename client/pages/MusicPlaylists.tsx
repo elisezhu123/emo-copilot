@@ -328,10 +328,25 @@ const MusicPlaylists = () => {
 
   const playTrack = async (track: Track) => {
     try {
+      if (!track) {
+        console.error('No track provided to playTrack');
+        return;
+      }
+      if (!track.url) {
+        console.error('Track has no URL:', track);
+        return;
+      }
+
+      console.log('🎵 Setting current track:', track.title);
       setCurrentTrack(track);
+
+      console.log('🎵 Starting audio playback...');
       await audioManager.playTrack(track);
+
+      console.log('🎵 Track playback started successfully');
     } catch (error) {
       console.error('Error playing track:', error);
+      // Don't rethrow the error to prevent onClick handler from failing
     }
   };
 
