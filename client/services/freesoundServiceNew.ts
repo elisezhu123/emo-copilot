@@ -16,9 +16,47 @@ class FreesoundService {
   constructor() {
     this.apiKey = import.meta.env.VITE_FREESOUND_API_KEY || '';
     if (this.apiKey) {
-      console.log('🎵 Freesound API configured with OAuth client ID:', this.apiKey.substring(0, 10) + '...');
+      console.log('🎵 Freesound API configured with client credentials:', this.apiKey.substring(0, 10) + '...');
+      // Try to get OAuth access token
+      this.initializeOAuthToken();
     } else {
       console.warn('⚠️ Freesound API key not found in environment variables');
+    }
+  }
+
+  // Initialize OAuth access token
+  private async initializeOAuthToken(): Promise<void> {
+    try {
+      console.log('🔐 Attempting OAuth token exchange with Freesound...');
+
+      // For Freesound, try client credentials grant
+      const clientId = this.apiKey;
+      const clientSecret = import.meta.env.VITE_FREESOUND_CLIENT_SECRET || 'GKpwiy5CTi9qxmfraDqDHO1ZWg7PswE5nf5oyZSe';
+
+      const tokenResponse = await fetch('https://freesound.org/apiv2/oauth2/access_token/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          'client_id': clientId,
+          'client_secret': clientSecret,
+          'grant_type': 'client_credentials'
+        })
+      });
+
+      if (tokenResponse.ok) {
+        const tokenData = await tokenResponse.json();
+        if (tokenData.access_token) {
+          this.apiKey = tokenData.access_token;
+          console.log('✅ OAuth access token obtained successfully');
+          return;
+        }
+      }
+
+      console.warn('⚠️ OAuth token exchange failed, trying direct API key approach');
+    } catch (error) {
+      console.warn('⚠️ OAuth initialization failed:', error);
     }
   }
 
