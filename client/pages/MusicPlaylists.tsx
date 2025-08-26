@@ -475,10 +475,12 @@ const MusicPlaylists = () => {
         {/* Show loading or message if no tracks */}
         {tracks.length === 0 && (
           <div className="text-center py-8">
-            {isLoadingTracks ? (
+            {(isLoadingTracks || isUpdating) ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-xs text-gray-500">Fast loading your music...</p>
+                <p className="text-xs text-gray-500">
+                  {isUpdating ? 'Updating playlists...' : 'Loading your music...'}
+                </p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
