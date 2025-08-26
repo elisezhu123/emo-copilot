@@ -478,54 +478,54 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // Chillout Genre - Using chill samples
+      // Chillout Genre - Using demo audio
       {
         id: 'chillout_1',
-        title: 'Sunset Lounge',
-        artist: 'Chill Collective',
-        duration: 270,
+        title: 'Demo Chillout Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Chillout',
         url: demoAudioUrl
       },
       {
         id: 'chillout_2',
-        title: 'Lazy Sunday',
-        artist: 'Relaxed Minds',
-        duration: 250,
+        title: 'Demo Lounge',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Chillout',
         url: demoAudioUrl
       },
       {
         id: 'chillout_3',
-        title: 'Coffee Shop Dreams',
-        artist: 'Mellow Beats',
-        duration: 220,
+        title: 'Demo Relaxing',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Chillout',
         url: demoAudioUrl
       },
 
-      // Country Genre - Using country samples
+      // Country Genre - Using demo audio
       {
         id: 'country_1',
-        title: 'Country Road',
-        artist: 'Folk Guitar',
-        duration: 200,
+        title: 'Demo Country Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Country',
         url: demoAudioUrl
       },
       {
         id: 'country_2',
-        title: 'Hometown Blues',
-        artist: 'Americana Collective',
-        duration: 240,
+        title: 'Demo Bluegrass',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Country',
         url: demoAudioUrl
       },
       {
         id: 'country_3',
-        title: 'Prairie Wind',
-        artist: 'Open Range Band',
-        duration: 210,
+        title: 'Demo Western',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'Country',
         url: demoAudioUrl
       },
@@ -743,7 +743,7 @@ class FreesoundService {
       // Return Freesound tracks or fallback if empty
       console.log(`✅ Freesound tracks loaded and randomized: ${randomizedTracks.length}`);
       if (randomizedTracks.length === 0) {
-        console.warn('⚠️ No tracks found from Freesound API for the selected genres, using fallback');
+        console.warn('���️ No tracks found from Freesound API for the selected genres, using fallback');
         const allFallbackTracks = this.getFallbackTracks();
         const filteredTracks = allFallbackTracks.filter(track =>
           genres.some(genre =>
