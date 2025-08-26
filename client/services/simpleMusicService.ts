@@ -69,6 +69,19 @@ class SimpleMusicService {
     await this.initialize();
   }
 
+  // Force fresh reload - clears cache and gets completely new tracks
+  async forceFreshReload(genres: string[]): Promise<void> {
+    console.log('🔄 Force refresh: clearing all caches for fresh dynamic playlist');
+    this.cachedTracks = [];
+    await this.updateGenres(genres);
+  }
+
+  // Clear cache to ensure fresh results
+  clearCache(): void {
+    console.log('🧹 Clearing music cache for fresh playlist');
+    this.cachedTracks = [];
+  }
+
   // Update genres and refresh music collection with dynamic playlists
   async updateGenres(genres: string[]): Promise<void> {
     try {
