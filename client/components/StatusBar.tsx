@@ -497,28 +497,45 @@ const StatusBar: React.FC<StatusBarProps> = ({
         </span>
       </div>
 
-      {/* Center - Temperature */}
-      {showTemperature && temperature && (
-        <div className="flex justify-center items-center gap-2">
-          <svg width="12" height="12" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="4.5" cy="4" r="4" fill="#A6DBFF"/>
-          </svg>
-          <span
-            className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal cursor-pointer hover:text-blue-600"
-            onClick={() => {
-              console.log('🔄 Manual temperature refresh requested');
-              if (currentLocation) {
-                fetchWeather(currentLocation.lat, currentLocation.lng);
-              } else {
-                fetchWeather(52.6638, -8.6267); // Limerick coordinates
-              }
-            }}
-            title="Click to refresh temperature"
-          >
-            Temperature: {temperature}
-          </span>
-        </div>
-      )}
+      {/* Center - Temperature and Driver State */}
+      <div className="flex items-center gap-6">
+        {showTemperature && temperature && (
+          <div className="flex justify-center items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="4.5" cy="4" r="4" fill="#A6DBFF"/>
+            </svg>
+            <span
+              className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal cursor-pointer hover:text-blue-600"
+              onClick={() => {
+                console.log('🔄 Manual temperature refresh requested');
+                if (currentLocation) {
+                  fetchWeather(currentLocation.lat, currentLocation.lng);
+                } else {
+                  fetchWeather(52.6638, -8.6267); // Limerick coordinates
+                }
+              }}
+              title="Click to refresh temperature"
+            >
+              Temperature: {temperature}
+            </span>
+          </div>
+        )}
+
+        {showDriverState && (
+          <div className="flex justify-center items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="4" cy="4" r="4" fill={getDriverStateInfo(driverState).color}/>
+            </svg>
+            <span
+              className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal cursor-pointer hover:text-blue-600"
+              onClick={forceDriverStateSync}
+              title="Click to refresh driver state"
+            >
+              {getDriverStateInfo(driverState).text}
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Right Side - Time + Battery */}
       <div className="flex justify-end items-center gap-2">
