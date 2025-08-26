@@ -71,11 +71,16 @@ class FreesoundService {
   private async getAuthParams(): Promise<{ headers: any, params: any }> {
     // If no working method found, test the connection first
     if (!this.workingAuthMethod) {
-      await this.testApiConnection();
+      console.log('🔍 Testing API connection for authentication...');
+      const connectionWorking = await this.testApiConnection();
+      if (!connectionWorking) {
+        console.warn('⚠️ API connection test failed - calls will likely fail and use fallbacks');
+      }
     }
 
     // Return the working authentication method or fallback
     if (this.workingAuthMethod) {
+      console.log(`✅ Using working auth method: ${this.workingAuthMethod.name}`);
       return {
         headers: { 'Accept': 'application/json', ...this.workingAuthMethod.headers },
         params: this.workingAuthMethod.params
@@ -83,6 +88,7 @@ class FreesoundService {
     }
 
     // Fallback to token parameter method
+    console.log('⚠️ No working auth method found, using fallback token approach');
     return {
       headers: { 'Accept': 'application/json' },
       params: { token: this.apiKey }
