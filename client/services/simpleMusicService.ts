@@ -165,15 +165,7 @@ class SimpleMusicService {
     this.lastGenres = [...genres];
 
     try {
-      console.log('⚡ Fast loading from Freesound API for genres:', genres);
-
-      // Special debug for Rock and Blues
-      if (genres.includes('Rock') || genres.includes('Blues')) {
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Loading Rock or Blues!');
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): All genres:', genres);
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Has Rock:', genres.includes('Rock'));
-        console.log('🎸 ROCK/BLUES DEBUG (simpleMusicService): Has Blues:', genres.includes('Blues'));
-      }
+      console.log('⚡ Loading tracks for genres:', genres);
 
       // Clear any existing cache timeout
       if (this.cacheTimeout) {
