@@ -188,6 +188,39 @@ const AIChatbot = () => {
       }, 3000); // Wait for initial greeting to finish
     }
 
+    if (isProlongedStressNavigation) {
+      console.log('⏰ Arrived at AI chatbot due to prolonged stress/anxiety detection');
+
+      // Clear the prolonged-stress parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Skip initial greeting and immediately provide advice
+      const adviceOptions = [
+        "I've noticed you've been feeling stressed for a while. Would you like me to play some calming music or guide you through a quick breathing exercise?",
+        "You've been anxious for some time now. Let me help! I can play relaxing music, tell you a joke, or lead a breathing exercise. What sounds good?",
+        "I see you're still feeling stressed. How about some soothing music therapy or a fun joke to lighten your mood? I'm here to help!"
+      ];
+
+      const selectedAdvice = adviceOptions[Math.floor(Math.random() * adviceOptions.length)];
+
+      // Replace the initial greeting with immediate advice
+      setMessages([{
+        id: '1',
+        text: selectedAdvice,
+        type: 'bot',
+        timestamp: new Date()
+      }]);
+
+      // Show comfort emoji for prolonged stress support
+      setShowComfortEmoji(true);
+      setTimeout(() => setShowComfortEmoji(false), 3000);
+
+      // Speak the advice immediately (no initial greeting)
+      setTimeout(() => {
+        speakText(selectedAdvice);
+      }, 1000);
+    }
+
     if (isWeatherNavigation) {
       console.log('⚠️ Arrived at AI chatbot due to extreme weather detection');
 
