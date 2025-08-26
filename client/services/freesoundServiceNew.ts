@@ -975,7 +975,7 @@ class FreesoundService {
       query: `${genre.toLowerCase()} music`,
       page_size: '25', // Balanced for reliability and content
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
-      filter: `type:(wav OR mp3) duration:[60.0 TO 300.0]`, // Prefer longer tracks for more content
+      filter: `type:(wav OR mp3) duration:[30.0 TO 300.0]`, // Balanced duration for more results
       sort: 'downloads_desc' // Consistent, fast sorting
     });
 
