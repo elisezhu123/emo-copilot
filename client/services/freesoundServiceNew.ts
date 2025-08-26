@@ -95,7 +95,8 @@ class FreesoundService {
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
         // Search for music with better filters
         filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
-        sort: randomSort
+        sort: randomSort,
+        token: this.apiKey
       });
 
       console.log(`🎲 Dynamic Freesound search: query="${musicQuery}", sort="${randomSort}", page=${randomPage}`);
