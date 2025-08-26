@@ -87,6 +87,25 @@ const MusicPlaylists = () => {
 
     loadTracks();
 
+    // Also check for genre changes immediately when component mounts
+    // This helps catch cases where user navigated back with new genres
+    const checkGenresOnMount = () => {
+      setTimeout(() => {
+        console.log('🔍 Checking for genre changes 500ms after mount');
+        const currentGenres = musicService.loadSelectedGenres();
+        const mountGenres = initialGenresRef.current;
+        const mountChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(mountGenres?.sort());
+
+        if (mountChanged && currentGenres && currentGenres.length > 0) {
+          console.log('🔄 Detected genre change after mount, reloading');
+          initialGenresRef.current = currentGenres;
+          loadTracks();
+        }
+      }, 500);
+    };
+
+    checkGenresOnMount();
+
     // Subscribe to audio state changes
     const unsubscribe = audioManager.subscribe((state: AudioState) => {
       setAudioState(state);
