@@ -119,39 +119,8 @@ const MusicPlaylists = () => {
       console.error('🔍 MusicPlaylists: Error loading tracks:', error);
       console.error('🔍 MusicPlaylists: Error stack:', error.stack);
 
-      // Critical fallback: If everything fails, try musicService fallback tracks
-      try {
-        const savedGenres = musicService.loadSelectedGenres();
-        if (savedGenres && savedGenres.length > 0) {
-          console.log('🔄 EMERGENCY FALLBACK: Using musicService tracks after error');
-          const fallbackTracks = musicService.getFilteredTracks();
-          if (fallbackTracks.length > 0) {
-            setTracks(fallbackTracks);
-            const selectedTrack = fallbackTracks[0];
-            setCurrentTrack(selectedTrack);
-            audioManager.setPlaylist(fallbackTracks);
-            console.log('🔄 EMERGENCY FALLBACK: Loaded', fallbackTracks.length, 'fallback tracks');
-
-            // Auto-play fallback tracks too (with same session logic)
-            if (!hasAutoPlayedRef.current) {
-              console.log('🎵 Auto-play: Starting fallback track playback');
-              hasAutoPlayedRef.current = true;
-              setTimeout(async () => {
-                try {
-                  await audioManager.playTrack(selectedTrack);
-                  console.log('🎵 Auto-play: Successfully started fallback playback');
-                } catch (error) {
-                  console.error('🎵 Auto-play: Failed to start fallback playback:', error);
-                }
-              }, 800);
-            }
-
-            return; // Exit early on successful fallback
-          }
-        }
-      } catch (fallbackError) {
-        console.error('🔍 MusicPlaylists: Even fallback failed:', fallbackError);
-      }
+      // FREESOUND ONLY: No emergency fallback tracks
+      console.log('🎵 FREESOUND ONLY: No fallback tracks - check Freesound API connection');
 
       setTracks([]);
       setCurrentTrack(null);
