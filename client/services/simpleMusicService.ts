@@ -106,11 +106,17 @@ class SimpleMusicService {
 
   // Smart reload - only reload if genres changed or cache is old
   async forceFreshReload(genres: string[]): Promise<void> {
+    console.log('🔍 SimpleMusicService: forceFreshReload called with genres:', genres);
+    console.log('🔍 SimpleMusicService: lastGenres:', this.lastGenres);
+    console.log('🔍 SimpleMusicService: cached tracks count:', this.cachedTracks.length);
+
     const genresChanged = JSON.stringify(genres.sort()) !== JSON.stringify(this.lastGenres.sort());
+    console.log('🔍 SimpleMusicService: genres changed?', genresChanged);
 
     if (genresChanged) {
-      console.log('🔄 Genres changed, loading new tracks');
+      console.log('🔄 Genres changed, clearing cache and loading new tracks');
       this.cachedTracks = [];
+      this.clearCache(); // Ensure complete cache clear
       await this.updateGenres(genres);
     } else if (this.cachedTracks.length > 0) {
       console.log('⚡ Using cached tracks for same genres (faster loading)');
