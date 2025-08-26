@@ -608,28 +608,28 @@ class FreesoundService {
         url: demoAudioUrl
       },
 
-      // New Age Genre - Using new age samples
+      // New Age Genre - Using demo audio
       {
         id: 'new_age_1',
-        title: 'Crystal Meditation',
-        artist: 'Spiritual Sounds',
-        duration: 360,
+        title: 'Demo New Age Track',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'New Age',
         url: demoAudioUrl
       },
       {
         id: 'new_age_2',
-        title: 'Healing Light',
-        artist: 'Inner Peace',
-        duration: 400,
+        title: 'Demo Meditation',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'New Age',
         url: demoAudioUrl
       },
       {
         id: 'new_age_3',
-        title: 'Chakra Balance',
-        artist: 'Wellness Music',
-        duration: 320,
+        title: 'Demo Healing',
+        artist: 'Demo Artist',
+        duration: 30,
         genre: 'New Age',
         url: demoAudioUrl
       }
