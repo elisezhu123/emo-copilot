@@ -83,7 +83,10 @@ const MusicPlaylists = () => {
           setTracks(allTracks);
 
           if (allTracks.length > 0) {
-            setCurrentTrack(allTracks[0]);
+            // Only set new current track if we don't have one, or if this is not an update
+            if (!currentTrack || !isUpdate) {
+              setCurrentTrack(allTracks[0]);
+            }
             audioManager.setPlaylist(allTracks);
           }
 
