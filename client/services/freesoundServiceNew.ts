@@ -120,8 +120,8 @@ class FreesoundService {
         page_size: '50', // Increased for 15+ minutes per genre
         page: randomPage.toString(),
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
-        // Search for music with better filters
-        filter: `type:(wav OR mp3) duration:[20.0 TO 180.0] tag:music -tag:loop -tag:sfx -tag:effect`,
+        // Search for music with better filters - prefer longer tracks
+        filter: `type:(wav OR mp3) duration:[60.0 TO 300.0] tag:music -tag:loop -tag:sfx -tag:effect`,
         sort: randomSort,
         token: this.apiKey
       });
@@ -898,7 +898,7 @@ class FreesoundService {
         page_size: '50', // Increased for 15+ minutes per genre
         page: '1', // Start with page 1 to avoid empty results
         fields: 'id,name,username,duration,tags,previews,type,license',
-        filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
+        filter: `type:(wav OR mp3) duration:[60.0 TO 300.0]`, // Prefer longer tracks for more content
         sort: 'rating_desc' // Use consistent sorting
       });
 
@@ -975,7 +975,7 @@ class FreesoundService {
       query: `${genre.toLowerCase()} music`,
       page_size: '50', // Increased for 15+ minutes per genre
       fields: 'id,name,username,duration,previews', // Minimal fields for speed
-      filter: `type:(wav OR mp3) duration:[30.0 TO 180.0]`, // Simplified filter
+      filter: `type:(wav OR mp3) duration:[60.0 TO 300.0]`, // Prefer longer tracks for more content
       sort: 'downloads_desc' // Consistent, fast sorting
     });
 
