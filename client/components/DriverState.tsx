@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import React, { useState, useEffect, useRef } from 'react';
 import { arduinoService, HRVData, HeartRateData } from '../services/arduinoService';
 import { carStateManager, DriverStateType } from '../services/carStateManager';
 
