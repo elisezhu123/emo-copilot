@@ -3118,6 +3118,12 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       if (wakeWordRecognitionRef.current) {
         wakeWordRecognitionRef.current.stop();
       }
+      // Stop any ongoing speech synthesis when leaving the page
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 Stopped Melo speech synthesis on page cleanup');
+      }
+      setIsSpeaking(false);
     };
   }, []);
 
