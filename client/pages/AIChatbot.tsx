@@ -146,14 +146,19 @@ const AIChatbot = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Initial voice greeting
+  // Initial voice greeting (skip for prolonged stress navigation)
   useEffect(() => {
-    // Speak the initial greeting when component loads
-    const timer = setTimeout(() => {
-      speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
-    }, 1000); // Small delay to ensure everything is loaded
+    const urlParams = new URLSearchParams(window.location.search);
+    const isProlongedStress = urlParams.get('prolonged-stress') === 'true';
 
-    return () => clearTimeout(timer);
+    // Only speak initial greeting if not coming from prolonged stress
+    if (!isProlongedStress) {
+      const timer = setTimeout(() => {
+        speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
+      }, 1000); // Small delay to ensure everything is loaded
+
+      return () => clearTimeout(timer);
+    }
   }, []); // Only run once on mount
 
   // Check if arrived due to stress detection and offer music therapy
