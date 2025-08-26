@@ -30,9 +30,14 @@ const MusicPlaylists = () => {
     const immediateGenreCheck = () => {
       const genres = musicService.loadSelectedGenres();
       console.log('🔍 Immediate genre check on mount:', genres);
+      console.log('🔍 Genres array length:', genres?.length || 0);
+      console.log('🔍 Current loading state:', isLoadingTracks);
       if (genres && genres.length > 0) {
-        console.log('🔍 Genres detected, will start loading');
+        console.log('🔍 Genres detected, setting loading state to true');
         setIsLoadingTracks(true);
+        console.log('🔍 Loading state should now be true');
+      } else {
+        console.log('🔍 No genres detected on mount');
       }
     };
 
