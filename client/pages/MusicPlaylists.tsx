@@ -302,7 +302,7 @@ const MusicPlaylists = () => {
     const handleVisibilityChange = () => {
       try {
         if (!document.hidden) {
-          console.log('���� Auto-update: Page became visible, checking for changes...');
+          console.log('🔄 Auto-update: Page became visible, checking for changes...');
 
           // Multiple checks with different delays to catch any timing issues
           [50, 150, 300].forEach(delay => {
@@ -734,6 +734,34 @@ const MusicPlaylists = () => {
                   <p>Debug: localStorage check</p>
                   <p>Stored: {localStorage.getItem('selectedMusicGenres') || 'null'}</p>
                   <p>Initial ref: {JSON.stringify(initialGenresRef.current)}</p>
+                </div>
+                <div className="mt-3 space-y-2">
+                  <button
+                    onClick={() => {
+                      console.log('🧪 TEST: Manual genre setup for testing...');
+                      musicService.saveSelectedGenres(['Classical']);
+                      console.log('🧪 TEST: Saved Classical genre');
+                      setTimeout(() => {
+                        console.log('🧪 TEST: Triggering auto-update...');
+                        loadTracks(true, false);
+                      }, 100);
+                    }}
+                    className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    🧪 Test: Set Classical Genre
+                  </button>
+                  <button
+                    onClick={() => {
+                      console.log('🧪 TEST: Clearing localStorage...');
+                      localStorage.removeItem('selectedMusicGenres');
+                      initialGenresRef.current = [];
+                      setTracks([]);
+                      setCurrentTrack(null);
+                    }}
+                    className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 ml-2"
+                  >
+                    🧪 Clear Storage
+                  </button>
                 </div>
               </div>
             )}
