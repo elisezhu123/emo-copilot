@@ -114,11 +114,21 @@ const MusicPlaylists = () => {
       }
     };
 
+    // Visibility change listener as backup for focus events
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔍 Page became visible - checking for genre changes');
+        handleFocus(); // Reuse the same logic
+      }
+    };
+
     window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       unsubscribe();
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
