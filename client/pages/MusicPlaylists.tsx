@@ -185,31 +185,27 @@ const MusicPlaylists = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    console.log('🔄 Auto-update: Component mounted, initializing...');
+    console.log('🔄 Auto-update: Component mounted, starting initial load...');
 
-    // Immediately check if we have genres and start loading
-    const immediateGenreCheck = () => {
+    // ALWAYS load tracks on mount - this fixes the "need to clear storage" issue
+    const initialLoad = () => {
       const genres = musicService.loadSelectedGenres();
-      console.log('🔄 Auto-update: Immediate genre check on mount:', genres);
-      console.log('🔄 Auto-update: Genres array length:', genres?.length || 0);
+      console.log('🔄 Auto-update: Initial load - found genres:', genres);
 
+      // Set loading state immediately if we have genres
       if (genres && genres.length > 0) {
-        console.log('🔄 Auto-update: Genres detected, starting automatic loading...');
         setIsLoadingTracks(true);
-        // Call loadTracks immediately with the detected genres
-        setTimeout(() => {
-          loadTracks(false, false); // Initial load, not an update
-        }, 100);
-      } else {
-        console.log('🔄 Auto-update: No genres detected on mount');
-        // Still call loadTracks to handle the "no genres" case properly
-        setTimeout(() => {
-          loadTracks(false, false);
-        }, 100);
+        console.log('🔄 Auto-update: Starting initial loading for existing genres');
       }
+
+      // ALWAYS call loadTracks on mount, regardless of genre comparison
+      // This ensures tracks load even if genres were previously set
+      setTimeout(() => {
+        loadTracks(false, false); // Initial load - not an update
+      }, 50);
     };
 
-    immediateGenreCheck();
+    initialLoad();
 
     // Also check for genre changes immediately when component mounts
     // This helps catch cases where user navigated back with new genres
