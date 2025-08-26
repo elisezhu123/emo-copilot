@@ -64,14 +64,30 @@ const EmoCopilotDashboard = () => {
       setSelectedEmotion(newState.driverState);
       console.log('🚗 Dashboard synced with global car state:', newState);
       
-      // Check if driver state changed to stressed
-      if (previousState.driverState !== 'stressed' && newState.driverState === 'stressed') {
-        console.log('🚨 Stress detected! Navigating to AI chatbot for music therapy...');
-        
-        // Navigate to AI chatbot page with stress indication
-        setTimeout(() => {
-          navigate('/ai-chatbot?stress=true');
-        }, 1000);
+      // Check if driver state changed to stressed or anxious
+      const isStressedOrAnxious = newState.driverState === 'stressed' || newState.driverState === 'anxious';
+      const wasStressedOrAnxious = previousState.driverState === 'stressed' || previousState.driverState === 'anxious';
+
+      if (!wasStressedOrAnxious && isStressedOrAnxious) {
+        // Started being stressed/anxious - start timer
+        console.log(`🚨 ${newState.driverState} state detected! Starting timer...`);
+        setStressStartTime(Date.now());
+
+        // Set timer for 3 minutes (180,000 ms) to trigger navigation
+        const timer = setTimeout(() => {
+          console.log(`⏰ Driver has been ${newState.driverState} for 3 minutes - navigating to AI chatbot`);
+          navigate('/ai-chatbot?prolonged-stress=true');
+        }, 180000); // 3 minutes
+
+        setStressTimer(timer);
+      } else if (wasStressedOrAnxious && !isStressedOrAnxious) {
+        // No longer stressed/anxious - clear timer
+        console.log('✅ Driver state improved - clearing stress timer');
+        if (stressTimer) {
+          clearTimeout(stressTimer);
+          setStressTimer(null);
+        }
+        setStressStartTime(null);
       }
       
       previousState = newState;
