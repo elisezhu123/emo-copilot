@@ -71,6 +71,11 @@ const AIChatbot = () => {
   const [showMusicEmoji, setShowMusicEmoji] = useState(false);
   const [showHotEmoji, setShowHotEmoji] = useState(false);
   const [showBreathingEmoji, setShowBreathingEmoji] = useState(false);
+  const [showLaughEmoji, setShowLaughEmoji] = useState(false);
+
+  // Music listening timer states
+  const [musicStartTime, setMusicStartTime] = useState<number | null>(null);
+  const [musicTimer, setMusicTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Alert system states
   const [activeAlert, setActiveAlert] = useState<string | null>(null);
@@ -462,7 +467,7 @@ const AIChatbot = () => {
         // Add message to chat
         const lightMessage = {
           id: Date.now().toString() + '_lights',
-          text: "�� Lights turned on from dashboard. Better visibility for safe driving!",
+          text: "💡 Lights turned on from dashboard. Better visibility for safe driving!",
           type: 'bot' as const,
           timestamp: new Date()
         };
@@ -905,7 +910,7 @@ const AIChatbot = () => {
 
   const triggerRainAlert = () => {
     triggerAlert('rainAlert',
-      '🌧��� RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
+      '🌧️ RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
       4000
     );
   };
