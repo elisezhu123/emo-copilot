@@ -719,6 +719,68 @@ class FreesoundService {
     return filterMap[genre] || `tag:music tag:${genre.toLowerCase()}`;
   }
 
+  // Dynamic playlist randomization methods
+  private getRandomSearchVariations(baseQuery: string): string[] {
+    const variations: { [key: string]: string[] } = {
+      'Classical': ['classical', 'piano', 'orchestra', 'symphony', 'chamber', 'baroque', 'romantic', 'instrumental'],
+      'Ambient': ['ambient', 'atmospheric', 'soundscape', 'drone', 'minimalist', 'meditative', 'ethereal'],
+      'Jazz': ['jazz', 'smooth jazz', 'blues', 'swing', 'bebop', 'fusion', 'instrumental jazz', 'contemporary jazz'],
+      'Folk': ['folk', 'acoustic', 'traditional', 'bluegrass', 'country folk', 'indie folk', 'singer songwriter'],
+      'Rock': ['rock', 'electric guitar', 'alternative', 'indie rock', 'classic rock', 'soft rock', 'progressive'],
+      'Blues': ['blues', 'delta blues', 'electric blues', 'blues guitar', 'country blues', 'chicago blues'],
+      'Chillout': ['chill', 'chillout', 'downtempo', 'lounge', 'relaxed', 'calm', 'peaceful'],
+      'Country': ['country', 'bluegrass', 'americana', 'western', 'country music', 'nashville'],
+      'Hip-Pop': ['hip hop', 'rap', 'urban', 'beats', 'instrumental hip hop', 'boom bap'],
+      'Electro Pop': ['electronic', 'synth', 'electro', 'synthpop', 'electronica', 'techno', 'house'],
+      'Downbeat': ['downbeat', 'trip hop', 'downtempo', 'chillhop', 'lofi', 'breakbeat'],
+      'New Age': ['new age', 'meditation', 'zen', 'spiritual', 'healing', 'wellness', 'mindfulness']
+    };
+
+    const baseVariations = variations[baseQuery] || [baseQuery.toLowerCase()];
+
+    // Add some common music descriptors for more variety
+    const descriptors = ['instrumental', 'melodic', 'rhythmic', 'harmonic', 'composition'];
+    const expanded = [...baseVariations];
+
+    // Add combinations with descriptors (randomly pick a few)
+    for (let i = 0; i < 3; i++) {
+      const randomBase = baseVariations[Math.floor(Math.random() * baseVariations.length)];
+      const randomDescriptor = descriptors[Math.floor(Math.random() * descriptors.length)];
+      expanded.push(`${randomBase} ${randomDescriptor}`);
+    }
+
+    return expanded;
+  }
+
+  private getRandomSort(): string {
+    const sortOptions = [
+      'rating_desc',      // Highest rated first
+      'downloads_desc',   // Most downloaded first
+      'created_desc',     // Newest first
+      'duration_desc',    // Longest first
+      'duration_asc',     // Shortest first
+      'score',           // Relevance score
+      'created_asc'      // Oldest first (for vintage finds)
+    ];
+
+    return sortOptions[Math.floor(Math.random() * sortOptions.length)];
+  }
+
+  private getRandomPage(): number {
+    // Random page between 1 and 5 to get different result sets
+    // Higher pages might have less relevant results, so we limit the range
+    return Math.floor(Math.random() * 5) + 1;
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
   // Genre-aware search methods that preserve the target genre with dynamic randomization
   private async searchTracksWithGenre(query: string, targetGenre: string, filters: any = {}): Promise<Track[]> {
     if (!this.isConfigured()) {
