@@ -59,7 +59,16 @@ const StatusBar: React.FC<StatusBarProps> = ({
         console.log('🧠 StatusBar driver state updated:', newState.driverState);
       });
 
-      return unsubscribe;
+      // Periodic sync to ensure state stays consistent
+      const syncInterval = setInterval(() => {
+        const latestState = carStateManager.getState();
+        setDriverState(latestState.driverState);
+      }, 1000); // Check every second
+
+      return () => {
+        unsubscribe();
+        clearInterval(syncInterval);
+      };
     }
   }, [showDriverState]);
 
