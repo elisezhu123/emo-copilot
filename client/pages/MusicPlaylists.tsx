@@ -474,7 +474,17 @@ const MusicPlaylists = () => {
           </div>
           <div className="flex-1">
             <h4 className="text-base font-medium text-black lg:text-xl">
-              {currentTrack ? currentTrack.title :
+              {currentTrack ?
+                <span className="flex items-center gap-2">
+                  {currentTrack.title}
+                  {audioState.isPlaying && (
+                    <span className="flex items-center gap-1 text-green-600">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs">Auto-playing</span>
+                    </span>
+                  )}
+                </span>
+                :
                 (isLoadingTracks || isUpdating) ? 'Loading your music...' :
                 'Select music genres first, then click play'}
             </h4>
