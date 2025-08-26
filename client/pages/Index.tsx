@@ -113,10 +113,12 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (savedGenres && savedGenres.length > 0) {
-        console.log('🎵 Loading music for selected genres:', savedGenres);
-        await simpleMusicService.updateGenres(savedGenres);
-        
-        // Get tracks from service
+        console.log('🎲 Loading DYNAMIC music for selected genres:', savedGenres);
+
+        // Use dynamic loading for fresh playlists every time
+        await simpleMusicService.forceFreshReload(savedGenres);
+
+        // Get fresh dynamic tracks from service
         const allTracks = await simpleMusicService.getAllTracks();
         setPlaylist(allTracks);
 
@@ -124,13 +126,13 @@ const EmoCopilotDashboard = () => {
           setCurrentTrack(allTracks[0]);
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
-          console.log('🎵 Music loaded but not auto-playing. User must click play.');
+          console.log('🎲 Dynamic music loaded but not auto-playing. User must click play.');
         } else {
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
         }
 
-        console.log('🎵 Loaded playlist with', allTracks.length, 'tracks from Freesound');
+        console.log('🎲 Loaded dynamic playlist with', allTracks.length, 'tracks from Freesound');
       } else {
         console.log('🎵 No genres selected, no music will be loaded');
         setPlaylist([]);
