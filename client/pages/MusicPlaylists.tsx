@@ -674,9 +674,7 @@ const MusicPlaylists = () => {
         <div className="flex items-center justify-between py-2 px-3">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-black">
-                {initialGenresRef.current && initialGenresRef.current.length > 1 ? 'Mixed Playlist' : 'Playlists'}
-              </span>
+              <span className="text-xs font-medium text-black">Playlists</span>
               {initialGenresRef.current && initialGenresRef.current.length > 1 && (
                 <span className="text-xs bg-emotion-orange text-white px-2 py-0.5 rounded-full">
                   {initialGenresRef.current.length} genres
