@@ -117,7 +117,7 @@ class FreesoundService {
 
       const params = new URLSearchParams({
         query: `${musicQuery} music`,
-        page_size: '20', // Increased for more variety
+        page_size: '50', // Increased for 15+ minutes per genre
         page: randomPage.toString(),
         fields: 'id,name,username,duration,tags,previews,type,channels,license',
         // Search for music with better filters
