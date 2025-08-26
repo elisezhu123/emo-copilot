@@ -49,13 +49,15 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Driver state subscription
   useEffect(() => {
     if (showDriverState) {
-      const unsubscribe = carStateManager.subscribe((newState) => {
-        setDriverState(newState.driverState);
-      });
-
-      // Initialize with current state
+      // Initialize with current state immediately
       const currentState = carStateManager.getState();
       setDriverState(currentState.driverState);
+      console.log('🧠 StatusBar initial driver state:', currentState.driverState);
+
+      const unsubscribe = carStateManager.subscribe((newState) => {
+        setDriverState(newState.driverState);
+        console.log('🧠 StatusBar driver state updated:', newState.driverState);
+      });
 
       return unsubscribe;
     }
