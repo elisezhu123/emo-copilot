@@ -247,7 +247,7 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (!savedGenres || savedGenres.length === 0) {
-        alert('请先在音乐选择页面选择您喜欢的音乐类型��\nPlease select your preferred music genres in the Music Selection page first!');
+        alert('请先在音乐选择页面选择您喜欢的音乐类型！\nPlease select your preferred music genres in the Music Selection page first!');
         return;
       }
       
@@ -471,12 +471,42 @@ const EmoCopilotDashboard = () => {
                 <p className="text-xs text-black lg:text-sm">Real-time Detection</p>
               </div>
               <div className="grid grid-cols-3 gap-1 lg:gap-2">
-                <span className="px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Anxious</span>
-                <span className="px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Stressed</span>
-                <span className="px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Neutral</span>
-                <span className="px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Focused</span>
-                <span className="px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Calm</span>
-                <span className="px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Relaxed</span>
+                <button
+                  onClick={() => handleEmotionSelect('anxious')}
+                  className="px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Anxious
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('stressed')}
+                  className="px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Stressed
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('neutral')}
+                  className="px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Neutral
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('focused')}
+                  className="px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Focused
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('calm')}
+                  className="px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Calm
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('relaxed')}
+                  className="px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                  Relaxed
+                </button>
               </div>
             </div>
 
