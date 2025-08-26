@@ -176,12 +176,11 @@ const MusicPlaylists = () => {
     const initialLoad = () => {
       const genres = musicService.loadSelectedGenres();
       console.log('🔄 Auto-update: Initial load - found genres:', genres);
+      console.log('🔄 Auto-update: Raw localStorage:', localStorage.getItem('selectedMusicGenres'));
 
-      // Set loading state immediately if we have genres
-      if (genres && genres.length > 0) {
-        setIsLoadingTracks(true);
-        console.log('🔄 Auto-update: Starting initial loading for existing genres');
-      }
+      // Always show loading state initially - this helps user see something is happening
+      setIsLoadingTracks(true);
+      console.log('🔄 Auto-update: Setting loading state for initial load');
 
       // ALWAYS call loadTracks on mount, regardless of genre comparison
       // This ensures tracks load even if genres were previously set
