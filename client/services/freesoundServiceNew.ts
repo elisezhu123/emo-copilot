@@ -114,7 +114,7 @@ class FreesoundService {
   }
 
   // Convert Freesound data to our Track format with direct URLs
-  private async convertToTracks(freesoundTracks: any[]): Promise<Track[]> {
+  private async convertToTracks(freesoundTracks: any[], targetGenre?: string): Promise<Track[]> {
     const tracks: Track[] = [];
 
     for (const track of freesoundTracks) {
@@ -141,7 +141,7 @@ class FreesoundService {
           title: this.cleanTitle(track.name),
           artist: track.username || 'Freesound User',
           duration: Math.round(track.duration) || 60,
-          genre: this.extractGenre(track.tags || []),
+          genre: targetGenre || this.extractGenre(track.tags || []),
           url: directUrl
         });
       } catch (error) {
