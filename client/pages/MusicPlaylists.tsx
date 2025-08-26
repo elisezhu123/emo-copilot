@@ -129,7 +129,8 @@ const MusicPlaylists = () => {
       {/* Status Bar */}
       <StatusBar
         title="Music Playlists"
-        showHomeButton={true}
+        showBackButton={true}
+        showDriverState={true}
         showTemperature={true}
       />
 
