@@ -2964,6 +2964,13 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         recognitionRef.current.onspeechstart = () => {
           console.log('🗣️ Speech detected - processing...');
           console.log('✅ Your microphone is working! Continue speaking...');
+
+          // Interrupt Melo's speech immediately when driver starts speaking
+          if (isSpeaking && 'speechSynthesis' in window) {
+            console.log('🔇 Interrupting Melo speech - driver is speaking');
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+          }
         };
 
         recognitionRef.current.onspeechend = () => {
