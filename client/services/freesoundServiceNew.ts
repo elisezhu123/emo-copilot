@@ -898,7 +898,7 @@ class FreesoundService {
         page_size: '25', // Balanced for reliability and content
         page: '1', // Start with page 1 to avoid empty results
         fields: 'id,name,username,duration,tags,previews,type,license',
-        filter: `type:(wav OR mp3) duration:[60.0 TO 300.0]`, // Prefer longer tracks for more content
+        filter: `type:(wav OR mp3) duration:[30.0 TO 300.0]`, // Balanced duration for more results
         sort: 'rating_desc' // Use consistent sorting
       });
 
