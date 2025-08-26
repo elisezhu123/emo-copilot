@@ -475,37 +475,61 @@ const EmoCopilotDashboard = () => {
               <div className="grid grid-cols-3 gap-1 lg:gap-2">
                 <button
                   onClick={() => handleEmotionSelect('anxious')}
-                  className="px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'anxious'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Anxious
                 </button>
                 <button
                   onClick={() => handleEmotionSelect('stressed')}
-                  className="px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'stressed'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Stressed
                 </button>
                 <button
                   onClick={() => handleEmotionSelect('neutral')}
-                  className="px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'neutral'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Neutral
                 </button>
                 <button
                   onClick={() => handleEmotionSelect('focused')}
-                  className="px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'focused'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Focused
                 </button>
                 <button
                   onClick={() => handleEmotionSelect('calm')}
-                  className="px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'calm'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Calm
                 </button>
                 <button
                   onClick={() => handleEmotionSelect('relaxed')}
-                  className="px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer"
+                  className={`px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'relaxed'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
                 >
                   Relaxed
                 </button>
