@@ -546,7 +546,7 @@ const AIChatbot = () => {
 
     // Navigate to AI chatbot if not already there
     if (window.location.pathname !== '/ai-chatbot') {
-      console.log('⚠�� Navigating to AI chatbot due to extreme weather');
+      console.log('⚠️ Navigating to AI chatbot due to extreme weather');
       window.location.href = '/ai-chatbot?weather=extreme';
       return;
     }
@@ -1182,7 +1182,7 @@ const AIChatbot = () => {
       fullResponse += `\n\n🛡️ SAFETY CHECKLIST:\n`;
       fullResponse += "• Vehicle: Check fuel, tires, lights, wipers\n";
       fullResponse += "• Emergency kit: Water, snacks, first aid, blanket\n";
-      fullResponse += "• Communication: Charged phone, share route with family\n";
+      fullResponse += "��� Communication: Charged phone, share route with family\n";
       fullResponse += "�� Weather: Check forecast and road conditions\n";
       fullResponse += "• Rest: Take breaks every 2 hours if long trip";
       
@@ -1952,7 +1952,7 @@ Are you hurt? Do you need medical attention?`;
         weatherAdvice += `\n\n🌦��� WEATHER DRIVING TIPS:
 • Rain: Reduce speed 10-15 mph, increase following distance
 • Snow/Ice: Drive slowly, avoid sudden movements, keep winter kit
-�� Fog: Use fog lights, reduce speed significantly, avoid lane changes
+• Fog: Use fog lights, reduce speed significantly, avoid lane changes
 • Wind: Grip wheel firmly, be careful around trucks and bridges
 • Severe weather: Consider pulling over safely and waiting it out`;
         
@@ -2573,7 +2573,7 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
 
       if ((userLower.includes('animal') || userLower.includes('funny')) &&
           messages.some(msg => msg.text.includes('funny animal adventure'))) {
-        const animalStory = "There once was a little penguin named Pip who wanted to learn how to fly. Pip watched the birds and flapped their wings, but just slid on their belly instead! Then Pip met a wise old turtle who said, 'Everyone has their own special talent.' So Pip tried swimming and - whoosh! - became the fastest swimmer in the whole arctic! All the other animals cheered as Pip zoomed through the water like a feathered rocket. Pip learned that being different made them extra special! The End. What a fantastic discovery!";
+        const animalStory = "Pip the penguin wanted to fly but discovered swimming was their special talent. They became the fastest arctic swimmer ever! The end!";
         speakText(animalStory);
         return animalStory;
       }
