@@ -701,7 +701,10 @@ const MusicPlaylists = () => {
               <div className="flex flex-col items-center gap-2">
                 <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
                 <p className="text-xs text-gray-500">
-                  {isUpdating ? 'Auto-updating playlists...' : 'Auto-loading your music...'}
+                  {isUpdating ? 'Auto-updating playlists...' : 'Loading your music...'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  System is checking for selected genres
                 </p>
               </div>
             ) : (
@@ -709,7 +712,10 @@ const MusicPlaylists = () => {
                 <svg className="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
-                <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+                <p className="text-xs text-gray-500">No genres selected</p>
+                <p className="text-xs text-gray-400">
+                  Go to Music Selection to choose genres, then return here for automatic loading
+                </p>
               </div>
             )}
           </div>
