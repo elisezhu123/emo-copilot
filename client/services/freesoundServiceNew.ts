@@ -140,8 +140,8 @@ class FreesoundService {
       } else {
         console.error('❌ Error fetching from Freesound:', error);
       }
-      console.log('🔄 Falling back to local tracks due to API error');
-      return this.shuffleArray(this.getFallbackTracks());
+      console.log('🔄 FREESOUND ONLY: No fallback tracks available');
+      return [];
     }
   }
 
