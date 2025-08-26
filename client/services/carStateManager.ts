@@ -87,8 +87,46 @@ class CarStateManager {
     this.updateState({ musicVolume: Math.max(0, Math.min(100, volume)) });
   }
 
-  setDriverState(driverState: DriverStateType): void {
-    this.updateState({ driverState });
+  setDriverState(driverState: DriverStateType, isManual: boolean = false): void {
+    const updates: Partial<CarState> = { driverState };
+
+    if (isManual) {
+      updates.manualOverride = true;
+      updates.manualOverrideStartTime = Date.now();
+      console.log('🧠 Manual driver state set:', driverState, 'with 5-minute override');
+    }
+
+    this.updateState(updates);
+  }
+
+  checkManualOverrideExpiry(): boolean {
+    if (!this.state.manualOverride || !this.state.manualOverrideStartTime) {
+      return false;
+    }
+
+    const elapsed = Date.now() - this.state.manualOverrideStartTime;
+    const fiveMinutes = 5 * 60 * 1000;
+
+    if (elapsed >= fiveMinutes) {
+      console.log('🧠 Manual override expired after 5 minutes, resuming automatic detection');
+      this.updateState({
+        manualOverride: false,
+        manualOverrideStartTime: null
+      });
+      return true; // Override expired
+    }
+
+    return false; // Override still active
+  }
+
+  isManualOverrideActive(): boolean {
+    if (!this.state.manualOverride) {
+      return false;
+    }
+
+    // Check if override has expired
+    this.checkManualOverrideExpiry();
+    return this.state.manualOverride;
   }
 }
 
