@@ -32,6 +32,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   onExtremeWeather
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
