@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { carStateManager, type DriverStateType } from '../services/carStateManager';
+import { arduinoService } from '../services/arduinoService';
 
 interface WeatherCondition {
   condition: string;
