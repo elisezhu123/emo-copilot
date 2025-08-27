@@ -139,6 +139,8 @@ void loop() {
   }
 }
 
-// Global function for easy console testing
+// Global functions for easy console testing
 (window as any).testArduino = ArduinoConnectionTest.attemptConnection;
 (window as any).checkArduino = ArduinoConnectionTest.logCurrentStatus;
+(window as any).arduinoTest = ArduinoConnectionTest.testConnection;
+(window as any).getArduinoCode = ArduinoConnectionTest.getExampleArduinoCode;
