@@ -13,6 +13,7 @@ import MusicPlaylists from "./pages/MusicPlaylists";
 import AIChatbot from "./pages/AIChatbot";
 import NotFound from "./pages/NotFound";
 import { audioManager } from "./services/audioManager";
+import "./utils/arduinoConnectionTest";
 
 // Expose audioManager to window for debugging
 declare global {
