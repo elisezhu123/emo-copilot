@@ -478,8 +478,24 @@ const StatusBar: React.FC<StatusBarProps> = ({
           )}
         </div>
 
-        {/* Right Side - Time + Battery + Home */}
+        {/* Right Side - Arduino + Time + Battery + Home */}
         <div className="flex justify-end items-center gap-2">
+          {/* Arduino Connection Status */}
+          <button
+            onClick={connectArduino}
+            className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+            title={isArduinoConnected ? 'Arduino connected (real sensor data)' : 'Click to connect Arduino'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill={isArduinoConnected ? '#22C55E' : '#6B7280'} fillOpacity="0.2"/>
+              <circle cx="12" cy="12" r="6" fill={isArduinoConnected ? '#22C55E' : '#6B7280'}/>
+              <circle cx="12" cy="12" r="2" fill="white"/>
+            </svg>
+            <span className="text-xs text-gray-600 hidden lg:inline">
+              {isArduinoConnected ? 'Arduino' : 'Mock'}
+            </span>
+          </button>
+
           <span className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal">
             {formatTime(currentTime)}
           </span>
