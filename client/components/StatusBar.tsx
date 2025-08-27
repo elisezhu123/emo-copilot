@@ -68,6 +68,35 @@ const StatusBar: React.FC<StatusBarProps> = ({
     }
   }, [showDriverState]);
 
+  // Arduino connection monitoring
+  useEffect(() => {
+    // Check initial connection status
+    setIsArduinoConnected(arduinoService.isConnectedToArduino());
+
+    // Monitor connection status every few seconds
+    const connectionCheck = setInterval(() => {
+      setIsArduinoConnected(arduinoService.isConnectedToArduino());
+    }, 3000);
+
+    return () => clearInterval(connectionCheck);
+  }, []);
+
+  // Function to connect to Arduino
+  const connectArduino = async () => {
+    try {
+      const success = await arduinoService.connect();
+      setIsArduinoConnected(success);
+      if (success) {
+        console.log('✅ Arduino connected successfully from StatusBar');
+      } else {
+        console.log('ℹ️ Arduino connection failed - using mock data');
+      }
+    } catch (error) {
+      console.error('❌ Arduino connection error:', error);
+      setIsArduinoConnected(false);
+    }
+  };
+
   // Helper function to get driver state display info with emotion colors matching dashboard
   const getDriverStateInfo = (state: DriverStateType) => {
     switch (state) {
