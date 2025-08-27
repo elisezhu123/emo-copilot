@@ -38,6 +38,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [driverState, setDriverState] = useState<DriverStateType>('neutral');
+  const [isArduinoConnected, setIsArduinoConnected] = useState(false);
 
   // Real-time clock update
   useEffect(() => {
