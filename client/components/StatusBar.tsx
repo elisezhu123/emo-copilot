@@ -120,7 +120,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Manual sync function to force refresh
   const forceDriverStateSync = () => {
     // Clear localStorage cache
-    console.log('🧹 Clearing localStorage cache');
+    console.log('�� Clearing localStorage cache');
     localStorage.removeItem('carState');
 
     // Force reset to neutral and then let dashboard component set the correct state
@@ -319,7 +319,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               console.log('🌡️ StatusBar: Location unavailable, using Limerick weather');
               break;
             case error.TIMEOUT:
-              console.log('🌡️ StatusBar: Location request timed out, using Limerick weather');
+              console.log('🌡��� StatusBar: Location request timed out, using Limerick weather');
               break;
             default:
               console.log('🌡️ StatusBar: Location service unavailable, using Limerick weather');
@@ -329,7 +329,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
           // Fallback to Limerick weather when location is not available
           // For testing: occasionally simulate weather conditions
           const randomValue = Math.random();
-          if (randomValue < 0.2) { // 20% chance of simulation
+          if (randomValue < 0) { // DISABLED: was 20% chance of simulation - preventing unwanted alerts
             if (randomValue < 0.1) {
               // Simulate extreme weather
               const extremeWeatherTypes = [
