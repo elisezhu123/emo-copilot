@@ -30,9 +30,11 @@ class ArduinoService {
   private maxValues = 8;
   private subscribers: ((data: HeartRateData) => void)[] = [];
   private hrvSubscribers: ((data: HRVData) => void)[] = [];
+  private highHeartRateSubscribers: ((heartRate: number) => void)[] = [];
   private isConnected = false;
   private connectionAttempts = 0;
   private maxConnectionAttempts = 3;
+  private lastHighHeartRateAlert = 0; // Timestamp of last alert to prevent spam
 
   constructor() {
     // Check if Web Serial API is supported
@@ -44,7 +46,7 @@ class ArduinoService {
   async connect(): Promise<boolean> {
     try {
       if (!('serial' in navigator)) {
-        console.log('💡 Web Serial API not supported - using mock data for heart rate monitoring');
+        console.log('�� Web Serial API not supported - using mock data for heart rate monitoring');
         this.startMockData();
         return false;
       }
