@@ -202,7 +202,7 @@ class ArduinoService {
         try {
           callback(value);
         } catch (error) {
-          console.error('❌ Error in high heart rate subscriber callback:', error);
+          console.error('��� Error in high heart rate subscriber callback:', error);
         }
       });
     }
@@ -393,11 +393,8 @@ class ArduinoService {
         // Add some driving-realistic randomness
         let randomValue = baseValue + Math.floor(Math.random() * 8 - 4);
 
-        // Occasionally simulate dangerous high heart rate for testing (1% chance)
-        if (Math.random() < 0.01) {
-          randomValue = 125 + Math.floor(Math.random() * 15); // 125-140 BPM (dangerous level)
-          console.log('🧪 TESTING: Simulating dangerous high heart rate for emergency alert testing');
-        }
+        // Note: Automatic high heart rate simulation removed - alerts now only trigger with real heart rate > 120 BPM
+        // Manual testing can still be done via voice command "test high heart rate"
 
         this.addHeartRateValue(Math.max(65, Math.min(160, randomValue)));
         index++;
