@@ -3428,7 +3428,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
 
         recognitionRef.current.onspeechstart = () => {
           console.log('🗣️ Speech detected - processing...');
-          console.log('��� Your microphone is working! Continue speaking...');
+          console.log('✅ Your microphone is working! Continue speaking...');
 
           // Interrupt Melo's speech immediately when driver starts speaking
           if (isSpeaking && 'speechSynthesis' in window) {
@@ -3469,18 +3469,50 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
           console.log('🎤 Speech recognition result event triggered');
           console.log('🎤 Results count:', event.results.length);
 
-          // Process all results, including interim ones
+          // Enhanced voice isolation and noise filtering
           let finalTranscript = '';
           let interimTranscript = '';
+          let highestConfidence = 0;
 
           for (let i = 0; i < event.results.length; i++) {
             const result = event.results[i];
-            const transcript = result[0].transcript;
 
-            if (result.isFinal) {
-              finalTranscript += transcript;
-            } else {
-              interimTranscript += transcript;
+            // Analyze all alternatives for best quality
+            let bestResult = null;
+            let bestConfidence = 0;
+
+            for (let j = 0; j < result.length; j++) {
+              const alternative = result[j];
+              const confidence = alternative.confidence || 0;
+              const transcript = alternative.transcript;
+
+              // Check if this sounds like intentional speech vs background noise
+              if (isIntentionalSpeech(transcript, confidence)) {
+                if (confidence > bestConfidence) {
+                  bestResult = alternative;
+                  bestConfidence = confidence;
+                }
+              }
+            }
+
+            if (bestResult) {
+              const transcript = bestResult.transcript;
+              const cleanTranscript = filterNoiseWords(transcript);
+
+              if (result.isFinal) {
+                if (cleanTranscript.length > 1) {
+                  finalTranscript += cleanTranscript;
+                  if (bestConfidence > highestConfidence) {
+                    highestConfidence = bestConfidence;
+                  }
+                }
+              } else {
+                if (cleanTranscript.length > 0) {
+                  interimTranscript += cleanTranscript;
+                }
+              }
+
+              console.log(`🎤 Result ${i}: "${transcript}" → "${cleanTranscript}" (confidence: ${bestConfidence.toFixed(2)})`);
             }
           }
 
