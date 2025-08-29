@@ -491,9 +491,6 @@ const StatusBar: React.FC<StatusBarProps> = ({
               <circle cx="12" cy="12" r="6" fill={isArduinoConnected ? '#22C55E' : '#6B7280'}/>
               <circle cx="12" cy="12" r="2" fill="white"/>
             </svg>
-            <span className="text-xs text-gray-600 hidden lg:inline">
-              {isArduinoConnected ? 'Arduino' : 'Mock'}
-            </span>
           </button>
 
           <span className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal">
