@@ -144,7 +144,7 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
-                focus:outline-none active:outline-none
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >
@@ -180,7 +180,7 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
-                focus:outline-none active:outline-none
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >
@@ -216,7 +216,7 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
-                focus:outline-none active:outline-none
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >
