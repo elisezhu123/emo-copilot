@@ -3539,13 +3539,16 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
 
     if (userWantsListening) {
       console.log('��� User stopping speech recognition...');
-      setUserWantsListening(false); // User no longer wants listening
+      // Immediately update UI state for responsive feedback
+      setUserWantsListening(false);
+      setIsListening(false);
+
+      // Stop recognition
       try {
         recognitionRef.current.stop();
       } catch (error) {
         console.log('Error stopping recognition:', error);
       }
-      setIsListening(false);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
