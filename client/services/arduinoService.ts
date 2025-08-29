@@ -272,6 +272,15 @@ class ArduinoService {
     };
   }
 
+  subscribeHighHeartRate(callback: (heartRate: number) => void): () => void {
+    this.highHeartRateSubscribers.push(callback);
+
+    // Return unsubscribe function
+    return () => {
+      this.highHeartRateSubscribers = this.highHeartRateSubscribers.filter(cb => cb !== callback);
+    };
+  }
+
   getHeartRateValues(): number[] {
     return [...this.heartRateValues];
   }
