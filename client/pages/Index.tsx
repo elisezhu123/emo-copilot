@@ -746,23 +746,6 @@ const EmoCopilotDashboard = () => {
 
         {/* Control Buttons */}
         <div className="grid grid-cols-2 gap-2 p-2 border border-emotion-face rounded-xl lg:grid-cols-4 lg:gap-4 lg:p-4">
-          {/* Arduino Connection Status - Small indicator in top corner */}
-          <div className="col-span-2 lg:col-span-4 flex justify-end mb-2">
-            <button
-              onClick={connectArduino}
-              className="flex items-center gap-1 text-xs hover:opacity-70 transition-opacity"
-              title={isArduinoConnected ? 'Arduino connected (real sensor data)' : 'Click to connect Arduino sensor'}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="8" fill={isArduinoConnected ? '#22C55E' : '#6B7280'} fillOpacity="0.3"/>
-                <circle cx="12" cy="12" r="4" fill={isArduinoConnected ? '#22C55E' : '#6B7280'}/>
-                <circle cx="12" cy="12" r="1.5" fill="white"/>
-              </svg>
-              <span className="text-gray-600">
-                {isArduinoConnected ? 'Sensor Connected' : 'Connect Sensor'}
-              </span>
-            </button>
-          </div>
           <button
             onClick={() => {
               console.log('AI Chatbot button clicked');
