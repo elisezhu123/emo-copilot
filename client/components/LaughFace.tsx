@@ -7,7 +7,7 @@ const LaughFace = () => {
         viewBox="0 0 400 208"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full object-contain"
+        className="w-full h-full max-w-[400px] max-h-[208px]"
         preserveAspectRatio="xMidYMid meet"
       >
         <g clipPath="url(#clip0_17_451)">
