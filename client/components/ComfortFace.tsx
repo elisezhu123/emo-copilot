@@ -7,7 +7,7 @@ const ComfortFace = () => {
         viewBox="0 0 380 211"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full object-contain"
+        className="w-full h-full max-w-[380px] max-h-[211px]"
         preserveAspectRatio="xMidYMid meet"
       >
         <path
