@@ -1826,6 +1826,7 @@ const AIChatbot = () => {
 🎤 Voice: "start listening", "stop listening", "open microphone"
 ⚠�� Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
 🔧 Alert Control: "reset alerts", "clear alerts"
+🚨 Emergency Test: "test high heart rate" - simulates dangerous >120 BPM emergency alert
 
 Just speak naturally - I understand many variations of these commands!`;
     }
@@ -2389,7 +2390,7 @@ ${response}
         genreResponse = "🎷 Jazz music starting! Smooth, sophisticated sounds for your journey.";
       } else if (userLower.includes('ambient') || userLower.includes('chill')) {
         genreToPlay = 'Ambient';
-        genreResponse = "🌊 Ambient music playing! Relaxing soundscapes to keep you calm and centered.";
+        genreResponse = "���� Ambient music playing! Relaxing soundscapes to keep you calm and centered.";
       } else if (userLower.includes('pop')) {
         genreToPlay = 'Pop';
         genreResponse = "🎤 Pop music starting! Catchy tunes to make your drive more fun!";
@@ -3316,7 +3317,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
         recognitionRef.current.maxAlternatives = 1; // Only need one result
 
         recognitionRef.current.onstart = () => {
-          console.log('🎤 Speech recognition has started - listening for speech...');
+          console.log('�� Speech recognition has started - listening for speech...');
           console.log('✅ You can now speak and your words should appear');
           setIsListening(true);
 
