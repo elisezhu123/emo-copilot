@@ -391,8 +391,15 @@ class ArduinoService {
         baseValue += fatigueLevel * 3;
 
         // Add some driving-realistic randomness
-        const randomValue = baseValue + Math.floor(Math.random() * 8 - 4);
-        this.addHeartRateValue(Math.max(65, Math.min(120, randomValue)));
+        let randomValue = baseValue + Math.floor(Math.random() * 8 - 4);
+
+        // Occasionally simulate dangerous high heart rate for testing (1% chance)
+        if (Math.random() < 0.01) {
+          randomValue = 125 + Math.floor(Math.random() * 15); // 125-140 BPM (dangerous level)
+          console.log('🧪 TESTING: Simulating dangerous high heart rate for emergency alert testing');
+        }
+
+        this.addHeartRateValue(Math.max(65, Math.min(160, randomValue)));
         index++;
       }
     }, 1800); // New value every 1.8 seconds (more frequent for driving)
