@@ -187,6 +187,63 @@ const StatusBar: React.FC<StatusBarProps> = ({
     });
   };
 
+  // Request location permission and get coordinates
+  const requestLocationAccess = async (): Promise<{lat: number, lng: number} | null> => {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        console.log('🌍 Geolocation not supported by this browser');
+        setLocationStatus('unavailable');
+        resolve(null);
+        return;
+      }
+
+      setLocationStatus('requesting');
+      console.log('🌍 Requesting location access...');
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          console.log('📍 Location access granted:', location.lat, location.lng);
+          setLocationStatus('granted');
+          setCurrentLocation(location);
+          setIsUsingUserLocation(true);
+          resolve(location);
+        },
+        (error) => {
+          console.log('❌ Location access error:', error.message);
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              setLocationStatus('denied');
+              console.log('🌍 User denied location access');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              setLocationStatus('unavailable');
+              console.log('🌍 Location information unavailable');
+              break;
+            case error.TIMEOUT:
+              setLocationStatus('unavailable');
+              console.log('🌍 Location request timed out');
+              break;
+            default:
+              setLocationStatus('unavailable');
+              console.log('🌍 Unknown location error');
+              break;
+          }
+          setIsUsingUserLocation(false);
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 300000
+        }
+      );
+    });
+  };
+
   // Fetch weather data for Limerick, Ireland
   const fetchWeather = async (lat: number, lng: number) => {
     try {
