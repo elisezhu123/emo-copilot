@@ -146,4 +146,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Remove all button focus outlines and borders globally */
+  button:focus,
+  button:active,
+  button:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
