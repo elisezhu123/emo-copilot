@@ -6,10 +6,22 @@ const Starter: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Helper function to remove emojis from text
+    const removeEmojis = (text: string): string => {
+      // Remove emojis using Unicode ranges
+      return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+                 .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{238C}-\u{2454}]|[\u{20D0}-\u{20FF}]/gu, '')
+                 .replace(/[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '') // Remove variation selectors and zero-width joiners
+                 .trim();
+    };
+
     // Text-to-speech function
     const speakIntro = () => {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance("Hi, I am Melo, your emo-copilot assistant today.");
+        const introText = "Hi, I am Melo, your emo-copilot assistant today.";
+        // Clean the text by removing emojis before speaking
+        const cleanedText = removeEmojis(introText);
+        const utterance = new SpeechSynthesisUtterance(cleanedText);
         utterance.rate = 0.9;
         utterance.pitch = 1;
         utterance.volume = 0.8;

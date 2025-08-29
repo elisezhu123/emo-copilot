@@ -38,28 +38,28 @@ const MinimalDashboard = () => {
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={handleAIChatbot}
-            className="bg-emotion-mouth text-white py-4 px-6 rounded-lg text-center font-medium hover:scale-105 transition-transform"
+            className="bg-emotion-mouth text-white py-4 px-6 rounded-lg text-center font-medium hover:bg-emotion-mouth-dark hover:scale-105 transition-all"
           >
             AI Chatbot
           </button>
-          
+
           <button
             onClick={handleMusicSelection}
-            className="bg-emotion-orange text-white py-4 px-6 rounded-lg text-center font-medium hover:scale-105 transition-transform"
+            className="bg-emotion-orange text-white py-4 px-6 rounded-lg text-center font-medium hover:bg-emotion-orange-dark hover:scale-105 transition-all"
           >
             Select Music
           </button>
-          
+
           <button
             onClick={handleCooling}
-            className="bg-emotion-blue text-white py-4 px-6 rounded-lg text-center font-medium hover:scale-105 transition-transform"
+            className="bg-emotion-blue text-white py-4 px-6 rounded-lg text-center font-medium hover:bg-emotion-blue-dark hover:scale-105 transition-all"
           >
             Cooling AC
           </button>
-          
+
           <button
             onClick={handleLighting}
-            className="bg-flowkit-green text-white py-4 px-6 rounded-lg text-center font-medium hover:scale-105 transition-transform"
+            className="bg-flowkit-green text-white py-4 px-6 rounded-lg text-center font-medium hover:bg-flowkit-green-dark hover:scale-105 transition-all"
           >
             Lighting
           </button>

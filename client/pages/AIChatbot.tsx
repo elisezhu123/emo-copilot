@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import StatusBar from '../components/StatusBar';
+import StatusBar, { WeatherCondition } from '../components/StatusBar';
 import ComfortFace from '../components/ComfortFace';
 import ShockFace from '../components/ShockFace';
 import CuteFace from '../components/CuteFace';
@@ -8,7 +8,19 @@ import CryFace from '../components/CryFace';
 import EnjoyFace from '../components/EnjoyFace';
 import ACFace from '../components/ACFace';
 import LightingFace from '../components/LightingFace';
+import HappyFace from '../components/HappyFace';
+import SadFace from '../components/SadFace';
+import AlertFace from '../components/AlertFace';
+import YesPermissionFace from '../components/YesPermissionFace';
+import NoPermissionFace from '../components/NoPermissionFace';
+import MusicFace from '../components/MusicFace';
+import HotFace from '../components/HotFace';
+import BreathingFace from '../components/BreathingFace';
+import LaughFace from '../components/LaughFace';
 import { carStateManager } from '../services/carStateManager';
+import { simpleMusicService } from '../services/simpleMusicService';
+import { audioManager } from '../services/audioManager';
+import { musicService } from '../services/musicService';
 
 interface Message {
   id: string;
@@ -28,7 +40,18 @@ const AIChatbot = () => {
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [temperature, setTemperature] = useState<string | null>('15°C'); // Initialize with current Limerick temperature
+  const [temperature, setTemperature] = useState<string | null>('20°C'); // Initialize with current Limerick temperature
+  const [temperatureTriggered, setTemperatureTriggered] = useState<boolean>(false);
+  const [awaitingACPermission, setAwaitingACPermission] = useState<boolean>(false);
+  const [currentWeatherCondition, setCurrentWeatherCondition] = useState<WeatherCondition | null>(null);
+  const [awaitingWeatherPermission, setAwaitingWeatherPermission] = useState<boolean>(false);
+  const [weatherTriggered, setWeatherTriggered] = useState<boolean>(false);
+  const [focusModeStartTime, setFocusModeStartTime] = useState<number | null>(null);
+  const [awaitingBreathingPermission, setAwaitingBreathingPermission] = useState<boolean>(false);
+  const [isBreathingExercise, setIsBreathingExercise] = useState<boolean>(false);
+  const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [breathingCount, setBreathingCount] = useState<number>(0);
+  const [focusTriggered, setFocusTriggered] = useState<boolean>(false);
 
   // Emotional emoji states
   const [showComfortEmoji, setShowComfortEmoji] = useState(false);
@@ -38,6 +61,28 @@ const AIChatbot = () => {
   const [showEnjoyEmoji, setShowEnjoyEmoji] = useState(false);
   const [showACEmoji, setShowACEmoji] = useState(false);
   const [showLightingEmoji, setShowLightingEmoji] = useState(false);
+  const [showHappyEmoji, setShowHappyEmoji] = useState(false);
+  const [showSadEmoji, setShowSadEmoji] = useState(false);
+
+  // New scenario-specific emoji states
+  const [showAlertEmoji, setShowAlertEmoji] = useState(false);
+  const [showYesPermissionEmoji, setShowYesPermissionEmoji] = useState(false);
+  const [showNoPermissionEmoji, setShowNoPermissionEmoji] = useState(false);
+  const [showMusicEmoji, setShowMusicEmoji] = useState(false);
+  const [showHotEmoji, setShowHotEmoji] = useState(false);
+  const [showBreathingEmoji, setShowBreathingEmoji] = useState(false);
+  const [showLaughEmoji, setShowLaughEmoji] = useState(false);
+
+  // Music listening timer states
+  const [musicStartTime, setMusicStartTime] = useState<number | null>(null);
+  const [musicTimer, setMusicTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Alert system states
+  const [activeAlert, setActiveAlert] = useState<string | null>(null);
+  const [alertTriggered, setAlertTriggered] = useState<{[key: string]: boolean}>({});
+
+  // Microphone status
+  const [microphoneStatus, setMicrophoneStatus] = useState<'unknown' | 'available' | 'permission-denied' | 'not-supported'>('unknown');
 
   // Wellness features - REMOVED
   // const [isBreathingActive, setIsBreathingActive] = useState(false);
@@ -54,20 +99,26 @@ const AIChatbot = () => {
   const [seatHeating, setSeatHeating] = useState(false);
   const [musicVolume, setMusicVolume] = useState(50);
   const [lightsOn, setLightsOn] = useState(false);
-  // Clear any saved conversation and use clean Figma design
+  // Fresh conversation history for each session (clears on npm run dev)
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Clear any existing conversation history for fresh start
-    localStorage.removeItem('ai-chatbot-history');
+    // Check if user has already seen the greeting in this session
+    const hasSeenGreeting = localStorage.getItem('meloGreetingSeen') === 'true';
 
-    // Return clean default conversation with only Melo's greeting
-    return [
-      {
-        id: '1',
-        text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
-        type: 'bot',
-        timestamp: new Date()
-      }
-    ];
+    if (hasSeenGreeting) {
+      // Return empty array for returning users
+      return [];
+    } else {
+      // Mark greeting as seen and show it for first-time users
+      localStorage.setItem('meloGreetingSeen', 'true');
+      return [
+        {
+          id: '1',
+          text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
+          type: 'bot',
+          timestamp: new Date()
+        }
+      ];
+    }
   });
 
   const recognitionRef = useRef<any>(null);
@@ -84,15 +135,15 @@ const AIChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Save conversation history to localStorage whenever messages change
+  // Auto-scroll during transcription to follow real-time text
   useEffect(() => {
-    try {
-      localStorage.setItem('ai-chatbot-history', JSON.stringify(messages));
-      console.log('💾 Conversation history saved to localStorage');
-    } catch (error) {
-      console.error('Failed to save conversation history:', error);
+    if (pendingTranscript) {
+      scrollToBottom();
     }
-  }, [messages]);
+  }, [pendingTranscript]);
+
+  // Chat history maintained in memory only (clears on page refresh/npm run dev)
+  // This allows learning during current session but starts fresh each time
 
   // Real-time clock update
   useEffect(() => {
@@ -103,27 +154,36 @@ const AIChatbot = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Initial voice greeting
+  // Initial voice greeting (skip for prolonged stress navigation and returning users)
   useEffect(() => {
-    // Speak the initial greeting when component loads
-    const timer = setTimeout(() => {
-      speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
-    }, 1000); // Small delay to ensure everything is loaded
+    const urlParams = new URLSearchParams(window.location.search);
+    const isProlongedStress = urlParams.get('prolonged-stress') === 'true';
 
-    return () => clearTimeout(timer);
+    // Only speak initial greeting if not coming from prolonged stress AND it's first visit (messages contains greeting)
+    if (!isProlongedStress && messages.length > 0) {
+      const timer = setTimeout(() => {
+        speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
+      }, 1000); // Small delay to ensure everything is loaded
+
+      return () => clearTimeout(timer);
+    }
   }, []); // Only run once on mount
 
   // Check if arrived due to stress detection and offer music therapy
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const isStressNavigation = urlParams.get('stress') === 'true';
-    
+    const isProlongedStressNavigation = urlParams.get('prolonged-stress') === 'true';
+    const isWeatherNavigation = urlParams.get('weather') === 'extreme';
+    const isHighHeartRateNavigation = urlParams.get('high-heart-rate') === 'true';
+    const heartRateBpm = urlParams.get('bpm');
+
     if (isStressNavigation) {
       console.log('🚨 Arrived at AI chatbot due to stress detection');
-      
+
       // Clear the stress parameter from URL
       window.history.replaceState({}, '', window.location.pathname);
-      
+
       // Wait a bit for initial greeting, then add stress support message
       setTimeout(() => {
         const stressMessage = {
@@ -133,14 +193,131 @@ const AIChatbot = () => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, stressMessage]);
-        
+
         // Show comfort emoji for stress support
         setShowComfortEmoji(true);
         setTimeout(() => setShowComfortEmoji(false), 3000);
-        
+
         // Speak the stress support message
         speakText("I noticed your stress levels are elevated. Would you like me to play some calming music to help you relax?");
       }, 3000); // Wait for initial greeting to finish
+    }
+
+    if (isProlongedStressNavigation) {
+      console.log('⏰ Arrived at AI chatbot due to prolonged stress/anxiety detection');
+
+      // Clear the prolonged-stress parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Skip initial greeting and immediately provide advice
+      const adviceOptions = [
+        "I've noticed you've been feeling stressed. Would you like calming music, a breathing exercise, or a joke to brighten your mood?",
+        "You've been anxious for a while. Let me help! I can play relaxing music, tell a funny joke, or guide breathing exercises. What sounds good?",
+        "I see you're still feeling stressed. How about soothing music, a quick joke, or a calming breathing exercise to help you relax?",
+        "You've been tense for some time. I'm here to help! Would you prefer calming music, a cheerful joke, or guided breathing to feel better?",
+        "I notice prolonged stress. Let's fix that! I can offer relaxing music, tell jokes, or lead breathing exercises. What would help most?"
+      ];
+
+      const selectedAdvice = adviceOptions[Math.floor(Math.random() * adviceOptions.length)];
+
+      // Replace the initial greeting with immediate advice
+      setMessages([{
+        id: '1',
+        text: selectedAdvice,
+        type: 'bot',
+        timestamp: new Date()
+      }]);
+
+      // Show comfort emoji for prolonged stress support
+      setShowComfortEmoji(true);
+      setTimeout(() => setShowComfortEmoji(false), 3000);
+
+      // Speak the advice immediately (no initial greeting)
+      setTimeout(() => {
+        speakText(selectedAdvice);
+      }, 1000);
+    }
+
+    if (isWeatherNavigation) {
+      console.log('⚠️ Arrived at AI chatbot due to extreme weather detection');
+
+      // Clear the weather parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Wait a bit for initial greeting, then add weather alert message
+      setTimeout(() => {
+        const weatherMessage = {
+          id: Date.now().toString() + '_weather_alert_nav',
+          text: "I detected extreme weather conditions that require immediate attention for your safety. I'm here to help you navigate these dangerous conditions safely.",
+          type: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, weatherMessage]);
+
+        // Show shock emoji for weather alert
+        setShowShockEmoji(true);
+        setTimeout(() => setShowShockEmoji(false), 4000);
+
+        // Speak the weather alert message
+        speakText("I detected extreme weather conditions that require immediate attention for your safety. I'm here to help you navigate these dangerous conditions safely.");
+      }, 3000); // Wait for initial greeting to finish
+    }
+
+    const isFocusNavigation = urlParams.get('focus') === 'true';
+    if (isFocusNavigation) {
+      console.log('🧘 Arrived at AI chatbot due to focus mode detection');
+
+      // Clear the focus parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Wait a bit for initial greeting, then add focus message
+      setTimeout(() => {
+        const focusMessage = {
+          id: Date.now().toString() + '_focus_alert_nav',
+          text: "I noticed you've been in focused driving mode for 5 minutes. Prolonged concentration can be tiring. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?",
+          type: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, focusMessage]);
+
+        // Set state for breathing permission
+        setAwaitingBreathingPermission(true);
+        setFocusTriggered(true);
+
+        // Show comfort emoji for focus support
+        setShowComfortEmoji(true);
+        setTimeout(() => setShowComfortEmoji(false), 4000);
+
+        // Speak the focus message
+        speakText("I noticed you've been in focused driving mode for 5 minutes. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?");
+      }, 3000); // Wait for initial greeting to finish
+    }
+
+    if (isHighHeartRateNavigation) {
+      console.log('🚨 Arrived at AI chatbot due to DANGEROUS high heart rate detection');
+
+      // Clear the high-heart-rate parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Replace the initial greeting with immediate emergency alert
+      const emergencyBpm = heartRateBpm || '120+';
+      const emergencyMessage = `🚨 EMERGENCY ALERT: Your heart rate is ${emergencyBpm} BPM - this is dangerously high for driving! You may be experiencing a medical emergency, under the influence, or in extreme distress. Please pull over safely immediately and do not continue driving until your heart rate normalizes.`;
+
+      setMessages([{
+        id: '1',
+        text: emergencyMessage,
+        type: 'bot',
+        timestamp: new Date()
+      }]);
+
+      // Show alert emoji for emergency
+      setShowAlertEmoji(true);
+      setTimeout(() => setShowAlertEmoji(false), 6000); // Longer display for emergency
+
+      // Speak the emergency alert immediately (no initial greeting)
+      setTimeout(() => {
+        speakText(`Emergency alert! Your heart rate is ${emergencyBpm} B P M. This is dangerously high for driving. Please pull over safely immediately and do not continue driving until your heart rate normalizes.`);
+      }, 1000);
     }
   }, []); // Only run once on mount
 
@@ -158,7 +335,7 @@ const AIChatbot = () => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
       if (!apiKey || apiKey === 'your-openweather-api-key') {
-        console.warn('⚠️ OpenWeather API key not configured - using Limerick temperature');
+        console.warn('⚠��� OpenWeather API key not configured - using Limerick temperature');
         setTemperature('15°C');
         return;
       }
@@ -181,6 +358,9 @@ const AIChatbot = () => {
       const temp = Math.round(data.main.temp);
       setTemperature(`${temp}°C`);
       console.log('🌡️ Temperature updated for Limerick area:', `${temp}°C`);
+
+      // Weather alerts disabled - only shown when user mentions weather conditions via voice
+      // checkWeatherAlerts(data);
 
     } catch (error) {
       console.error('❌ Weather API error:', error);
@@ -236,7 +416,7 @@ const AIChatbot = () => {
                     fetchWeather(location.lat, location.lng);
                   },
                   (retryError) => {
-                    console.error('❌ Location retry failed:', retryError.message);
+                    console.error('🔄 Location retry failed:', retryError.message);
                     // Don't add automatic location messages to keep UI clean
                     console.log('Location retry failed, but keeping UI clean');
                   },
@@ -250,16 +430,17 @@ const AIChatbot = () => {
               break;
           }
 
-          console.error('❌ Geolocation error:', errorMessage);
-          console.error('Error details:', {
-            code: error.code,
-            message: error.message || 'No message provided',
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent
-          });
+          console.log('📍 Location access:', errorMessage);
+          // Only log detailed error info for unexpected errors, not user permission denials
+          if (error.code !== error.PERMISSION_DENIED) {
+            console.log('Location error details:', {
+              code: error.code,
+              message: error.message || 'No message provided'
+            });
+          }
 
           // Fallback to Limerick weather when location is not available
-          console.log('Location permission denied, using Limerick weather as fallback');
+          console.log('💡 Using default location (Limerick) for weather and navigation features');
           fetchWeather(52.6638, -8.6267); // Limerick coordinates
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
@@ -278,14 +459,14 @@ const AIChatbot = () => {
     const unsubscribe = carStateManager.subscribe((newState) => {
       // Check if AC was turned on
       if (!previousState.isAcOn && newState.isAcOn) {
-        console.log('❄️ AC turned on from dashboard - showing AC emoji');
+        console.log('���� AC turned on from dashboard - showing AC emoji');
         setShowACEmoji(true);
         setTimeout(() => setShowACEmoji(false), 3000);
 
         // Add message to chat
         const acMessage = {
           id: Date.now().toString() + '_ac',
-          text: `��️ Air conditioner turned on at ${newState.acTemperature}°C from dashboard. Staying cool!`,
+          text: `���� Air conditioner turned on at ${newState.acTemperature}°C from dashboard. Staying cool!`,
           type: 'bot' as const,
           timestamp: new Date()
         };
@@ -311,11 +492,11 @@ const AIChatbot = () => {
       // Check if driver state changed to stressed while in chatbot
       if (previousState.driverState !== 'stressed' && newState.driverState === 'stressed') {
         console.log('🚨 Stress detected while in AI chatbot - offering music therapy');
-        
+
         // Show comfort emoji for stress support
         setShowComfortEmoji(true);
         setTimeout(() => setShowComfortEmoji(false), 3000);
-        
+
         // Add proactive stress support message
         const stressMessage = {
           id: Date.now().toString() + '_stress_detected',
@@ -324,11 +505,34 @@ const AIChatbot = () => {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, stressMessage]);
-        
+
         // Speak the stress support message
         setTimeout(() => {
           speakText("I'm detecting elevated stress levels. Would you like some calming music or a breathing exercise?");
         }, 1000);
+      }
+
+      // Monitor focus mode duration
+      if (newState.driverState === 'focused') {
+        if (focusModeStartTime === null) {
+          // Start tracking focus mode
+          setFocusModeStartTime(Date.now());
+          console.log('🎯 Focus mode started - tracking duration');
+        } else {
+          // Check if focus mode has been active for 5 minutes
+          const focusDuration = (Date.now() - focusModeStartTime) / (1000 * 60); // minutes
+          if (focusDuration >= 5 && !focusTriggered) {
+            console.log('���� Focus mode active for 5 minutes - triggering breathing exercise offer');
+            handleFocusMode();
+          }
+        }
+      } else {
+        // Reset focus mode tracking if state changes
+        if (focusModeStartTime !== null) {
+          console.log('🎯 Focus mode ended - resetting timer');
+          setFocusModeStartTime(null);
+          setFocusTriggered(false);
+        }
       }
 
       previousState = newState;
@@ -337,8 +541,282 @@ const AIChatbot = () => {
     return unsubscribe;
   }, []);
 
+  // Reset all emoji states and temperature triggers on component mount
+  useEffect(() => {
+    setShowComfortEmoji(false);
+    setShowShockEmoji(false);
+    setShowCuteEmoji(false);
+    setShowCryEmoji(false);
+    setShowEnjoyEmoji(false);
+    setShowACEmoji(false);
+    setShowLightingEmoji(false);
+    setShowHappyEmoji(false);
+    setShowSadEmoji(false);
+    setShowAlertEmoji(false);
+    setShowYesPermissionEmoji(false);
+    setShowNoPermissionEmoji(false);
+    setShowMusicEmoji(false);
+    setShowHotEmoji(false);
+    setShowBreathingEmoji(false);
+    setShowLaughEmoji(false);
+
+    // Reset temperature and weather triggered states for clean start
+    setTemperatureTriggered(false);
+    setWeatherTriggered(false);
+    setAwaitingACPermission(false);
+    setAwaitingWeatherPermission(false);
+    console.log('🌡️ Reset temperature and weather trigger states');
+  }, []);
+
+  // Music listening timer - show emoji after 5 minutes
+  useEffect(() => {
+    const unsubscribe = audioManager.subscribe((state) => {
+      // Start timer when music starts playing
+      if (state.isPlaying && !musicStartTime) {
+        const startTime = Date.now();
+        setMusicStartTime(startTime);
+        console.log('🎵 Music started - starting 5-minute timer');
+
+        // Set 5-minute timer (300,000 ms)
+        const timer = setTimeout(() => {
+          console.log('🎵 Music has been playing for 5 minutes - showing music emoji');
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+
+          // Add a message about music enjoyment
+          const musicMessage = {
+            id: Date.now().toString() + '_music_5min',
+            text: "I can see you're really enjoying the music! You've been listening for 5 minutes straight. Music can really enhance your driving experience!",
+            type: 'bot' as const,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, musicMessage]);
+          speakText("I can see you're really enjoying the music! You've been listening for 5 minutes straight.");
+        }, 300000); // 5 minutes
+
+        setMusicTimer(timer);
+      }
+
+      // Clear timer when music stops
+      if (!state.isPlaying && musicStartTime) {
+        console.log('🎵 Music stopped - clearing timer');
+        if (musicTimer) {
+          clearTimeout(musicTimer);
+          setMusicTimer(null);
+        }
+        setMusicStartTime(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      if (musicTimer) {
+        clearTimeout(musicTimer);
+      }
+    };
+  }, [musicStartTime, musicTimer]);
+
+  // Automatic driving condition monitoring disabled - alerts only shown when user mentions conditions via voice
+  // useEffect(() => {
+  //   const monitoringInterval = setInterval(() => {
+  //     monitorDrivingConditions();
+  //   }, 60000); // Check every minute
+
+  //   // Initial check
+  //   monitorDrivingConditions();
+
+  //   return () => clearInterval(monitoringInterval);
+  // }, [alertTriggered]);
+
   // Breathing exercise and meditation functions - REMOVED
   // These wellness features have been removed as requested
+
+  // Handle temperature exceeding 35��C
+  const handleTemperatureExceed = (temp: number) => {
+    console.log(`🌡️ Temperature alert triggered with: ${temp}°C, Status bar shows: ${temperature}`);
+    if (temperatureTriggered) {
+      console.log('🌡️ Temperature alert already triggered, skipping');
+      return; // Prevent multiple triggers
+    }
+
+    setTemperatureTriggered(true);
+    setAwaitingACPermission(true);
+
+    // Show hot emoji first, then AC emoji
+    setShowHotEmoji(true);
+    setTimeout(() => {
+      setShowHotEmoji(false);
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+    }, 3000);
+
+    // Add AI message asking for permission
+    const permissionMessage: Message = {
+      id: Date.now().toString() + '_temp_trigger',
+      text: `I've detected the temperature is ${temp}���C - quite hot! Would you want me to set the air conditioner on?`,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, permissionMessage]);
+
+    // Speak the message
+    speakText(`It's ${temp} degrees outside - quite hot! Would you want me to set the air conditioner on?`);
+  };
+
+  // Handle extreme weather conditions
+  const handleExtremeWeather = (weather: WeatherCondition) => {
+    if (weatherTriggered) return; // Prevent multiple triggers
+
+    setWeatherTriggered(true);
+    setCurrentWeatherCondition(weather);
+    setAwaitingWeatherPermission(true);
+
+    // Navigate to AI chatbot if not already there
+    if (window.location.pathname !== '/ai-chatbot') {
+      console.log('⚠️ Navigating to AI chatbot due to extreme weather');
+      window.location.href = '/ai-chatbot?weather=extreme';
+      return;
+    }
+
+    // Generate weather-specific message and recommendation
+    let message = '';
+    let recommendation = '';
+
+    if (weather.condition.includes('snow') || weather.condition.includes('blizzard')) {
+      message = `I've detected ${weather.description} with ${weather.temp}°C temperature. Driving conditions are dangerous!`;
+      recommendation = 'Should I reduce your vehicle speed by 6-7 km/h for safer driving in these snowy conditions?';
+    } else if (weather.condition.includes('fog') || weather.condition.includes('mist') || weather.visibility < 1000) {
+      message = `I've detected ${weather.description} with visibility at ${weather.visibility}m. This is very dangerous for driving!`;
+      recommendation = 'Should I activate autodrive assistance to help navigate safely through this low visibility?';
+    } else if (weather.condition.includes('thunderstorm') || weather.windSpeed > 15) {
+      message = `I've detected ${weather.description} with ${weather.windSpeed}m/s winds. Severe weather conditions ahead!`;
+      recommendation = 'Should I suggest finding a safe place to pull over until this storm passes?';
+    } else if (weather.temp <= -5) {
+      message = `I've detected extremely cold conditions at ${weather.temp}°C. Road ice is likely!`;
+      recommendation = 'Should I reduce speed and increase following distance for icy road conditions?';
+    } else {
+      message = `I've detected extreme weather: ${weather.description}. Please drive with extra caution!`;
+      recommendation = 'Should I provide enhanced safety monitoring for these conditions?';
+    }
+
+    // Show warning emoji
+    setShowShockEmoji(true);
+    setTimeout(() => setShowShockEmoji(false), 4000);
+
+    // Add AI message with warning and recommendation
+    const weatherMessage: Message = {
+      id: Date.now().toString() + '_weather_alert',
+      text: `���️ WEATHER ALERT: ${message} ${recommendation}`,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, weatherMessage]);
+
+    // Speak the warning
+    speakText(`Weather alert! ${message} ${recommendation}`);
+  };
+
+  // Handle focus mode detection (5 minutes)
+  const handleFocusMode = () => {
+    if (focusTriggered) return; // Prevent multiple triggers
+
+    setFocusTriggered(true);
+    setAwaitingBreathingPermission(true);
+
+    // Navigate to AI chatbot if not already there
+    if (window.location.pathname !== '/ai-chatbot') {
+      console.log('🧘 Navigating to AI chatbot due to prolonged focus mode');
+      window.location.href = '/ai-chatbot?focus=true';
+      return;
+    }
+
+    // Show focus emoji
+    setShowComfortEmoji(true);
+    setTimeout(() => setShowComfortEmoji(false), 4000);
+
+    // Add AI message asking about breathing exercise
+    const focusMessage: Message = {
+      id: Date.now().toString() + '_focus_trigger',
+      text: "I notice you've been in focused driving mode for 5 minutes. Prolonged concentration can be tiring. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?",
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, focusMessage]);
+
+    // Speak the message
+    speakText("I notice you've been in focused driving mode for 5 minutes. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?");
+  };
+
+  // Voice-guided breathing exercise
+  const startBreathingExercise = () => {
+    setIsBreathingExercise(true);
+    setBreathingStep('inhale');
+    setBreathingCount(0);
+
+    const breathingMessage: Message = {
+      id: Date.now().toString() + '_breathing_start',
+      text: "Perfect! Let's do a simple 4-7-8 breathing exercise. I'll guide you through it with voice commands. Stay focused on the road while you breathe.",
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, breathingMessage]);
+
+    speakText("Perfect! Let's do a simple 4-7-8 breathing exercise. I'll guide you through it with voice commands. Stay focused on the road while you breathe.");
+
+    // Start the breathing cycle after a short delay
+    setTimeout(() => {
+      performBreathingCycle();
+    }, 3000);
+  };
+
+  // Perform breathing exercise cycle
+  const performBreathingCycle = () => {
+    if (breathingCount >= 4) { // 4 complete cycles
+      setIsBreathingExercise(false);
+      setBreathingCount(0);
+
+      const completionMessage: Message = {
+        id: Date.now().toString() + '_breathing_complete',
+        text: "Excellent work! You've completed the breathing exercise. You should feel more relaxed and alert now. Keep driving safely!",
+        type: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, completionMessage]);
+
+      speakText("Excellent work! You've completed the breathing exercise. You should feel more relaxed and alert now. Keep driving safely!");
+      return;
+    }
+
+    const cycleNumber = breathingCount + 1;
+
+    // Inhale phase (4 seconds)
+    setBreathingStep('inhale');
+    speakText(`Cycle ${cycleNumber}. Breathe in slowly through your nose for 4 seconds. Inhale... 2... 3... 4.`);
+
+    setTimeout(() => {
+      // Hold phase (7 seconds)
+      setBreathingStep('hold');
+      speakText("Now hold your breath for 7 seconds. Hold... 2... 3... 4... 5... 6... 7.");
+
+      setTimeout(() => {
+        // Exhale phase (8 seconds)
+        setBreathingStep('exhale');
+        speakText("Now exhale slowly through your mouth for 8 seconds. Exhale... 2... 3... 4... 5... 6... 7... 8.");
+
+        setTimeout(() => {
+          setBreathingCount(prev => prev + 1);
+
+          if (breathingCount + 1 < 4) {
+            setTimeout(() => {
+              performBreathingCycle();
+            }, 2000); // Pause between cycles
+          } else {
+            performBreathingCycle(); // Complete the exercise
+          }
+        }, 9000); // 8 seconds exhale + 1 second buffer
+      }, 8000); // 7 seconds hold + 1 second buffer
+    }, 5000); // 4 seconds inhale + 1 second buffer
+  };
 
   // Car control functions with global state
   const setAirConditioner = (temp: number, turnOn: boolean = true) => {
@@ -443,6 +921,90 @@ const AIChatbot = () => {
     speakText(turnOn ? `Lights on` : `Lights off`);
   };
 
+  // Comprehensive Alert System for Driving Risks
+  const triggerAlert = (alertType: string, message: string, emojiDuration: number = 4000) => {
+    if (alertTriggered[alertType]) return; // Prevent multiple triggers
+
+    setAlertTriggered(prev => ({ ...prev, [alertType]: true }));
+    setActiveAlert(alertType);
+
+    // Show appropriate emoji based on alert type
+    setShowShockEmoji(true);
+    setTimeout(() => setShowShockEmoji(false), emojiDuration);
+
+    // Add alert message
+    const alertMessage: Message = {
+      id: Date.now().toString() + `_${alertType}_alert`,
+      text: message,
+      type: 'bot',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, alertMessage]);
+
+    // Speak the alert
+    speakText(message);
+
+    // Clear active alert after speaking
+    setTimeout(() => {
+      setActiveAlert(null);
+    }, emojiDuration + 2000);
+  };
+
+  // Specific alert triggers
+  const triggerIceRiskAlert = () => {
+    triggerAlert('iceRisk',
+      '���� ICE RISK: Near-freezing temperatures! Watch for black ice on bridges and shaded areas. Drive very carefully.',
+      5000
+    );
+  };
+
+  const triggerHighWindAlert = (windSpeed: number) => {
+    triggerAlert('highWind',
+      `💨 HIGH WIND WARNING: Strong crosswinds detected at ${windSpeed} m/s! Grip steering wheel firmly, especially when passing trucks.`,
+      5000
+    );
+  };
+
+  const triggerFogAlert = (visibility: number) => {
+    triggerAlert('fogAlert',
+      `🌫�� FOG ALERT: Low visibility at ${visibility}m! Use fog lights, reduce speed significantly, and avoid lane changes.`,
+      5000
+    );
+  };
+
+  const triggerRainAlert = () => {
+    triggerAlert('rainAlert',
+      '🌧️ RAIN ALERT: Wet roads ahead! Reduce speed by 10-15 mph and increase following distance. Turn on headlights.',
+      4000
+    );
+  };
+
+  const triggerFatigueRiskAlert = () => {
+    triggerAlert('fatigueRisk',
+      '😴 FATIGUE RISK: Peak drowsiness hours! Consider rest stops every hour. Don\'t fight sleepiness - pull over safely.',
+      5000
+    );
+  };
+
+  const triggerRushHourAlert = () => {
+    triggerAlert('rushHour',
+      '🚗 RUSH HOUR: Heavy traffic expected! Allow extra time and stay calm. Consider alternate routes.',
+      4000
+    );
+  };
+
+  // Enhanced alert monitoring system - DISABLED (alerts only shown when user says test commands)
+  const monitorDrivingConditions = () => {
+    // All automatic time-based alerts disabled - only triggered by test commands
+    return;
+  };
+
+  // Weather-based alert integration - DISABLED (alerts only shown when user says test commands)
+  const checkWeatherAlerts = (weatherData: any) => {
+    // All automatic weather alerts disabled - only triggered by test commands
+    return;
+  };
+
   // Enhanced navigation with real-time safety and danger warnings
   const checkRoadSafety = async (lat: number, lng: number): Promise<string[]> => {
     const warnings: string[] = [];
@@ -518,8 +1080,41 @@ const AIChatbot = () => {
 
   // Enhanced location services with safety integration
   const findNearbyPlaces = async (placeType: string): Promise<string> => {
+    // If location is not available, provide general helpful responses instead of asking for permissions
     if (!currentLocation) {
-      return "I need your location to find nearby places. Please allow location access in your browser settings.";
+      // Use default responses that don't require exact location
+      const fallbackResponses = {
+        'gas station': [
+          `I'll help you find gas stations! Look for major brands like Shell, Chevron, BP, or Exxon along your route. Most highway exits have at least one gas station. Use your car's navigation or a maps app to find the closest ones with current prices.`,
+          `Gas stations are typically found at highway exits and major intersections. Popular chains like Mobil, Texaco, and Costco often have competitive prices. I recommend checking gas price apps for the best deals in your area.`,
+          `For gas stations, try looking for the next highway exit or major road. Most gas station apps like GasBuddy can show you nearby options with current prices. Shell, BP, and Chevron are reliable choices with good coverage.`
+        ],
+        'restaurant': [
+          `I can help you find restaurants! Highway exits typically have fast food options like McDonald's, Subway, or local diners. For sit-down restaurants, try checking near shopping centers or downtown areas in nearby towns.`,
+          `Look for restaurant signs at upcoming exits or use a food delivery app to see what's nearby. Highway travel plazas often have multiple food options in one location.`
+        ],
+        'coffee': [
+          `Coffee shops are usually found at highway exits! Look for Starbucks, Dunkin', or local coffee shops. Many gas stations also have good coffee. Travel centers often have multiple coffee options.`
+        ],
+        'hotel': [
+          `Hotels are typically located at major highway exits. Look for signs for brands like Holiday Inn, Hampton Inn, or Best Western. Booking apps can show availability and prices for your route.`
+        ],
+        'hospital': [
+          `For hospitals, follow signs for "Hospital" or "Medical Center" from major highways. In emergencies, call 911. Most GPS systems can navigate to the nearest hospital quickly.`
+        ],
+        'pharmacy': [
+          `Pharmacies like CVS, Walgreens, and Rite Aid are commonly found in shopping centers and near grocery stores. Many are open late or 24 hours for urgent needs.`
+        ],
+        'rest area': [
+          `Rest areas are marked with blue signs on highways. They typically have restrooms, picnic tables, and parking. Travel plazas offer more amenities like food and fuel.`
+        ]
+      };
+
+      const responses = fallbackResponses[placeType.toLowerCase()] || [
+        `I can help you find ${placeType} locations! Try checking at the next highway exit or use your navigation app to locate nearby options. Most major routes have good coverage for essential services.`
+      ];
+
+      return responses[Math.floor(Math.random() * responses.length)];
     }
 
     // Get safety warnings for current location
@@ -580,8 +1175,24 @@ const AIChatbot = () => {
 
   // Enhanced Google Maps API functions with safety integration
   const searchNearbyPlaces = async (query: string, type: string = ''): Promise<string> => {
+    // Provide helpful responses even without exact location
     if (!currentLocation) {
-      return "I need your location to help with navigation. Please allow location access in your browser settings.";
+      const fallbackResponses = {
+        'gas': `I'll help you find gas stations! Look for major brands like Shell, Chevron, BP, or Exxon along your route. Check highway exits or use gas price apps like GasBuddy for the best nearby options.`,
+        'restaurant': `For restaurants, check the next highway exit or nearby shopping areas. Fast food chains are common at exits, while local diners often offer great road trip meals.`,
+        'coffee': `Coffee shops are usually at highway exits or in town centers. Look for Starbucks, Dunkin', or local cafes. Many gas stations also serve good coffee.`,
+        'hospital': `For medical facilities, follow blue hospital signs from highways. In emergencies, call 911. Most navigation apps can quickly route to the nearest hospital.`,
+        'pharmacy': `Pharmacies like CVS, Walgreens, and Rite Aid are in most towns. Check shopping centers or ask at gas stations for directions to the nearest one.`
+      };
+
+      const placeType = type.toLowerCase() || query.toLowerCase();
+      for (const [key, response] of Object.entries(fallbackResponses)) {
+        if (placeType.includes(key)) {
+          return response;
+        }
+      }
+
+      return `I can help you find ${query}! Try checking at highway exits or use your navigation app. Most essential services are well-marked along major routes.`;
     }
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -593,7 +1204,7 @@ const AIChatbot = () => {
     try {
       // Note: Direct API calls from browser may have CORS issues
       // In production, this should go through a backend proxy
-      console.log(`🔍 Searching for ${query} near location:`, currentLocation);
+      console.log(`������ Searching for ${query} near location:`, currentLocation);
 
       // Simulate location-based response for now
       const responses = {
@@ -620,8 +1231,9 @@ const AIChatbot = () => {
   };
 
   const getDirections = async (destination: string): Promise<string> => {
+    // Provide helpful direction guidance even without exact location
     if (!currentLocation) {
-      return "I need your current location to provide directions. Please enable location access in your browser settings.";
+      return `I can help you get to ${destination}! Use your phone's GPS or car navigation system for turn-by-turn directions. I recommend checking traffic conditions and having a backup route planned. Safe travels!`;
     }
 
     // Get safety warnings for current location and route
@@ -629,7 +1241,7 @@ const AIChatbot = () => {
 
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (!apiKey || apiKey === 'your-google-maps-api-key') {
-      console.warn('⚠️ Google Maps API key not configured');
+      console.warn('����� Google Maps API key not configured');
       
       // Enhanced fallback with safety information
       const estimatedTime = Math.floor(Math.random() * 30) + 10; // 10-40 minutes
@@ -637,12 +1249,12 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n💡 SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
-        safetyAdvice += "• Share your route with someone\n";
+        safetyAdvice += "�� Share your route with someone\n";
         safetyAdvice += "• Take breaks every 2 hours for long trips\n";
-        safetyAdvice += "• Keep phone charged for navigation";
+        safetyAdvice += "��� Keep phone charged for navigation";
       }
       
       return `I'd love to guide you to ${destination}, but I need my navigation system set up. Estimated ${estimatedTime} minutes (${estimatedDistance} miles). For now, use your phone's GPS and I'll provide safety support!${safetyAdvice}`;
@@ -660,7 +1272,7 @@ const AIChatbot = () => {
       
       // Simulate route hazard detection
       if (Math.random() > 0.7) {
-        routeDangers.push("🚧 CONSTRUCTION ZONE: Lane closures ahead at mile marker 12. Expect 10-15 minute delays.");
+        routeDangers.push("�� CONSTRUCTION ZONE: Lane closures ahead at mile marker 12. Expect 10-15 minute delays.");
       }
       
       if (Math.random() > 0.8) {
@@ -668,7 +1280,7 @@ const AIChatbot = () => {
       }
       
       if (Math.random() > 0.6) {
-        routeDangers.push("📱 DEAD ZONE: Limited cell service for 5-mile stretch. Download offline maps as backup.");
+        routeDangers.push("�� DEAD ZONE: Limited cell service for 5-mile stretch. Download offline maps as backup.");
       }
       
       if (Math.random() > 0.75) {
@@ -677,7 +1289,7 @@ const AIChatbot = () => {
       
       // Mountain/hill warnings for certain routes
       if (destination.toLowerCase().includes('mountain') || Math.random() > 0.85) {
-        routeDangers.push("⛰️ STEEP GRADES: Mountain roads ahead. Check brakes, use lower gears, watch for overheating.");
+        routeDangers.push("��️ STEEP GRADES: Mountain roads ahead. Check brakes, use lower gears, watch for overheating.");
       }
 
       let baseResponse = `Excellent! ${destination} is ${estimatedDistance} miles away, approximately ${estimatedTime} minutes. Route looks good overall!`;
@@ -686,7 +1298,7 @@ const AIChatbot = () => {
       let fullResponse = baseResponse;
       
       if (safetyWarnings.length > 0) {
-        fullResponse += `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+        fullResponse += `\n\n�� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
       }
       
       if (routeDangers.length > 0) {
@@ -697,14 +1309,14 @@ const AIChatbot = () => {
       fullResponse += `\n\n🛡️ SAFETY CHECKLIST:\n`;
       fullResponse += "• Vehicle: Check fuel, tires, lights, wipers\n";
       fullResponse += "• Emergency kit: Water, snacks, first aid, blanket\n";
-      fullResponse += "• Communication: Charged phone, share route with family\n";
-      fullResponse += "• Weather: Check forecast and road conditions\n";
+      fullResponse += "��� Communication: Charged phone, share route with family\n";
+      fullResponse += "��� Weather: Check forecast and road conditions\n";
       fullResponse += "• Rest: Take breaks every 2 hours if long trip";
       
       // Add time-specific advice
       const currentHour = new Date().getHours();
       if (currentHour >= 18 || currentHour <= 6) {
-        fullResponse += "\n• Night driving: Use headlights, watch for wildlife, stay extra alert";
+        fullResponse += "\n�� Night driving: Use headlights, watch for wildlife, stay extra alert";
       }
       
       return fullResponse;
@@ -721,12 +1333,80 @@ const AIChatbot = () => {
     }
   };
 
+  // Helper function to remove emojis from text
+  const removeEmojis = (text: string): string => {
+    // Remove emojis using Unicode ranges
+    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+               .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{238C}-\u{2454}]|[\u{20D0}-\u{20FF}]/gu, '')
+               .replace(/[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '') // Remove variation selectors and zero-width joiners
+               .trim();
+  };
+
+  // Enhanced noise filtering for voice recognition
+  const filterNoiseWords = (transcript: string): string => {
+    if (!transcript) return '';
+
+    // Common noise patterns to filter out
+    const noisePatterns = [
+      /^(uh|um|er|ah|eh)+\s*/gi,          // Filler words at start
+      /\s+(uh|um|er|ah|eh)+\s*/gi,        // Filler words in middle
+      /^(the|a|an)\s*$/gi,                // Single articles (likely noise)
+      /^(and|or|but)\s*$/gi,              // Single conjunctions
+      /^[^a-zA-Z]*$/,                     // Non-alphabetic noise
+      /^\s*[a-zA-Z]\s*$/,                 // Single letters
+      /engine|radio|music|noise/gi,       // Background car sounds
+    ];
+
+    let cleaned = transcript.trim();
+
+    // Apply noise filters
+    noisePatterns.forEach(pattern => {
+      cleaned = cleaned.replace(pattern, ' ');
+    });
+
+    // Clean up extra whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+    // Reject very short or repetitive results (likely noise)
+    if (cleaned.length < 2) return '';
+    if (/^(.)\1+$/.test(cleaned)) return ''; // Repeated single character
+
+    return cleaned;
+  };
+
+  // Voice activity detection - check if speech sounds intentional
+  const isIntentionalSpeech = (transcript: string, confidence: number): boolean => {
+    if (!transcript || transcript.length < 2) return false;
+    if (confidence < 0.4) return false;
+
+    // Check for wake words (higher confidence required)
+    const wakeWords = ['hey melo', 'melo', 'hello', 'hi'];
+    const hasWakeWord = wakeWords.some(word =>
+      transcript.toLowerCase().includes(word)
+    );
+
+    if (hasWakeWord) return confidence > 0.3; // Lower threshold for wake words
+
+    // Check for command words (medium confidence)
+    const commandWords = ['play', 'stop', 'turn', 'set', 'help', 'navigate', 'music'];
+    const hasCommand = commandWords.some(word =>
+      transcript.toLowerCase().includes(word)
+    );
+
+    if (hasCommand) return confidence > 0.5;
+
+    // Regular speech needs higher confidence
+    return confidence > 0.6;
+  };
+
   // Text-to-speech function
   const speakText = (text: string): Promise<void> => {
     return new Promise((resolve) => {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9;
+        // Clean the text by removing emojis before speaking
+        const cleanedText = removeEmojis(text);
+        const utterance = new SpeechSynthesisUtterance(cleanedText);
+        utterance.rate = 1.05;
         utterance.pitch = 1;
         utterance.volume = 0.8;
 
@@ -796,6 +1476,11 @@ const AIChatbot = () => {
 
   // Start continuous listening
   const startContinuousListening = () => {
+    console.log('🎤 startContinuousListening called');
+    console.log('🔍 recognitionRef.current:', recognitionRef.current);
+    console.log('���� isListening:', isListening);
+    console.log('🔍 userWantsListening:', userWantsListening);
+
     if (!recognitionRef.current) {
       console.log('❌ Speech recognition not available');
       return;
@@ -805,6 +1490,7 @@ const AIChatbot = () => {
       console.log('🎤 Starting speech recognition...');
       recognitionRef.current.start();
       setIsListening(true);
+      console.log('✅ Speech recognition started successfully');
     } catch (error) {
       console.log('⚠️ Recognition start failed:', error);
       // If recognition is already running, that's fine
@@ -823,14 +1509,22 @@ const AIChatbot = () => {
       return;
     }
 
+    // Don't start if main listening is active
+    if (userWantsListening || isListening) {
+      console.log('⏭️ Skipping wake word start - main listening is active');
+      return;
+    }
+
     try {
-      console.log('👂 Starting wake word listening for "Hey Melo"...');
+      console.log('🎤 Starting wake word listening for "Hey Melo"...');
       wakeWordRecognitionRef.current.start();
       setIsWakeWordListening(true);
-    } catch (error) {
+    } catch (error: any) {
       console.log('⚠️ Wake word recognition start failed:', error);
+      // If already started, that's fine
       if (error.message && error.message.includes('already started')) {
         setIsWakeWordListening(true);
+        console.log('✅ Wake word recognition was already active');
       }
     }
   };
@@ -844,7 +1538,7 @@ const AIChatbot = () => {
         console.log('👂 Wake word listening stopped');
       }
     } catch (error) {
-      console.log('⚠️ Error stopping wake word recognition:', error);
+      console.log('⚠�� Error stopping wake word recognition:', error);
     }
   };
 
@@ -852,15 +1546,356 @@ const AIChatbot = () => {
   const getFallbackResponse = async (userMessage: string): Promise<string> => {
     const message = userMessage.toLowerCase();
 
+    // Check for child story suggestions when driver mentions having children
+    if ((message.includes('child') || message.includes('kid') || message.includes('children') ||
+         message.includes('son') || message.includes('daughter') || message.includes('my boy') ||
+         message.includes('my girl') || message.includes('little one')) &&
+        (message.includes('have') || message.includes('got') || message.includes('with me') ||
+         message.includes('back seat') || message.includes('car') || message.includes('bored') ||
+         message.includes('crying') || message.includes('restless') || message.includes('tired') ||
+         message.includes('entertain') || message.includes('story') || message.includes('book'))) {
+
+      // Show happy emoji for child-friendly suggestion
+      setTimeout(() => {
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+      }, 1000);
+
+      const childStoryResponse = "I'd love to help entertain your little passenger! I can tell some wonderful short stories - would you like me to share a quick adventure tale about a brave little explorer, a magical forest story, or maybe a funny animal adventure? These stories are perfect for car rides and will keep your child engaged and happy!";
+
+      // Add comfort words after emoji
+      setTimeout(() => {
+        const comfortMsg: Message = {
+          id: Date.now().toString() + '_child_comfort_fallback',
+          text: "Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.",
+          type: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, comfortMsg]);
+        speakText("Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.");
+      }, 3000);
+
+      return childStoryResponse;
+    }
+
+    // Handle story selection when user responds to child story offer
+    if ((message.includes('adventure') || message.includes('explorer')) &&
+        messages.some(msg => msg.text.includes('brave little explorer'))) {
+      const adventureStory = "Sam found a magical compass! Red arrow led to singing flowers, blue to joking frogs, gold to family with snacks. What an adventure!";
+      speakText(adventureStory);
+      return adventureStory;
+    }
+
+    if ((message.includes('forest') || message.includes('magical')) &&
+        messages.some(msg => msg.text.includes('magical forest story'))) {
+      const forestStory = "Luna the bunny made flowers glow with her paws. She helped a lost owl find home by lighting the forest path. The end!";
+      speakText(forestStory);
+      return forestStory;
+    }
+
+    if ((message.includes('animal') || message.includes('funny')) &&
+        messages.some(msg => msg.text.includes('funny animal adventure'))) {
+      const animalStory = "Pip the penguin wanted to fly but discovered swimming was their special talent. They became the fastest arctic swimmer ever! The end!";
+      speakText(animalStory);
+      return animalStory;
+    }
+
+    // Handle AC permission responses when awaiting permission
+    if (awaitingACPermission && (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+        message.includes('okay') || message.includes('please') || message.includes('turn on') ||
+        message.includes('cool') || message.includes('ac'))) {
+
+      setAwaitingACPermission(false);
+
+      // Show AC emoji for 3 seconds first, then turn on AC
+      setTimeout(() => {
+        setShowACEmoji(true);
+        setTimeout(() => {
+          setShowACEmoji(false);
+          // Turn on AC after emoji is shown
+          setAirConditioner(22, true);
+        }, 3000);
+      }, 1000);
+
+      return "Perfect! I'll turn on the air conditioner at 22°C to help cool you down. You should feel more comfortable soon!";
+    }
+
+    if (awaitingACPermission && (message.includes('no') || message.includes('not') || message.includes('don\'t'))) {
+      setAwaitingACPermission(false);
+      return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
+    }
+
+    // Handle weather permission responses in fallback
+    if (awaitingWeatherPermission && currentWeatherCondition) {
+      if (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+          message.includes('okay') || message.includes('please') || message.includes('activate') ||
+          message.includes('reduce') || message.includes('help')) {
+
+        setAwaitingWeatherPermission(false);
+
+        // Show happy emoji for acceptance
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+
+        let actionMessage = '';
+        let comfortWords = '';
+
+        if (currentWeatherCondition.condition.includes('snow')) {
+          actionMessage = 'Perfect! Speed reduced by 7 km/h for snowy conditions. Winter driving mode activated.';
+          comfortWords = 'Smart choice! I\'ll help you navigate these snowy roads safely.';
+        } else if (currentWeatherCondition.condition.includes('fog')) {
+          actionMessage = 'Excellent! Autodrive assistance activated for low visibility conditions.';
+          comfortWords = 'Great decision! I\'ll be your guide through this fog.';
+        } else {
+          actionMessage = 'Perfect! Enhanced safety monitoring activated for extreme weather.';
+          comfortWords = 'You\'re being very responsible. I\'ll help you stay safe.';
+        }
+
+        // Add comfort message after delay
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 2000);
+
+        return actionMessage;
+      }
+
+      if (message.includes('no') || message.includes('not') || message.includes('don\'t')) {
+        setAwaitingWeatherPermission(false);
+
+        // Show sad emoji for rejection
+        setShowSadEmoji(true);
+        setTimeout(() => setShowSadEmoji(false), 3000);
+
+        const comfortWords = 'I understand. Please drive very carefully in these conditions. I\'m still here to help if you need me.';
+
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_sad_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 3000);
+
+        return 'I understand you want to handle this yourself.';
+      }
+    }
+
+    // Handle breathing exercise permission responses in fallback
+    if (awaitingBreathingPermission) {
+      if (message.includes('yes') || message.includes('sure') || message.includes('ok') ||
+          message.includes('okay') || message.includes('please') || message.includes('guide') ||
+          message.includes('breathing') || message.includes('help')) {
+
+        setAwaitingBreathingPermission(false);
+
+        // Show happy emoji for acceptance
+        setShowHappyEmoji(true);
+        setTimeout(() => setShowHappyEmoji(false), 3000);
+
+        // Start breathing exercise after emoji
+        setTimeout(() => {
+          startBreathingExercise();
+        }, 3500);
+
+        return "Wonderful! I'll guide you through a relaxing breathing exercise.";
+      }
+
+      if (message.includes('no') || message.includes('not') || message.includes('don\'t')) {
+        setAwaitingBreathingPermission(false);
+
+        // Show sad emoji for rejection
+        setShowSadEmoji(true);
+        setTimeout(() => setShowSadEmoji(false), 3000);
+
+        const comfortWords = "I understand. Remember to take deep breaths naturally and stay relaxed while driving. I'm here if you need me.";
+
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_comfort_breathing_fallback',
+            text: comfortWords,
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText(comfortWords);
+        }, 3000);
+
+        return "No problem at all. You know what's best for you.";
+      }
+    }
+
+    // Test commands for various triggers
+    if (message.includes('test temperature') || message.includes('test ac') || message.includes('simulate hot')) {
+      console.log('🔥 Temperature test command triggered by message:', message);
+      // Use the actual displayed temperature from status bar, or current temperature state
+      const currentTemp = temperature ? parseInt(temperature.replace('°C', '')) : 15;
+      setTimeout(() => {
+        handleTemperatureExceed(currentTemp > 35 ? currentTemp : 37); // Use real temp if hot, otherwise simulate 37°C
+      }, 1000);
+      return `Testing temperature trigger! Real API temperature: ${temperature || '15��C'} from OpenWeather${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C for demo)'}...`;
+    }
+
+    // Test "too hot" complaint
+    if (message.includes('test too hot')) {
+      console.log('🔥 Testing "too hot" complaint functionality');
+      setTimeout(() => {
+        handleTemperatureExceed(38); // Simulate high temperature for hot complaint
+      }, 1000);
+      return "Testing 'too hot' complaint! Watch for the hot emoji sequence...";
+    }
+
+    // Test AC emoji sequence
+    if (message.includes('test ac sequence')) {
+      console.log('���️ Testing AC emoji sequence');
+      setTimeout(() => {
+        setShowACEmoji(true);
+        setTimeout(() => {
+          setShowACEmoji(false);
+          setAirConditioner(22, true);
+        }, 3000);
+      }, 1000);
+      return "Testing AC emoji sequence! Watch the happy AC face for 3 seconds, then AC turns on...";
+    }
+
+    // Test lighting emoji sequence
+    if (message.includes('test lights') || message.includes('test lighting')) {
+      console.log('💡 Testing lighting emoji sequence');
+      setTimeout(() => {
+        setShowCuteEmoji(true);
+        setTimeout(() => {
+          setShowCuteEmoji(false);
+          controlLights(true);
+        }, 3000);
+      }, 1000);
+      return "Testing lighting emoji sequence! Watch the squinting face for 3 seconds, then lights turn on...";
+    }
+
+    if (message.includes('test snow') || message.includes('simulate snow')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'snow',
+          visibility: 10000,
+          windSpeed: 5,
+          temp: -2,
+          description: 'Heavy snow'
+        });
+      }, 1000);
+      return "Testing snow weather! Simulating heavy snow conditions...";
+    }
+
+    if (message.includes('test fog') || message.includes('simulate fog')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'fog',
+          visibility: 200,
+          windSpeed: 2,
+          temp: 8,
+          description: 'Dense fog'
+        });
+      }, 1000);
+      return "Testing fog weather! Simulating dense fog conditions...";
+    }
+
+    if (message.includes('test storm') || message.includes('simulate storm')) {
+      setTimeout(() => {
+        handleExtremeWeather({
+          condition: 'thunderstorm',
+          visibility: 5000,
+          windSpeed: 22,
+          temp: 18,
+          description: 'Severe thunderstorm'
+        });
+      }, 1000);
+      return "Testing storm weather! Simulating severe thunderstorm conditions...";
+    }
+
+    if (message.includes('test focus') || message.includes('simulate focus')) {
+      setTimeout(() => {
+        handleFocusMode();
+      }, 1000);
+      return "Testing focus mode trigger! Simulating 5 minutes of focused driving...";
+    }
+
+    // Test commands for new alert system
+    if (message.includes('test ice') || message.includes('simulate ice')) {
+      triggerIceRiskAlert();
+      return "Testing ice risk alert! Simulating near-freezing conditions...";
+    }
+
+    if (message.includes('test wind') || message.includes('simulate wind')) {
+      triggerHighWindAlert(12);
+      return "Testing high wind alert! Simulating strong crosswinds...";
+    }
+
+    if (message.includes('test fog alert') || message.includes('simulate fog alert')) {
+      triggerFogAlert(500);
+      return "Testing fog alert! Simulating low visibility conditions...";
+    }
+
+    if (message.includes('test rain') || message.includes('simulate rain')) {
+      triggerRainAlert();
+      return "Testing rain alert! Simulating wet road conditions...";
+    }
+
+    if (message.includes('test fatigue') || message.includes('simulate fatigue')) {
+      triggerFatigueRiskAlert();
+      return "Testing fatigue risk alert! Simulating peak drowsiness hours...";
+    }
+
+    if (message.includes('test rush hour') || message.includes('simulate traffic')) {
+      triggerRushHourAlert();
+      return "Testing rush hour alert! Simulating heavy traffic conditions...";
+    }
+
+    if (message.includes('reset alerts') || message.includes('clear alerts')) {
+      setAlertTriggered({});
+      setActiveAlert(null);
+      return "All alert triggers have been reset! You can test the alerts again.";
+    }
+
+    // Simple test commands
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+      return "Hello! I'm Melo, your AI co-driver assistant. I'm here to help with navigation, music, and keeping you safe on the road. How can I assist you today?";
+    }
+
+    if (message.includes('microphone test') || message.includes('mic test')) {
+      return "🎤 Microphone test successful! I can hear you clearly. Your speech recognition is working properly.";
+    }
+
+    if (message.includes('test high heart rate') || message.includes('test emergency heart rate')) {
+      // Simulate high heart rate emergency for testing
+      setTimeout(() => {
+        window.location.href = '/ai-chatbot?high-heart-rate=true&bpm=130';
+      }, 2000);
+      return "🧪 Testing high heart rate emergency alert. Simulating 130 BPM dangerous level in 2 seconds...";
+    }
+
+    if (message.includes('test') && message.includes('speech')) {
+      return "Speech recognition test successful! I can hear you clearly. Try asking me about music, navigation, or car controls.";
+    }
+
     // Voice control help system
-    if (message.includes('help') || message.includes('commands') || message.includes('what can you do') || 
+    if (message.includes('help') || message.includes('commands') || message.includes('what can you do') ||
         message.includes('voice commands') || message.includes('how to use')) {
       return `I can understand many voice commands! Try saying:
 
-🎵 Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
-🚗 Navigation: "go to dashboard", "open playlists", "navigate to music page"  
-❄️ Car Control: "turn on AC", "set temperature to 20", "turn on lights"
+���� Music: "select rock music", "open music selection", "play", "pause", "next song", "volume up"
+��� Navigation: "go to dashboard", "open playlists", "navigate to music page"
+❄️ Car Control: "turn on AC", "set temperature to 22", "turn on lights"
 🎤 Voice: "start listening", "stop listening", "open microphone"
+⚠�� Test Alerts: "test ice", "test wind", "test fog alert", "test rain", "test fatigue", "test rush hour"
+🔧 Alert Control: "reset alerts", "clear alerts"
+🚨 Emergency Test: "test high heart rate" - simulates dangerous >120 BPM emergency alert
 
 Just speak naturally - I understand many variations of these commands!`;
     }
@@ -1046,12 +2081,12 @@ Just speak naturally - I understand many variations of these commands!`;
         const safetyWarnings = await checkRoadSafety(currentLocation.lat, currentLocation.lng);
         let safetyInfo = "";
         if (safetyWarnings.length > 0) {
-          safetyInfo = `\n\n🚨 CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
+          safetyInfo = `\n\n�� CURRENT CONDITIONS:\n${safetyWarnings.join('\n')}`;
         }
         
         return `🗺️ TRIP PLANNING SAFETY GUIDE:
 
-🛡️ PRE-DEPARTURE CHECKLIST:
+��️ PRE-DEPARTURE CHECKLIST:
 • Vehicle inspection: tires, brakes, lights, fluids
 • Emergency kit: water, snacks, first aid, blanket, flashlight
 • Navigation backup: download offline maps
@@ -1062,7 +2097,7 @@ Just speak naturally - I understand many variations of these commands!`;
 ⚠️ SAFETY RULES:
 • Take breaks every 2 hours
 • Don't drive when drowsy - pull over safely
-• Keep 3-second following distance (6+ in bad weather)
+��� Keep 3-second following distance (6+ in bad weather)
 • Share your route and check-in times with family
 • Trust your instincts - if something feels wrong, be cautious${safetyInfo}`;
       }
@@ -1086,7 +2121,7 @@ Just speak naturally - I understand many variations of these commands!`;
 
 📞 EMERGENCY CONTACTS:
 • Police/Fire/Medical: 911
-• Roadside Assistance: Check your insurance card
+��� Roadside Assistance: Check your insurance card
 • Poison Control: 1-800-222-1222
 
 📍 LOCATION HELP: I can help identify your location for emergency responders if needed. Stay on the line with 911 and follow their instructions.
@@ -1107,7 +2142,7 @@ Are you hurt? Do you need medical attention?`;
           weatherAdvice += `\n\n🚨 WEATHER ALERTS:\n${safetyWarnings.join('\n')}`;
         }
         
-        weatherAdvice += `\n\n🌦️ WEATHER DRIVING TIPS:
+        weatherAdvice += `\n\n🌦��� WEATHER DRIVING TIPS:
 • Rain: Reduce speed 10-15 mph, increase following distance
 • Snow/Ice: Drive slowly, avoid sudden movements, keep winter kit
 • Fog: Use fog lights, reduce speed significantly, avoid lane changes
@@ -1148,9 +2183,9 @@ ${response}
     // Vehicle breakdown assistance
     if (message.includes('car trouble') || message.includes('breakdown') || message.includes('won\'t start') || 
         message.includes('flat tire') || message.includes('engine') || message.includes('overheating')) {
-      return `🔧 VEHICLE BREAKDOWN ASSISTANCE:
+      return `�� VEHICLE BREAKDOWN ASSISTANCE:
 
-🛡️ SAFETY FIRST:
+������ SAFETY FIRST:
 • Pull over safely (shoulder, parking lot)
 • Turn on hazard lights
 • Exit away from traffic if safe
@@ -1160,7 +2195,7 @@ ${response}
 • Flat tire: Use spare if you know how, or call roadside assistance
 • Dead battery: Try jump start or call for help
 • Overheating: Pull over immediately, turn off AC, turn on heat
-• Won't start: Check battery connections, fuel level
+��� Won't start: Check battery connections, fuel level
 
 📞 GET HELP:
 • Roadside assistance (insurance/AAA)
@@ -1223,6 +2258,15 @@ ${response}
       return `It's currently ${temp} outside in Limerick. Should I adjust your AC to keep you comfortable inside the car?`;
     }
 
+    // Handle "too hot" complaints - trigger hot emoji sequence
+    if (message.includes('too hot') || message.includes('so hot') || message.includes('very hot') || message.includes('really hot')) {
+      console.log('🔥 User complained about heat, triggering hot emoji sequence');
+      setTimeout(() => {
+        handleTemperatureExceed(38); // Simulate high temperature for hot complaint
+      }, 1000);
+      return "Oh no! I can see you're feeling the heat. Let me help with that!";
+    }
+
     if (message.includes('cold') || message.includes('hot') || message.includes('warm')) {
       if (message.includes('cold')) {
         setTimeout(() => {
@@ -1233,21 +2277,25 @@ ${response}
         return "I'll warm things up for you! Setting the AC to 24°C to help you feel more comfortable.";
       } else {
         setTimeout(() => {
-          setAirConditioner(20, true);
+          setAirConditioner(22, true);
           setShowComfortEmoji(true);
           setTimeout(() => setShowComfortEmoji(false), 3000);
         }, 1000);
-        return "Let me cool things down! Setting the AC to 20°C so you can drive comfortably.";
+        return "Let me cool things down! Setting the AC to 22°C so you can drive comfortably.";
       }
     }
 
-    if (message.includes('dark') || message.includes('can\'t see') || message.includes('hard to see')) {
+    if (message.includes('dark') || message.includes('can\'t see') || message.includes('hard to see') || message.includes('too dark') || message.includes('turn on light')) {
+      // Show cute squinting emoji for 3 seconds first, then turn on lights
       setTimeout(() => {
-        controlLights(true);
         setShowCuteEmoji(true);
-        setTimeout(() => setShowCuteEmoji(false), 3000);
+        setTimeout(() => {
+          setShowCuteEmoji(false);
+          // Turn on lights after emoji is shown
+          controlLights(true);
+        }, 3000);
       }, 1000);
-      return "Safety first! I'm turning on your lights for better visibility. Drive carefully!";
+      return "Safety first! I'll turn on your lights for better visibility. Drive carefully!";
     }
 
     if (message.includes('where am i') || message.includes('location') || message.includes('lost')) {
@@ -1279,60 +2327,113 @@ ${response}
     const message = userMessage.toLowerCase();
     const response = botResponse.toLowerCase();
 
-    // Comfort emoji triggers + proactive wellness suggestions
+    // Updated emotion analysis system:
+    // - Alerts only show on test commands
+    // - Comfort emoji can show during normal conversation
+    // - Other emojis show for specific scenarios
+
+    // Comfort emoji - can trigger during normal conversation for stress/comfort words
     if (message.includes('stress') || message.includes('anxious') || message.includes('worried') ||
         message.includes('scared') || message.includes('nervous') || message.includes('overwhelmed') ||
-        response.includes('comfort') || response.includes('calm') || response.includes('relax')) {
+        message.includes('comfort') || message.includes('calm') || message.includes('relax')) {
       setShowComfortEmoji(true);
       setTimeout(() => setShowComfortEmoji(false), 3000);
-
-      // Proactively suggest breathing exercise for stress
-      setTimeout(() => {
-        const wellnessMessage: Message = {
-          id: Date.now().toString() + '_wellness_suggest',
-          text: "I notice you might be feeling stressed. Would you like me to guide you through a quick breathing exercise? Just say 'start breathing' and I'll help you relax.",
-          type: 'bot',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, wellnessMessage]);
-        speakText("I can help you feel better. Would you like to try a breathing exercise with me?");
-      }, 4000);
       return;
     }
 
-    // Shock emoji triggers
-    if (message.includes('accident') || message.includes('emergency') || message.includes('help') ||
-        message.includes('crash') || message.includes('police') || message.includes('ambulance') ||
-        response.includes('shock') || response.includes('emergency') || response.includes('urgent')) {
+    // Test command emojis - Only for specific test commands
+    if (message.includes('test shock') || message.includes('test emergency') || message.includes('test alert')) {
       setShowShockEmoji(true);
       setTimeout(() => setShowShockEmoji(false), 3000);
       return;
     }
 
-    // Cute emoji triggers
-    if (message.includes('good morning') || message.includes('thank you') || message.includes('love') ||
-        message.includes('sweet') || message.includes('nice') || message.includes('cute') ||
-        response.includes('adorable') || response.includes('sweet') || response.includes('lovely')) {
+    if (message.includes('test cute') || message.includes('test sweet') || message.includes('test jokes')) {
       setShowCuteEmoji(true);
       setTimeout(() => setShowCuteEmoji(false), 3000);
       return;
     }
 
-    // Cry emoji triggers
-    if (message.includes('sad') || message.includes('cry') || message.includes('upset') ||
-        message.includes('disappointed') || message.includes('hurt') || message.includes('bad day') ||
-        response.includes('sorry') || response.includes('difficult') || response.includes('understand')) {
+    if (message.includes('test cry') || message.includes('test sad') || message.includes('test no')) {
       setShowCryEmoji(true);
       setTimeout(() => setShowCryEmoji(false), 3000);
       return;
     }
 
-    // Enjoy emoji triggers
-    if (message.includes('happy') || message.includes('excited') || message.includes('great') ||
-        message.includes('awesome') || message.includes('fun') || message.includes('enjoy') ||
-        response.includes('wonderful') || response.includes('amazing') || response.includes('fantastic')) {
+    if (message.includes('test happy') || message.includes('test enjoy') || message.includes('test yes') || message.includes('test breathing')) {
       setShowEnjoyEmoji(true);
       setTimeout(() => setShowEnjoyEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test ac') || message.includes('test air conditioner') || message.includes('test hot')) {
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test lights') || message.includes('test fog lights') || message.includes('test headlights')) {
+      setShowLightingEmoji(true);
+      setTimeout(() => setShowLightingEmoji(false), 3000);
+      return;
+    }
+
+    if (message.includes('test music') || message.includes('test listen music')) {
+      setShowHappyEmoji(true);
+      setTimeout(() => setShowHappyEmoji(false), 3000);
+      return;
+    }
+
+    // NEW EMOJI TRIGGERS
+
+    // Hot weather mentions → HotFace emoji
+    if (message.includes('so hot') || message.includes('too hot') || message.includes('really hot') ||
+        message.includes('very hot') || message.includes('burning up') || message.includes('boiling') ||
+        message.includes('sweltering') || message.includes('scorching') || message.includes('heat wave') ||
+        message.includes('temperature is high') || message.includes('temperature too high') ||
+        message.includes('weather is hot') || message.includes('it\'s hot') || message.includes('feeling hot')) {
+      setShowHotEmoji(true);
+      setTimeout(() => {
+        setShowHotEmoji(false);
+        // Also trigger AC suggestion after showing hot emoji
+        handleTemperatureExceed(35);
+      }, 3000);
+      return;
+    }
+
+    // Joke requests → CuteFace emoji
+    if (message.includes('tell me a joke') || message.includes('joke please') || message.includes('make me laugh') ||
+        message.includes('something funny') || message.includes('funny story') || message.includes('cheer me up') ||
+        message.includes('need a laugh') || message.includes('entertain me') || message.includes('humor') ||
+        message.includes('funny joke') || message.includes('lighten the mood') || message.includes('brighten my day')) {
+      setShowCuteEmoji(true);
+      setTimeout(() => setShowCuteEmoji(false), 3000);
+      return;
+    }
+
+    // Happy/positive feedback → LaughFace emoji
+    if (message.includes('that\'s so good') || message.includes('i am happy now') || message.includes('that\'s great') ||
+        message.includes('amazing') || message.includes('wonderful') || message.includes('excellent') ||
+        message.includes('fantastic') || message.includes('love it') || message.includes('so funny') ||
+        message.includes('hilarious') || message.includes('made me smile') || message.includes('feel better') ||
+        message.includes('that\'s awesome') || message.includes('brilliant') || message.includes('perfect') ||
+        message.includes('you\'re the best') || message.includes('thank you so much') || message.includes('feel great') ||
+        message.includes('really good') || message.includes('so happy') || message.includes('cheered me up') ||
+        message.includes('feeling good') || message.includes('much better') || message.includes('that helped')) {
+      setShowLaughEmoji(true);
+      setTimeout(() => setShowLaughEmoji(false), 3000);
+      return;
+    }
+
+    // Alert system triggers → ShockFace emoji (enhanced)
+    if (message.includes('emergency') || message.includes('help') || message.includes('urgent') ||
+        message.includes('accident') || message.includes('dangerous') || message.includes('warning') ||
+        message.includes('alert') || message.includes('problem') || message.includes('trouble') ||
+        message.includes('call 911') || message.includes('call police') || message.includes('medical') ||
+        message.includes('hurt') || message.includes('injured') || message.includes('crash') ||
+        message.includes('breakdown') || message.includes('emergency stop') || activeAlert) {
+      setShowShockEmoji(true);
+      setTimeout(() => setShowShockEmoji(false), 4000);
       return;
     }
   };
@@ -1341,7 +2442,107 @@ ${response}
   const callDeepSeekAPI = async (userMessage: string): Promise<string> => {
     // Handle comprehensive voice commands for UI interactions
     const userLower = userMessage.toLowerCase();
-    
+
+    // Direct music playback commands - play specific genres without navigation
+    if (userLower.includes('play') && userLower.includes('music')) {
+      let genreToPlay = '';
+      let genreResponse = '';
+
+      if (userLower.includes('rock')) {
+        genreToPlay = 'Rock';
+        genreResponse = "🎸 Starting rock music! Get ready for some energizing beats to power your drive!";
+      } else if (userLower.includes('classical')) {
+        genreToPlay = 'Classical';
+        genreResponse = "🎼 Playing classical music! Perfect for a calm, focused drive with beautiful melodies.";
+      } else if (userLower.includes('jazz')) {
+        genreToPlay = 'Jazz';
+        genreResponse = "🎷 Jazz music starting! Smooth, sophisticated sounds for your journey.";
+      } else if (userLower.includes('ambient') || userLower.includes('chill')) {
+        genreToPlay = 'Ambient';
+        genreResponse = "���� Ambient music playing! Relaxing soundscapes to keep you calm and centered.";
+      } else if (userLower.includes('pop')) {
+        genreToPlay = 'Pop';
+        genreResponse = "🎤 Pop music starting! Catchy tunes to make your drive more fun!";
+      } else if (userLower.includes('electronic') || userLower.includes('techno') || userLower.includes('edm')) {
+        genreToPlay = 'Electro Pop';
+        genreResponse = "🎧 Electronic music playing! High-energy beats to energize your drive!";
+      } else if (userLower.includes('country')) {
+        genreToPlay = 'Country';
+        genreResponse = "🤠 Country music starting! Perfect road trip vibes for your journey!";
+      } else if (userLower.includes('blues')) {
+        genreToPlay = 'Blues';
+        genreResponse = "🎸 Blues music playing! Soulful sounds for a smooth drive.";
+      }
+
+      if (genreToPlay) {
+        // Show music emoji
+        setTimeout(() => {
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+        }, 1000);
+
+        // Start playing the requested genre
+        setTimeout(async () => {
+          try {
+            console.log(`🎵 Chatbot: Starting ${genreToPlay} music directly`);
+
+            // Set the genre in localStorage
+            musicService.saveSelectedGenres([genreToPlay]);
+
+            // Load and play tracks
+            await simpleMusicService.forceFreshReload([genreToPlay], true);
+            const tracks = await simpleMusicService.getAllTracks();
+
+            if (tracks.length > 0) {
+              console.log(`🎵 Chatbot: Found ${tracks.length} ${genreToPlay} tracks, starting playback`);
+              audioManager.setPlaylist(tracks);
+              await audioManager.playTrack(tracks[0]);
+            } else {
+              console.warn(`🎵 Chatbot: No ${genreToPlay} tracks found`);
+            }
+          } catch (error) {
+            console.error(`🎵 Chatbot: Error playing ${genreToPlay} music:`, error);
+          }
+        }, 1500);
+
+        return genreResponse;
+      }
+
+      // Handle general "play music" without specific genre - start default music
+      if ((userLower.includes('play music') || userLower.includes('start music')) && !genreToPlay) {
+        // Show music emoji
+        setTimeout(() => {
+          setShowMusicEmoji(true);
+          setTimeout(() => setShowMusicEmoji(false), 3000);
+        }, 1000);
+
+        // Start playing default genre (Rock for energy)
+        setTimeout(async () => {
+          try {
+            console.log('🎵 Chatbot: Starting default music (Rock)');
+            const defaultGenre = 'Rock';
+
+            // Set the genre in localStorage
+            musicService.saveSelectedGenres([defaultGenre]);
+
+            // Load and play tracks
+            await simpleMusicService.forceFreshReload([defaultGenre], true);
+            const tracks = await simpleMusicService.getAllTracks();
+
+            if (tracks.length > 0) {
+              console.log(`🎵 Chatbot: Found ${tracks.length} tracks, starting playback`);
+              audioManager.setPlaylist(tracks);
+              await audioManager.playTrack(tracks[0]);
+            }
+          } catch (error) {
+            console.error('🎵 Chatbot: Error playing default music:', error);
+          }
+        }, 1500);
+
+        return "🎵 Starting music! I've chosen some energizing rock tracks to enhance your drive. Say 'play [genre] music' if you want a specific style!";
+      }
+    }
+
     // Music genre selection voice commands
     if (userLower.includes('select') || userLower.includes('choose') || userLower.includes('pick')) {
       // Music genre selection
@@ -1529,14 +2730,16 @@ ${response}
     // Voice control for closing/dismissing
     if (userLower.includes('close') || userLower.includes('dismiss') || userLower.includes('hide')) {
       if (userLower.includes('chat') || userLower.includes('conversation')) {
-        // Clear conversation
+        // Clear conversation and history
         setTimeout(() => {
-          setMessages([{
+          const freshStart = [{
             id: '1',
             text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
             type: 'bot',
             timestamp: new Date()
-          }]);
+          }];
+          setMessages(freshStart);
+          localStorage.setItem('ai-chatbot-history', JSON.stringify(freshStart));
         }, 500);
         return "Conversation cleared! I'm here whenever you need me.";
       }
@@ -1569,7 +2772,10 @@ ${response}
       
       if (!apiKey || apiKey === 'your-deepseek-api-key') {
         console.warn('⚠️ DeepSeek API key not configured - using fallback responses');
-        return await getFallbackResponse(userMessage);
+        console.log('🔄 Calling fallback response for:', userMessage);
+        const fallbackResult = await getFallbackResponse(userMessage);
+        console.log('✅ Fallback response generated:', fallbackResult);
+        return fallbackResult;
       }
 
       const locationContext = currentLocation
@@ -1591,12 +2797,14 @@ ${response}
 
 PERSONALITY TRAITS:
 - Warm, supportive, and emotionally aware
+- Remember our conversation history and build upon it
 - Detect stress, fatigue, frustration, or anxiety in messages
 - Offer emotional support and encouragement
 - Be conversational and friendly, not robotic
 - Show genuine care and concern
 - Use encouraging and uplifting language
 - Express emotions through your responses to trigger appropriate emoji reactions
+- Leverage your full conversational abilities as DeepSeek
 
 CAPABILITIES:
 - Navigation and directions (integrated with Google Maps)
@@ -1632,17 +2840,31 @@ EMOTIONAL RESPONSES:
 - Express excitement and joy for happy moments to trigger enjoy emoji
 
 RESPONSE STYLE:
-- Keep responses conversational and under 2 sentences for safety
+- Prioritize safety while driving - keep responses focused and relevant
+- ADAPTIVE LENGTH: Adjust response length based on context and user needs
+  * Quick responses (10-15 words) for simple confirmations, controls, or urgent safety matters
+  * Natural responses (20-50 words) for conversations, explanations, emotional support
+  * Detailed responses (50+ words) for stories, complex explanations, or when user explicitly asks for more detail
+- Use your full DeepSeek conversational abilities - don't always give standardized responses
+- Vary your response style naturally based on the conversation flow
+- Remember what we've talked about and reference it naturally
+- Use our conversation history to provide contextual responses
 - Ask follow-up questions to show you care
 - Offer encouragement during stressful driving situations
 - Be proactive about safety and wellbeing
 - Use a caring, friend-like tone
 - Include emotional words that match the context (comfort, shock, cute, empathy, joy)
+- Be authentic and engaging rather than robotic or templated
 
 ${locationContext}
 
-Always prioritize driver safety and emotional wellbeing. If you detect stress or fatigue, suggest appropriate rest or support.`
+Always prioritize driver safety and emotional wellbeing. Remember our conversation history and build upon it naturally. Use your full capabilities as DeepSeek to provide genuine, helpful, and varied responses.`
             },
+            // Include recent conversation history (last 6 messages for context)
+            ...messages.slice(-6).map(msg => ({
+              role: msg.type === 'user' ? 'user' : 'assistant',
+              content: msg.text
+            })),
             {
               role: 'user',
               content: userMessage
@@ -1666,12 +2888,259 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       // Check for action requests and perform them
       const userLower = userMessage.toLowerCase();
 
+      // Check for child story suggestions when driver mentions having children
+      if ((userLower.includes('child') || userLower.includes('kid') || userLower.includes('children') ||
+           userLower.includes('son') || userLower.includes('daughter') || userLower.includes('my boy') ||
+           userLower.includes('my girl') || userLower.includes('little one')) &&
+          (userLower.includes('have') || userLower.includes('got') || userLower.includes('with me') ||
+           userLower.includes('back seat') || userLower.includes('car') || userLower.includes('bored') ||
+           userLower.includes('crying') || userLower.includes('restless') || userLower.includes('tired') ||
+           userLower.includes('entertain') || userLower.includes('story') || userLower.includes('book'))) {
+
+        // Show happy emoji for child-friendly suggestion
+        setTimeout(() => {
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+        }, 1000);
+
+        const childStoryResponse = "I'd love to help entertain your little passenger! I can tell some wonderful short stories - would you like me to share a quick adventure tale about a brave little explorer, a magical forest story, or maybe a funny animal adventure? These stories are perfect for car rides and will keep your child engaged and happy!";
+
+        // Add comfort words after emoji
+        setTimeout(() => {
+          const comfortMsg: Message = {
+            id: Date.now().toString() + '_child_comfort',
+            text: "Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.",
+            type: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, comfortMsg]);
+          speakText("Keeping children happy during car rides is so important for everyone's safety and comfort. I have lots of age-appropriate stories that are both entertaining and calming.");
+        }, 3000);
+
+        return childStoryResponse;
+      }
+
+      // Handle general story confirmation (yes/yeah after story offer)
+      if ((userLower.includes('yes') || userLower.includes('yeah') || userLower.includes('sure') || userLower.includes('ok')) &&
+          messages.slice(-3).some(msg => msg.text.includes('story') || msg.text.includes('tell'))) {
+        const stories = [
+          "Once upon a time, a little star got lost in the sky. A friendly cloud guided it home by creating sparkly raindrops that lit up the path. The star learned that asking for help makes you braver, not weaker!",
+          "There was a brave little mouse who wanted to help a giant elephant. The elephant was scared of a tiny spider! The mouse gently moved the spider to safety, and they all became best friends.",
+          "A magical tree grew candy apples that granted one wish each. A kind girl wished for all the forest animals to have warm homes for winter. Her selfless wish made the tree bloom year-round!"
+        ];
+        const randomStory = stories[Math.floor(Math.random() * stories.length)];
+        speakText(randomStory);
+        return randomStory;
+      }
+
+      // Handle story selection when user responds to child story offer
+      if ((userLower.includes('adventure') || userLower.includes('explorer')) &&
+          messages.some(msg => msg.text.includes('brave little explorer'))) {
+        const adventureStory = "Sam found a magical compass! Red arrow led to singing flowers, blue to joking frogs, gold to family with snacks. What an adventure!";
+        speakText(adventureStory);
+        return adventureStory;
+      }
+
+      if ((userLower.includes('forest') || userLower.includes('magical')) &&
+          messages.some(msg => msg.text.includes('magical forest story'))) {
+        const forestStory = "Luna the bunny made flowers glow with her paws. She helped a lost owl find home by lighting the forest path. The end!";
+        speakText(forestStory);
+        return forestStory;
+      }
+
+      if ((userLower.includes('animal') || userLower.includes('funny')) &&
+          messages.some(msg => msg.text.includes('funny animal adventure'))) {
+        const animalStory = "Pip the penguin wanted to fly but discovered swimming was their special talent. They became the fastest arctic swimmer ever! The end!";
+        speakText(animalStory);
+        return animalStory;
+      }
+
+      // Handle AC permission responses when awaiting permission
+      if (awaitingACPermission && (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+          userLower.includes('okay') || userLower.includes('please') || userLower.includes('turn on') ||
+          userLower.includes('cool') || userLower.includes('ac'))) {
+
+        setAwaitingACPermission(false);
+
+        // Show AC emoji for 3 seconds first, then turn on AC
+        setTimeout(() => {
+          setShowACEmoji(true);
+          setTimeout(() => {
+            setShowACEmoji(false);
+            // Turn on AC after emoji is shown
+            setAirConditioner(22, true);
+          }, 3000);
+        }, 1000);
+
+        return "Perfect! I'll turn on the air conditioner at 22°C to help cool you down. You should feel more comfortable soon!";
+      }
+
+      if (awaitingACPermission && (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t'))) {
+        setAwaitingACPermission(false);
+        return "No problem! I'll let you handle the temperature yourself. Just let me know if you change your mind!";
+      }
+
+      // Handle weather permission responses
+      if (awaitingWeatherPermission && currentWeatherCondition) {
+        if (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+            userLower.includes('okay') || userLower.includes('please') || userLower.includes('activate') ||
+            userLower.includes('reduce') || userLower.includes('help')) {
+
+          setAwaitingWeatherPermission(false);
+
+          // Show happy emoji for acceptance
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+
+          // Provide specific action based on weather condition
+          let actionMessage = '';
+          let comfortWords = '';
+
+          if (currentWeatherCondition.condition.includes('snow') || currentWeatherCondition.condition.includes('blizzard')) {
+            actionMessage = 'Perfect! I\'ve reduced your speed by 7 km/h and activated winter driving mode. Your vehicle will now maintain safer speeds and distances.';
+            comfortWords = 'You\'re making the right choice for safety. I\'ll keep monitoring conditions and help you get to your destination safely.';
+          } else if (currentWeatherCondition.condition.includes('fog')) {
+            actionMessage = 'Excellent! I\'ve activated autodrive assistance with enhanced sensors. The vehicle will now help guide you safely through low visibility.';
+            comfortWords = 'This was a smart decision. I\'ll be your extra eyes in this fog and ensure you stay on the right path safely.';
+          } else if (currentWeatherCondition.condition.includes('thunderstorm')) {
+            actionMessage = 'Great choice! I\'ve found the nearest safe rest area 2.3 km ahead. I\'ll guide you there to wait out the storm.';
+            comfortWords = 'You\'re prioritizing safety, which is always the right call. Better to arrive safely than risk danger in severe weather.';
+          } else {
+            actionMessage = 'Perfect! I\'ve activated enhanced safety monitoring and adjusted driving parameters for current conditions.';
+            comfortWords = 'You\'re being very responsible. I\'ll help you navigate these challenging conditions safely.';
+          }
+
+          // Add action confirmation message
+          setTimeout(() => {
+            const actionMsg: Message = {
+              id: Date.now().toString() + '_weather_action',
+              text: actionMessage,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, actionMsg]);
+
+            // Add comfort words after a delay
+            setTimeout(() => {
+              const comfortMsg: Message = {
+                id: Date.now().toString() + '_comfort',
+                text: comfortWords,
+                type: 'bot',
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, comfortMsg]);
+              speakText(comfortWords);
+            }, 2000);
+          }, 1000);
+
+          return actionMessage;
+        }
+
+        if (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t')) {
+          setAwaitingWeatherPermission(false);
+
+          // Show sad emoji for rejection
+          setShowSadEmoji(true);
+          setTimeout(() => setShowSadEmoji(false), 3000);
+
+          let sadResponse = 'I understand you want to handle this yourself.';
+          let comfortWords = 'Please drive very carefully in these conditions. I\'m still here monitoring the weather and ready to help if you change your mind. Your safety is my top priority.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort_sad',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 3000);
+
+          return sadResponse;
+        }
+      }
+
+      // Handle breathing exercise permission responses
+      if (awaitingBreathingPermission) {
+        if (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('ok') ||
+            userLower.includes('okay') || userLower.includes('please') || userLower.includes('need') ||
+            userLower.includes('help') || userLower.includes('breathing')) {
+
+          setAwaitingBreathingPermission(false);
+
+          // Show happy emoji for acceptance
+          setShowHappyEmoji(true);
+          setTimeout(() => setShowHappyEmoji(false), 3000);
+
+          // Start breathing exercise after emoji
+          setTimeout(() => {
+            startBreathingExercise();
+          }, 3000);
+
+          const acceptanceMessage = 'Wonderful! I\'ll guide you through a calming 4-7-8 breathing exercise to help you relax and refocus.';
+          const comfortWords = 'Taking a moment to breathe and center yourself is always a wise choice. Let\'s restore your calm and clarity together.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 2000);
+
+          return acceptanceMessage;
+        }
+
+        if (userLower.includes('no') || userLower.includes('not') || userLower.includes('don\'t') ||
+            userLower.includes('maybe later') || userLower.includes('busy')) {
+
+          setAwaitingBreathingPermission(false);
+
+          // Show sad emoji for rejection
+          setShowSadEmoji(true);
+          setTimeout(() => setShowSadEmoji(false), 3000);
+
+          const sadResponse = 'That\'s perfectly okay! You know what\'s best for you right now.';
+          const comfortWords = 'Remember, I\'m always here when you need support. Sometimes just acknowledging stress is the first step to feeling better. Drive safely and take care of yourself.';
+
+          // Add comfort message after emoji
+          setTimeout(() => {
+            const comfortMsg: Message = {
+              id: Date.now().toString() + '_comfort_sad',
+              text: comfortWords,
+              type: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, comfortMsg]);
+            speakText(comfortWords);
+          }, 3000);
+
+          return sadResponse;
+        }
+      }
+
       // Music and entertainment requests (enhanced for stress support)
-      if (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
-          userLower.includes('play') || userLower.includes('listen') || userLower.includes('song')) ||
+      // Only navigate to music selection if no specific genre was mentioned (handled above)
+      // But don't navigate if user explicitly said "play music" - they want immediate playback
+      const hasSpecificGenre = userLower.includes('rock') || userLower.includes('classical') ||
+                              userLower.includes('jazz') || userLower.includes('ambient') ||
+                              userLower.includes('pop') || userLower.includes('electronic') ||
+                              userLower.includes('country') || userLower.includes('blues');
+
+      const isPlayCommand = userLower.includes('play music') || userLower.includes('start music');
+
+      if (!hasSpecificGenre && !isPlayCommand &&
+          (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
+          userLower.includes('listen') || userLower.includes('song')) ||
           userLower.includes('yes') && userLower.includes('music') ||
-          (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('okay')) && 
-          messages.some(msg => msg.text.includes('calming music'))) {
+          (userLower.includes('yes') || userLower.includes('sure') || userLower.includes('okay')) &&
+          messages.some(msg => msg.text.includes('calming music')))) {
 
         // Show music emoji first
         setTimeout(() => {
@@ -1685,8 +3154,8 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         }, 3000);
 
         // Check if this is stress-related music request
-        const isStressRelated = userLower.includes('stress') || userLower.includes('calm') || 
-                               userLower.includes('relax') || 
+        const isStressRelated = userLower.includes('stress') || userLower.includes('calm') ||
+                               userLower.includes('relax') ||
                                messages.some(msg => msg.text.includes('stress levels are elevated'));
 
         if (isStressRelated) {
@@ -1796,8 +3265,15 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       }
 
       if (userLower.includes('turn on lights') || userLower.includes('lights on')) {
-        controlLights(true);
-        return "Lights turned on for better visibility. Drive safely!";
+        // Show cute squinting emoji for 3 seconds first, then turn on lights
+        setTimeout(() => {
+          setShowCuteEmoji(true);
+          setTimeout(() => {
+            setShowCuteEmoji(false);
+            controlLights(true);
+          }, 3000);
+        }, 500);
+        return "Lights turning on for better visibility. Drive safely!";
       }
 
       if (userLower.includes('turn off lights') || userLower.includes('lights off')) {
@@ -1885,80 +3361,237 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
   };
 
   useEffect(() => {
-    // Request microphone permissions automatically
-    const requestMicrophonePermission = async () => {
-      try {
-        // Request microphone access to get permission
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('✅ Microphone permission granted automatically');
-        // Immediately stop the stream since we just needed permission
-        stream.getTracks().forEach(track => track.stop());
-      } catch (error) {
-        console.log('❌ Microphone permission denied or not available:', error);
-      }
-    };
 
     // Initialize Speech Recognition for continuous listening
+    console.log('🔍 Checking speech recognition availability...');
+    console.log('🔍 webkitSpeechRecognition in window:', 'webkitSpeechRecognition' in window);
+    console.log('🔍 SpeechRecognition in window:', 'SpeechRecognition' in window);
+
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      // Request microphone permission first
-      requestMicrophonePermission();
+      console.log('✅ Speech recognition available - will request permission when microphone button is clicked');
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      
-      // Main speech recognition for conversations
-      recognitionRef.current = new SpeechRecognition();
+      console.log('🔍 SpeechRecognition constructor:', SpeechRecognition);
+
+      try {
+        // Main speech recognition for conversations
+        recognitionRef.current = new SpeechRecognition();
+        console.log('✅ Main recognition instance created:', recognitionRef.current);
+      } catch (error) {
+        console.error('❌ Failed to create speech recognition:', error);
+        return;
+      }
 
       if (recognitionRef.current) {
         recognitionRef.current.continuous = true; // Continuous listening
-        recognitionRef.current.interimResults = false;
+        recognitionRef.current.interimResults = true; // Allow interim results for better responsiveness
         recognitionRef.current.lang = 'en-US';
+        recognitionRef.current.maxAlternatives = 3; // Get multiple alternatives to filter noise
+
+        // Enhanced noise filtering settings
+        try {
+          // Request audio constraints for better noise handling (if supported)
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const audioConstraints = {
+              audio: {
+                echoCancellation: true,      // Remove echo/feedback
+                noiseSuppression: true,      // Filter background noise
+                autoGainControl: true,       // Normalize volume levels
+                sampleRate: 16000,          // Optimal for speech recognition
+                channelCount: 1,            // Mono audio for better processing
+                latency: 0.1,               // Low latency for real-time
+                volume: 0.8                 // Moderate input volume
+              }
+            };
+            console.log('🔧 Enhanced audio constraints applied for noise reduction');
+          }
+        } catch (error) {
+          console.log('⚠️ Advanced audio constraints not supported, using defaults');
+        }
+
+        recognitionRef.current.onstart = () => {
+          console.log('�� Speech recognition has started - listening for speech...');
+          console.log('✅ You can now speak and your words should appear');
+          setIsListening(true);
+
+          // Add a test timeout to see if recognition is actually working
+          setTimeout(() => {
+            if (userWantsListening && isListening) {
+              console.log('🔍 Speech recognition test: Still listening after 5 seconds - this is good!');
+              console.log('🔍 If you spoke but no text appeared, check:');
+              console.log('   1. Your microphone is not muted');
+              console.log('   2. You are speaking clearly and loudly enough');
+              console.log('   3. Your browser has microphone permission');
+            }
+          }, 5000);
+        };
+
+        recognitionRef.current.onspeechstart = () => {
+          console.log('🗣️ Speech detected - processing...');
+          console.log('✅ Your microphone is working! Continue speaking...');
+
+          // Interrupt Melo's speech immediately when driver starts speaking
+          if (isSpeaking && 'speechSynthesis' in window) {
+            console.log('🔇 Interrupting Melo speech - driver is speaking');
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+          }
+        };
+
+        recognitionRef.current.onspeechend = () => {
+          console.log('🔇 Speech ended - processing transcript...');
+        };
+
+        recognitionRef.current.onaudiostart = () => {
+          console.log('🎵 Audio input started - microphone is active');
+        };
+
+        recognitionRef.current.onaudioend = () => {
+          console.log('🔇 Audio input ended');
+        };
+
+        recognitionRef.current.onsoundstart = () => {
+          console.log('🔊 Sound detected by microphone');
+
+          // Interrupt Melo's speech immediately when any sound is detected
+          if (isSpeaking && 'speechSynthesis' in window) {
+            console.log('🔇 Interrupting Melo speech - sound detected from driver');
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+          }
+        };
+
+        recognitionRef.current.onsoundend = () => {
+          console.log('🔇 Sound ended');
+        };
 
         recognitionRef.current.onresult = (event: any) => {
-          // Get the latest result
-          const lastResultIndex = event.results.length - 1;
-          const transcript = event.results[lastResultIndex][0].transcript.trim();
+          console.log('🎤 Speech recognition result event triggered');
+          console.log('🎤 Results count:', event.results.length);
 
-          console.log('🎤 Raw transcript:', transcript);
-          console.log('🎤 Word count:', transcript.split(' ').length);
+          // Enhanced voice isolation and noise filtering
+          let finalTranscript = '';
+          let interimTranscript = '';
+          let highestConfidence = 0;
 
-          // Only process if transcript is meaningful (more than 2 words)
-          if (transcript.split(' ').length > 1) {
-            console.log('✅ Processing transcript:', transcript);
+          for (let i = 0; i < event.results.length; i++) {
+            const result = event.results[i];
 
-            // Temporarily stop listening while processing, but keep user intent
+            // Analyze all alternatives for best quality
+            let bestResult = null;
+            let bestConfidence = 0;
+
+            for (let j = 0; j < result.length; j++) {
+              const alternative = result[j];
+              const confidence = alternative.confidence || 0;
+              const transcript = alternative.transcript;
+
+              // Check if this sounds like intentional speech vs background noise
+              if (isIntentionalSpeech(transcript, confidence)) {
+                if (confidence > bestConfidence) {
+                  bestResult = alternative;
+                  bestConfidence = confidence;
+                }
+              }
+            }
+
+            if (bestResult) {
+              const transcript = bestResult.transcript;
+              const cleanTranscript = filterNoiseWords(transcript);
+
+              if (result.isFinal) {
+                if (cleanTranscript.length > 1) {
+                  finalTranscript += cleanTranscript;
+                  if (bestConfidence > highestConfidence) {
+                    highestConfidence = bestConfidence;
+                  }
+                }
+              } else {
+                if (cleanTranscript.length > 0) {
+                  interimTranscript += cleanTranscript;
+                }
+              }
+
+              console.log(`🎤 Result ${i}: "${transcript}" → "${cleanTranscript}" (confidence: ${bestConfidence.toFixed(2)})`);
+            }
+          }
+
+          console.log('🎤 Final transcript:', finalTranscript);
+          console.log('🎤 Interim transcript:', interimTranscript);
+
+          // Show interim results in real-time
+          if (interimTranscript.length > 0) {
+            setPendingTranscript(interimTranscript);
+            console.log('��� Displaying interim result:', interimTranscript);
+          }
+
+          // Process final results with enhanced confidence filtering
+          if (finalTranscript.length > 1 && highestConfidence > 0.4) {
+            console.log('�� Processing final transcript:', finalTranscript);
+
+            // Clear interim transcript
+            setPendingTranscript(null);
+
+            // Temporarily stop listening while processing
             recognitionRef.current?.stop();
-            setIsListening(false); // Just for UI state, don't change user intent
-            setPendingTranscript(transcript);
+            setIsListening(false);
 
             // Add user message immediately
             const newMessage: Message = {
               id: Date.now().toString(),
-              text: transcript,
+              text: finalTranscript.trim(),
               type: 'user',
               timestamp: new Date()
             };
             setMessages(prev => [...prev, newMessage]);
-            setPendingTranscript(null);
 
             // Trigger AI response (which will restart listening)
-            addBotResponse(transcript);
+            addBotResponse(finalTranscript.trim());
           }
         };
 
         recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-          if (event.error !== 'aborted') {
-            // Restart listening after error (except if manually aborted)
+          console.log('⚠️ Speech recognition error:', event.error);
+
+          // Don't treat "aborted" as an error - it's normal when stopping manually
+          if (event.error === 'aborted') {
+            console.log('🎤 Speech recognition was stopped (normal operation)');
+            return;
+          }
+
+          if (event.error === 'not-allowed') {
+            console.error('❌ Microphone permission denied!');
+            setMicrophoneStatus('permission-denied');
+            setUserWantsListening(false);
+            alert('Please allow microphone access in your browser settings and refresh the page.');
+          } else if (event.error === 'no-speech') {
+            console.log('⚠️ No speech detected, continuing to listen...');
+            // Restart listening for no-speech error
             setTimeout(() => {
-              startContinuousListening();
+              if (userWantsListening && !isSpeaking) {
+                startContinuousListening();
+              }
+            }, 1000);
+          } else {
+            console.log(`🔄 Recognition error (${event.error}), restarting...`);
+            // Restart listening after error
+            setTimeout(() => {
+              if (userWantsListening && !isSpeaking) {
+                startContinuousListening();
+              }
             }, 2000);
           }
         };
 
         recognitionRef.current.onend = () => {
+          console.log('🎤 Speech recognition ended');
+          console.log('🔍 userWantsListening:', userWantsListening);
+          console.log('🔍 isSpeaking:', isSpeaking);
+          console.log('🔍 isListening:', isListening);
+
           // Only restart listening if user has explicitly enabled it and not speaking
-          console.log('🎤 Recognition ended. User wants listening:', userWantsListening, 'Is speaking:', isSpeaking);
           if (userWantsListening && !isSpeaking) {
+            console.log('🔄 Restarting recognition automatically...');
             setTimeout(() => {
               try {
                 startContinuousListening();
@@ -1966,99 +3599,36 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
                 console.log('⚠️ Failed to restart listening:', error);
               }
             }, 500);
+          } else {
+            console.log('❌ Not restarting recognition - conditions not met');
           }
         };
       }
 
-      // Wake word recognition for "Hey Melo"
-      wakeWordRecognitionRef.current = new SpeechRecognition();
+      // Wake word recognition disabled to prevent microphone conflicts
+      // wakeWordRecognitionRef.current = new SpeechRecognition();
       
-      if (wakeWordRecognitionRef.current) {
-        wakeWordRecognitionRef.current.continuous = true;
-        wakeWordRecognitionRef.current.interimResults = true;
-        wakeWordRecognitionRef.current.lang = 'en-US';
-
-        wakeWordRecognitionRef.current.onresult = (event: any) => {
-          const lastResultIndex = event.results.length - 1;
-          const transcript = event.results[lastResultIndex][0].transcript.toLowerCase().trim();
-          
-          console.log('👂 Wake word listening:', transcript);
-
-          // Check for "Hey Melo" or variations
-          if (transcript.includes('hey melo') || transcript.includes('hey melow') || 
-              transcript.includes('a melo') || transcript.includes('hey milo')) {
-            console.log('🎯 Wake word detected!');
-            
-            // Show visual feedback
-            setWakeWordDetected(true);
-            setTimeout(() => setWakeWordDetected(false), 2000);
-            
-            // Stop wake word listening temporarily
-            stopWakeWordListening();
-            
-            // If we're not already on the AI chatbot page, navigate there
-            if (window.location.pathname !== '/ai-chatbot') {
-              console.log('🚀 Navigating to AI chatbot page');
-              window.location.href = '/ai-chatbot';
-              return; // Exit early since we're navigating away
-            }
-            
-            // Auto-activate air conditioner (cooling)
-            setTimeout(() => {
-              console.log('❄️ Auto-activating air conditioner via wake word');
-              setAirConditioner(20, true); // Set to cooling temperature
-              setShowACEmoji(true);
-              setTimeout(() => setShowACEmoji(false), 3000);
-            }, 1000);
-            
-            // Auto-activate lights
-            setTimeout(() => {
-              console.log('💡 Auto-activating lights via wake word');
-              controlLights(true);
-              setShowLightingEmoji(true);
-              setTimeout(() => setShowLightingEmoji(false), 3000);
-            }, 1500);
-            
-            // Start main conversation listening
-            setUserWantsListening(true);
-            startContinuousListening();
-            
-            // Give audio feedback
-            speakText("Yes, I'm listening. I've turned on the air conditioner and lights for you. How can I help?");
-            
-            // Restart wake word listening after a delay
-            setTimeout(() => {
-              if (!userWantsListening) {
-                startWakeWordListening();
-              }
-            }, 8000); // Longer delay to account for automation actions
-          }
-        };
-
-        wakeWordRecognitionRef.current.onerror = (event: any) => {
-          console.error('Wake word recognition error:', event.error);
-          if (event.error !== 'aborted') {
-            setTimeout(() => {
-              startWakeWordListening();
-            }, 2000);
-          }
-        };
-
-        wakeWordRecognitionRef.current.onend = () => {
-          console.log('👂 Wake word recognition ended');
-          if (!userWantsListening) {
-            setTimeout(() => {
-              startWakeWordListening();
-            }, 500);
-          }
-        };
-
-        // Start wake word listening immediately
-        startWakeWordListening();
-      }
+      // Wake word recognition setup disabled to prevent microphone conflicts
+      console.log('🎤 Wake word detection completely disabled to prevent Safari permission conflicts');
 
       // Don't start listening immediately - wait for user to click button
+    } else {
+      console.error('❌ Speech recognition not available in this browser');
+      console.log('💡 Please use Chrome, Safari, or Edge with HTTPS/localhost');
+      setMicrophoneStatus('not-supported');
     }
+
+    // Add event listener to stop speech when user navigates away with browser controls
+    const handleBeforeUnload = () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 Stopped Melo speech synthesis on browser navigation');
+      }
+    };
+
+    // Listen for page unload (browser back/forward/refresh)
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
 
     return () => {
       if (timeoutRef.current) {
@@ -2071,96 +3641,128 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
       if (wakeWordRecognitionRef.current) {
         wakeWordRecognitionRef.current.stop();
       }
+      // Stop any ongoing speech synthesis when leaving the page
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 Stopped Melo speech synthesis on page cleanup');
+      }
+      setIsSpeaking(false);
+
+      // Remove event listeners
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
     };
   }, []);
 
-  const toggleListening = () => {
+  // Request microphone permission function
+  const requestMicrophonePermission = async (): Promise<boolean> => {
+    try {
+      console.log('🎤 Requesting microphone permission...');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia not supported');
+      }
+
+      // Request microphone access to get permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('✅ Microphone permission granted');
+      setMicrophoneStatus('available');
+      // Immediately stop the stream since we just needed permission
+      stream.getTracks().forEach(track => track.stop());
+      return true;
+    } catch (error: any) {
+      console.error('��� Microphone permission error:', error);
+      if (error.name === 'NotAllowedError') {
+        console.log('💡 User denied microphone permission. Please allow it in browser settings.');
+        setMicrophoneStatus('permission-denied');
+      } else if (error.name === 'NotFoundError') {
+        console.log('💡 No microphone found. Please connect a microphone.');
+        setMicrophoneStatus('not-supported');
+      } else {
+        console.log('💡 Microphone error:', error.message);
+        setMicrophoneStatus('not-supported');
+      }
+      return false;
+    }
+  };
+
+  const toggleListening = async () => {
+    console.log('🚨 MICROPHONE BUTTON CLICKED! 🚨');
+    console.log('🎤 Microphone button clicked - current state:', userWantsListening ? 'STOPPING' : 'STARTING');
+    console.log('🔍 Recognition available:', !!recognitionRef.current);
+    console.log('🔍 Microphone status:', microphoneStatus);
+    console.log('🔍 Browser info:', navigator.userAgent);
+    console.log('�� Is HTTPS:', window.location.protocol === 'https:');
+    console.log('🔍 getUserMedia support:', !!navigator.mediaDevices?.getUserMedia);
+
     if (!recognitionRef.current) {
-      alert('Speech recognition is not supported in your browser. Please use Chrome, Safari, or Edge.');
+      console.error('❌ Speech recognition not available');
+      alert('Speech recognition is not supported in this browser. Please use Chrome, Safari, or Edge.');
       return;
     }
 
     if (userWantsListening) {
-      console.log('🔇 User stopping speech recognition...');
-      setUserWantsListening(false); // User no longer wants listening
+      console.log('��� User stopping speech recognition...');
+      // Immediately update UI state for responsive feedback
+      setUserWantsListening(false);
+      setIsListening(false);
+
+      // Stop recognition
       try {
         recognitionRef.current.stop();
       } catch (error) {
         console.log('Error stopping recognition:', error);
       }
-      setIsListening(false);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      // Restart wake word listening when main listening stops
-      setTimeout(() => {
-        startWakeWordListening();
-      }, 1000);
+      // No message when stopping
     } else {
       console.log('🎤 User starting speech recognition...');
+
+      // Immediately update UI state for responsive feedback
+      setUserWantsListening(true);
+
+      // Request microphone permission
+      console.log('🎤 Requesting microphone permission...');
+      const permissionGranted = await requestMicrophonePermission();
+      if (!permissionGranted) {
+        console.error('❌ Microphone permission denied');
+        setUserWantsListening(false); // Reset state on failure
+        alert('Please allow microphone access to use voice features. Check your browser settings and try again.');
+        return;
+      }
+
+      console.log('�� Microphone permission granted, starting voice recognition...');
+
       setUserWantsListening(true); // User wants continuous listening
-      // Stop wake word listening when main listening starts
-      stopWakeWordListening();
-      startContinuousListening();
+
+      // Start continuous listening with reduced delay for better responsiveness
+      setTimeout(() => {
+        console.log('🎤 Starting continuous listening...');
+        startContinuousListening();
+      }, 200);
+
+      // No test messages needed
     }
   };
 
   return (
-    <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl">
-      {/* Conditional Content - Show emoji or normal chat interface */}
-      {showComfortEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <ComfortFace />
-          </div>
-        </div>
-      ) : showShockEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <ShockFace />
-          </div>
-        </div>
-      ) : showCuteEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <CuteFace />
-          </div>
-        </div>
-      ) : showCryEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <CryFace />
-          </div>
-        </div>
-      ) : showEnjoyEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <EnjoyFace />
-          </div>
-        </div>
-      ) : showACEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <ACFace />
-          </div>
-        </div>
-      ) : showLightingEmoji ? (
-        <div className="flex items-center justify-center min-h-screen w-full p-2">
-          <div className="animate-spontaneous-pop" style={{width: '70vw', height: '70vh'}}>
-            <LightingFace />
-          </div>
-        </div>
-      ) : (
+    <div className="min-h-screen bg-white px-3 py-2 max-w-md mx-auto lg:max-w-4xl xl:max-w-6xl flex flex-col h-screen">
+      {/* Normal Chat Interface */}
+      {!(showComfortEmoji || showShockEmoji || showCuteEmoji || showCryEmoji || showEnjoyEmoji || showACEmoji || showLightingEmoji || showHappyEmoji || showSadEmoji || showAlertEmoji || showYesPermissionEmoji || showNoPermissionEmoji || showMusicEmoji || showHotEmoji || showBreathingEmoji || showLaughEmoji) && (
         <>
           {/* Status Bar */}
           <StatusBar
             title="Co-Driver Assistant"
-            showHomeButton={true}
+            showBackButton={true}
+            showDriverState={true}
             showTemperature={true}
+            onTemperatureExceed={handleTemperatureExceed}
+            onExtremeWeather={handleExtremeWeather}
           />
 
       {/* Conversation Container */}
-      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 h-44 lg:h-56 overflow-y-auto">
+      <div className="bg-white border border-emotion-face rounded-xl p-3 mb-6 h-44 lg:h-80 overflow-y-auto">
         <div className="flex flex-col gap-4">
           {messages.map((message) => (
             <div key={message.id}>
@@ -2225,48 +3827,178 @@ Always prioritize driver safety and emotional wellbeing. If you detect stress or
         </div>
       </div>
 
-      {/* Microphone Section */}
+      {/* Microphone Section - Updated Figma Design */}
       <div className="flex justify-center items-center gap-4 mt-8">
-        {/* Left Sound Wave */}
-        <div className="flex items-center gap-0.5">
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
-          </svg>
-        </div>
+        {/* Left Sound Wave - Changes color when microphone is active */}
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
+        </svg>
 
-        {/* Microphone Button Container */}
-        <div className="relative">
-          {/* Microphone Button - Always Active for Continuous Listening */}
+        {/* Microphone Button - Changes to dark brown when active */}
+        <div className={`flex w-16 h-16 p-1.5 justify-center items-center rounded-full relative ${userWantsListening ? 'bg-[#3A2018]' : 'bg-[#FF8B7E]'}`}>
           <button
             onClick={toggleListening}
-            className={`w-16 h-16 lg:w-20 lg:h-20 rounded-full transition-all duration-300 ${
-              userWantsListening
-                ? 'bg-emotion-default'
-                : 'bg-emotion-mouth hover:scale-105'
-            } ${isSpeaking ? 'ring-4 ring-emotion-orange ring-opacity-50' : ''} shadow-lg flex items-center justify-center`}
+            className="flex justify-center items-center w-full h-full hover:scale-105 transition-all duration-300"
             title={
-              userWantsListening 
-                ? 'Continuously listening... (Click to pause)' 
-                : 'Say "Hey Melo" to activate or click to start listening'
+              microphoneStatus === 'permission-denied'
+                ? 'Microphone permission denied. Please allow microphone access in your browser settings and refresh the page.'
+                : microphoneStatus === 'not-supported'
+                ? 'Microphone not supported. Please use Chrome, Safari, or Edge with HTTPS/localhost.'
+                : userWantsListening
+                ? 'Recording... (Click to stop)'
+                : 'Click to record voice message'
             }
           >
-            <svg className="w-12 h-12 lg:w-14 lg:h-14 text-white" fill="currentColor" viewBox="0 0 48 48">
+            <svg
+              className="w-12 h-12 flex-shrink-0"
+              viewBox="0 0 48 48"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path d="M16 12C16 7.58172 19.5817 4 24 4C28.4183 4 32 7.58172 32 12V24C32 28.4183 28.4183 32 24 32C19.5817 32 16 28.4183 16 24V12ZM24 6.5C20.9624 6.5 18.5 8.96243 18.5 12V24C18.5 27.0376 20.9624 29.5 24 29.5C27.0376 29.5 29.5 27.0376 29.5 24V12C29.5 8.96243 27.0376 6.5 24 6.5ZM25 37.7148C32.2653 37.2021 38 31.1458 38 23.75C38 23.0596 37.4404 22.5 36.75 22.5C36.0596 22.5 35.5 23.0596 35.5 23.75C35.5 30.1013 30.3513 35.25 24 35.25C17.6487 35.25 12.5 30.1013 12.5 23.75C12.5 23.0596 11.9404 22.5 11.25 22.5C10.5596 22.5 10 23.0596 10 23.75C10 30.9752 15.4734 36.9221 22.5 37.6706V42.75C22.5 43.4404 23.0596 44 23.75 44C24.4404 44 25 43.4404 25 42.75V37.7148Z" fill="white"/>
             </svg>
           </button>
         </div>
 
-        {/* Right Sound Wave */}
-        <div className="flex items-center gap-0.5">
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3C12.3797 3 12.6935 3.28215 12.7431 3.64823L12.75 3.75V20.25C12.75 20.6642 12.4142 21 12 21C11.6203 21 11.3065 20.7178 11.2568 20.3518L11.25 20.25V3.75C11.25 3.33579 11.5858 3 12 3ZM8.25493 6C8.63463 6 8.94842 6.28215 8.99809 6.64823L9.00493 6.75V17.25C9.00493 17.6642 8.66915 18 8.25493 18C7.87524 18 7.56144 17.7178 7.51178 17.3518L7.50493 17.25V6.75C7.50493 6.33579 7.84072 6 8.25493 6ZM15.745 6C16.1247 6 16.4385 6.28215 16.4882 6.64823L16.495 6.75V17.25C16.495 17.6642 16.1593 18 15.745 18C15.3653 18 15.0515 17.7178 15.0019 17.3518L14.995 17.25V6.75C14.995 6.33579 15.3308 6 15.745 6ZM4.7511 9C5.13079 9 5.44459 9.28215 5.49425 9.64823L5.5011 9.75V14.25C5.5011 14.6642 5.16531 15 4.7511 15C4.3714 15 4.05761 14.7178 4.00795 14.3518L4.0011 14.25V9.75C4.0011 9.33579 4.33689 9 4.7511 9ZM19.2522 9C19.6319 9 19.9457 9.28215 19.9953 9.64823L20.0022 9.75V14.2487C20.0022 14.6629 19.6664 14.9987 19.2522 14.9987C18.8725 14.9987 18.5587 14.7165 18.509 14.3504L18.5022 14.2487V9.75C18.5022 9.33579 18.838 9 19.2522 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
-          </svg>
-        </div>
+        {/* Right Sound Wave - Changes color when microphone is active */}
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.0001 3C12.3798 3 12.6936 3.28215 12.7433 3.64823L12.7501 3.75V20.25C12.7501 20.6642 12.4143 21 12.0001 21C11.6204 21 11.3066 20.7178 11.257 20.3518L11.2501 20.25V3.75C11.2501 3.33579 11.5859 3 12.0001 3ZM8.25505 6C8.63475 6 8.94854 6.28215 8.99821 6.64823L9.00505 6.75V17.25C9.00505 17.6642 8.66927 18 8.25505 18C7.87536 18 7.56156 17.7178 7.5119 17.3518L7.50505 17.25V6.75C7.50505 6.33579 7.84084 6 8.25505 6ZM15.7452 6C16.1249 6 16.4387 6.28215 16.4883 6.64823L16.4952 6.75V17.25C16.4952 17.6642 16.1594 18 15.7452 18C15.3655 18 15.0517 17.7178 15.002 17.3518L14.9952 17.25V6.75C14.9952 6.33579 15.3309 6 15.7452 6ZM4.75122 9C5.13092 9 5.44471 9.28215 5.49437 9.64823L5.50122 9.75V14.25C5.50122 14.6642 5.16543 15 4.75122 15C4.37152 15 4.05773 14.7178 4.00807 14.3518L4.00122 14.25V9.75C4.00122 9.33579 4.33701 9 4.75122 9ZM19.2523 9C19.632 9 19.9458 9.28215 19.9955 9.64823L20.0023 9.75V14.2487C20.0023 14.6629 19.6665 14.9987 19.2523 14.9987C18.8726 14.9987 18.5588 14.7165 18.5091 14.3504L18.5023 14.2487V9.75C18.5023 9.33579 18.8381 9 19.2523 9Z" fill={userWantsListening ? "#3A2018" : "#FF8B7E"}/>
+        </svg>
       </div>
+
 
           {/* Wellness Activity Overlay - REMOVED */}
           {/* Breathing and meditation features have been removed as requested */}
         </>
+      )}
+
+      {/* Emoji Popups - Overlays */}
+      {showComfortEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <ComfortFace />
+          </div>
+        </div>
+      )}
+
+      {showShockEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <ShockFace />
+          </div>
+        </div>
+      )}
+
+      {showCuteEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <CuteFace />
+          </div>
+        </div>
+      )}
+
+      {showCryEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <CryFace />
+          </div>
+        </div>
+      )}
+
+      {showEnjoyEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <EnjoyFace />
+          </div>
+        </div>
+      )}
+
+      {showACEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <ACFace />
+          </div>
+        </div>
+      )}
+
+      {showLightingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <LightingFace />
+          </div>
+        </div>
+      )}
+
+      {showHappyEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <HappyFace />
+          </div>
+        </div>
+      )}
+
+      {showSadEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <SadFace />
+          </div>
+        </div>
+      )}
+
+      {showAlertEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <AlertFace />
+          </div>
+        </div>
+      )}
+
+      {showYesPermissionEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <YesPermissionFace />
+          </div>
+        </div>
+      )}
+
+      {showNoPermissionEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <NoPermissionFace />
+          </div>
+        </div>
+      )}
+
+      {showMusicEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <MusicFace />
+          </div>
+        </div>
+      )}
+
+      {showHotEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <HotFace />
+          </div>
+        </div>
+      )}
+
+      {showBreathingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <BreathingFace />
+          </div>
+        </div>
+      )}
+
+      {showLaughEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spontaneous-pop bg-white rounded-2xl p-8 shadow-2xl max-w-[480px] max-h-[280px] w-[480px] h-[280px]">
+            <LaughFace />
+          </div>
+        </div>
       )}
     </div>
   );

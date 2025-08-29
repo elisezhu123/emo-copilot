@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
 import { simpleMusicService } from '../services/simpleMusicService';
 import { audioManager, AudioState } from '../services/audioManager';
@@ -8,8 +8,15 @@ import MusicProgressBar from '../components/MusicProgressBar';
 
 const MusicPlaylists = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [isLoadingTracks, setIsLoadingTracks] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+  const initialGenresRef = useRef<string[]>([]);
+  const lastLocationRef = useRef<string>('');
+  const hasAutoPlayedRef = useRef<boolean>(false);
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
@@ -21,30 +28,288 @@ const MusicPlaylists = () => {
     error: null
   });
 
-  useEffect(() => {
-    // Load tracks from the music service - same logic as dashboard
-    const loadTracks = async () => {
+  // Load tracks from the music service - defined here for proper scope access
+  const loadTracks = async (isUpdate = false, forceRefresh = false, force = false) => {
+    try {
+      console.log('🔍 MusicPlaylists: Starting loadTracks function, isUpdate:', isUpdate);
+
+      // Check if musicService is available
+      if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+        console.error('musicService is not available');
+        return;
+      }
+
       const savedGenres = musicService.loadSelectedGenres();
+      console.log('🔍 MusicPlaylists: Loaded genres from localStorage:', savedGenres);
+      console.log('🔍 MusicPlaylists: Genres length:', savedGenres?.length || 0);
+
+      // If we have genres, show loading state
+      if (savedGenres && savedGenres.length > 0) {
+        if (isUpdate) {
+          setIsUpdating(true);
+          console.log('🔍 MusicPlaylists: Setting updating state to true');
+        } else {
+          setIsLoadingTracks(true);
+          console.log('🔍 MusicPlaylists: Setting loading state to true');
+        }
+      }
 
       if (savedGenres && savedGenres.length > 0) {
-        console.log('🎵 Loading music for selected genres:', savedGenres);
-        await simpleMusicService.updateGenres(savedGenres);
+        // Update the ref with current genres for future comparisons
+        initialGenresRef.current = savedGenres;
+        console.log('⚡ Fast loading music for genres:', savedGenres);
 
-        const allTracks = await simpleMusicService.getAllTracks();
+        // Check if already loading to prevent duplicate requests (unless forced)
+        if (!force && simpleMusicService.isCurrentlyLoading()) {
+          console.log('⚡ Already loading, waiting...');
+          return;
+        }
+
+        // If this is an update (genre change), force clear cache first
+        if (isUpdate) {
+          console.log('🧹 Force clearing cache for genre update');
+          simpleMusicService.clearCache();
+        }
+
+        // Smart reload (uses cache when appropriate)
+        console.log('🎵 Force reloading tracks for genres:', savedGenres);
+        await simpleMusicService.forceFreshReload(savedGenres, true); // Force fresh reload
+
+        let allTracks = await simpleMusicService.getAllTracks();
+        console.log('⚡ Fast loaded:', allTracks.length, 'tracks');
+
+        // Check if we got tracks from Freesound API
+        console.log('🎵 Freesound tracks loaded:', allTracks.length);
+
+        // If no tracks loaded but we have genres, provide fallback
+        if (allTracks.length === 0 && savedGenres && savedGenres.length > 0) {
+          console.log('🎵 No tracks from API, providing fallback tracks for genres:', savedGenres);
+
+          const fallbackTracks = [
+            {
+              id: 'fallback_classical_1',
+              title: 'Classical Demo Track',
+              artist: 'Demo Artist',
+              duration: 180,
+              genre: 'Classical',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            },
+            {
+              id: 'fallback_jazz_1',
+              title: 'Jazz Demo Track',
+              artist: 'Demo Artist',
+              duration: 240,
+              genre: 'Jazz',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            },
+            {
+              id: 'fallback_ambient_1',
+              title: 'Ambient Demo Track',
+              artist: 'Demo Artist',
+              duration: 300,
+              genre: 'Ambient',
+              url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+            }
+          ].filter(track =>
+            savedGenres.some(genre =>
+              track.genre.toLowerCase() === genre.toLowerCase()
+            )
+          );
+
+          console.log(`🎵 Using ${fallbackTracks.length} fallback tracks`);
+          allTracks = [...allTracks, ...fallbackTracks];
+        }
+
+        // Log genre mixing for multiple genres
+        if (savedGenres.length > 1) {
+          console.log('🎭 MIXED PLAYLIST: Combining tracks from', savedGenres.length, 'genres:');
+          savedGenres.forEach(genre => {
+            const genreTracks = allTracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+            console.log(`   🎵 ${genre}: ${genreTracks.length} tracks`);
+          });
+          console.log('🎲 Total mixed tracks:', allTracks.length, '(tracks are shuffled together)');
+        } else {
+          console.log('🎵 Single genre playlist:', savedGenres[0] || 'Unknown');
+        }
+
         setTracks(allTracks);
 
         if (allTracks.length > 0) {
-          setCurrentTrack(allTracks[0]);
+          // Always use the first track from randomized Freesound list for variety
+          const selectedTrack = allTracks[0];
+          setCurrentTrack(selectedTrack);
           audioManager.setPlaylist(allTracks);
+
+          // Auto-play: Start playing automatically when tracks load (once per session or genre change)
+          if (!hasAutoPlayedRef.current || isUpdate) {
+            console.log('🎵 Auto-play: Starting automatic playback of:', selectedTrack.title);
+            hasAutoPlayedRef.current = true;
+            setTimeout(async () => {
+              try {
+                await audioManager.playTrack(selectedTrack);
+                console.log('🎵 Auto-play: Successfully started playback');
+              } catch (error) {
+                console.error('🎵 Auto-play: Failed to start playback:', error);
+              }
+            }, 800); // Longer delay to ensure everything is ready
+          } else {
+            console.log('🎵 Auto-play: Skipped (already played this session)');
+          }
         }
+
+        // Update the ref with successfully loaded genres for future focus comparisons
+        initialGenresRef.current = savedGenres;
+        setHasInitiallyLoaded(true);
       } else {
-        console.log('🎵 No genres selected');
+        console.log('🔍 MusicPlaylists: No genres selected or empty array');
+        setTracks([]);
+        setCurrentTrack(null);
+        // Reset the ref when no genres are selected
+        initialGenresRef.current = [];
+        setHasInitiallyLoaded(false);
+      }
+    } catch (error) {
+      console.error('🔍 MusicPlaylists: Error loading tracks:', error);
+      console.error('🔍 MusicPlaylists: Error stack:', error.stack);
+
+      // Provide emergency fallback tracks for selected genres
+      console.log('🎵 Using emergency fallback tracks for better user experience');
+
+      const emergencyTracks = [
+        {
+          id: 'emergency_classical_1',
+          title: 'Demo Classical Piano',
+          artist: 'Demo Artist',
+          duration: 180,
+          genre: 'Classical',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'emergency_jazz_1',
+          title: 'Demo Jazz Ensemble',
+          artist: 'Demo Artist',
+          duration: 240,
+          genre: 'Jazz',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'emergency_ambient_1',
+          title: 'Demo Ambient Soundscape',
+          artist: 'Demo Artist',
+          duration: 300,
+          genre: 'Ambient',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        },
+        {
+          id: 'emergency_rock_1',
+          title: 'Demo Rock Guitar',
+          artist: 'Demo Artist',
+          duration: 220,
+          genre: 'Rock',
+          url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAcBzWL0fPTgCwGKn3G7NyOOwgURrnn1qU='
+        }
+      ].filter(track =>
+        savedGenres && savedGenres.some(genre =>
+          track.genre.toLowerCase() === genre.toLowerCase()
+        )
+      );
+
+      if (emergencyTracks.length > 0) {
+        console.log(`🎵 Providing ${emergencyTracks.length} emergency tracks for ${savedGenres?.join(', ')}`);
+        setTracks(emergencyTracks);
+        setCurrentTrack(emergencyTracks[0]);
+        audioManager.setPlaylist(emergencyTracks);
+      } else {
         setTracks([]);
         setCurrentTrack(null);
       }
+    } finally {
+      console.log('🔍 MusicPlaylists: Setting loading states to false');
+      // Add a small delay to ensure user sees the loading state
+      setTimeout(() => {
+        setIsLoadingTracks(false);
+        setIsUpdating(false);
+      }, isUpdate ? 800 : 500); // Longer delay for updates
+    }
+  };
+
+  // Simplified navigation detection for reliable auto-updates
+  useEffect(() => {
+    console.log('🔄 Auto-update: Navigation to:', location.pathname);
+
+    // When navigating TO the playlists page from another page
+    if (location.pathname === '/music-playlists' && lastLocationRef.current && lastLocationRef.current !== location.pathname) {
+      console.log('🔄 Auto-update: Returned to playlists, checking for genre changes...');
+
+      // Small delay to ensure localStorage is updated after navigation
+      setTimeout(() => {
+        const currentGenres = musicService.loadSelectedGenres();
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+        console.log('🔄 Auto-update: Navigation check - Current:', currentGenres);
+        console.log('🔄 Auto-update: Navigation check - Previous:', previousGenres);
+        console.log('🔄 Auto-update: Navigation check - Changed?', genresChanged);
+
+        if (genresChanged && currentGenres && currentGenres.length > 0) {
+          console.log('🔄 Auto-update: Genre change detected on navigation - updating automatically');
+          initialGenresRef.current = currentGenres;
+          setIsUpdating(true);
+          loadTracks(true, false);
+        }
+      }, 200);
+    }
+
+    lastLocationRef.current = location.pathname;
+  }, [location.pathname]);
+
+  useEffect(() => {
+    console.log('🔄 Auto-update: Component mounted, starting initial load...');
+
+    // ALWAYS load tracks on mount - this fixes the "need to clear storage" issue
+    const initialLoad = () => {
+      const genres = musicService.loadSelectedGenres();
+      console.log('��� Auto-update: Initial load - found genres:', genres);
+      console.log('🔄 Auto-update: Raw localStorage:', localStorage.getItem('selectedMusicGenres'));
+
+      // Always show loading state initially - this helps user see something is happening
+      setIsLoadingTracks(true);
+      console.log('🔄 Auto-update: Setting loading state for initial load');
+
+      // ALWAYS call loadTracks on mount, regardless of genre comparison
+      // This ensures tracks load even if genres were previously set
+      setTimeout(() => {
+        loadTracks(false, false, true); // Initial load - not an update, but forced
+      }, 50);
     };
 
-    loadTracks();
+    initialLoad();
+
+    // Also check for genre changes immediately when component mounts
+    // This helps catch cases where user navigated back with new genres
+    const checkGenresOnMount = () => {
+      // Check multiple times with different delays to catch any timing issues
+      [300, 800, 1500].forEach(delay => {
+        setTimeout(() => {
+          console.log(`🔍 Checking for genre changes ${delay}ms after mount`);
+          const currentGenres = musicService.loadSelectedGenres();
+          const mountGenres = initialGenresRef.current;
+          const mountChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(mountGenres?.sort());
+
+          console.log(`🔍 Mount check (${delay}ms) - Current:`, currentGenres);
+          console.log(`🔍 Mount check (${delay}ms) - Previous:`, mountGenres);
+          console.log(`🔍 Mount check (${delay}ms) - Changed:`, mountChanged);
+
+          if (mountChanged && currentGenres && currentGenres.length > 0) {
+            console.log('🔄 Detected genre change after mount, reloading');
+            initialGenresRef.current = currentGenres;
+            loadTracks(true, false, false); // Pass true to indicate this is an update
+          }
+        }, delay);
+      });
+    };
+
+    checkGenresOnMount();
 
     // Subscribe to audio state changes
     const unsubscribe = audioManager.subscribe((state: AudioState) => {
@@ -55,7 +320,125 @@ const MusicPlaylists = () => {
       }
     });
 
-    return unsubscribe;
+    // Listen for localStorage changes (real-time genre updates)
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'selectedMusicGenres') {
+        console.log('🔄 Real-time: localStorage changed, updating playlists automatically');
+        setTimeout(() => {
+          const newGenres = musicService.loadSelectedGenres();
+          const currentGenres = initialGenresRef.current;
+          const genresChanged = JSON.stringify(newGenres?.sort()) !== JSON.stringify(currentGenres?.sort());
+
+          if (genresChanged) {
+            console.log('🔄 Real-time: Genre change detected via localStorage event');
+            console.log('🔄 Real-time: New genres:', newGenres);
+            console.log('🔄 Real-time: Previous genres:', currentGenres);
+            initialGenresRef.current = newGenres || [];
+            setIsUpdating(true);
+            loadTracks(true, false, false);
+          }
+        }, 200); // Small delay to ensure localStorage is fully updated
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Only refresh on focus if genres might have changed
+    const handleFocus = () => {
+      try {
+        console.log('🔄 Auto-update: Page focused, checking for changes...');
+
+        if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+          console.error('musicService not available in handleFocus');
+          return;
+        }
+
+        const currentGenres = musicService.loadSelectedGenres();
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+        console.log('🔄 Auto-update: Focus check - Current genres:', currentGenres);
+        console.log('🔄 Auto-update: Focus check - Previous genres:', previousGenres);
+        console.log('🔄 Auto-update: Focus check - Changed?', genresChanged);
+
+        if (genresChanged) {
+          console.log('🔄 Auto-update: Focus detected changes - updating automatically');
+          initialGenresRef.current = currentGenres || [];
+          setIsUpdating(true);
+          loadTracks(true, false);
+        }
+      } catch (error) {
+        console.error('Error in handleFocus:', error);
+      }
+    };
+
+    // Enhanced visibility change detection for auto-updates
+    const handleVisibilityChange = () => {
+      try {
+        if (!document.hidden) {
+          console.log('🔄 Auto-update: Page became visible, checking for changes...');
+
+          // Multiple checks with different delays to catch any timing issues
+          [50, 150, 300].forEach(delay => {
+            setTimeout(() => {
+              try {
+                if (!musicService || typeof musicService.loadSelectedGenres !== 'function') {
+                  return;
+                }
+
+                const currentGenres = musicService.loadSelectedGenres();
+                const previousGenres = initialGenresRef.current;
+                const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+                if (genresChanged) {
+                  console.log(`🔄 Auto-update: Visibility detected changes (${delay}ms check) - updating automatically`);
+                  console.log('🔄 Auto-update: New genres:', currentGenres);
+                  console.log('🔄 Auto-update: Previous genres:', previousGenres);
+                  initialGenresRef.current = currentGenres || [];
+                  setIsUpdating(true);
+                  loadTracks(true, false, false);
+                }
+              } catch (error) {
+                console.error('Error in visibility timeout:', error);
+              }
+            }, delay);
+          });
+        }
+      } catch (error) {
+        console.error('Error in handleVisibilityChange:', error);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Simplified periodic check for genre changes
+    const genreCheckInterval = setInterval(() => {
+      try {
+        const currentGenres = musicService.loadSelectedGenres();
+        const previousGenres = initialGenresRef.current;
+        const genresChanged = JSON.stringify(currentGenres?.sort()) !== JSON.stringify(previousGenres?.sort());
+
+        if (genresChanged) {
+          console.log('🔄 Auto-update: Periodic check detected genre change');
+          console.log('🔄 Auto-update: New genres:', currentGenres);
+          console.log('🔄 Auto-update: Previous genres:', previousGenres);
+          initialGenresRef.current = currentGenres || [];
+          setIsUpdating(true);
+          loadTracks(true, false);
+        }
+      } catch (error) {
+        console.error('Error in periodic genre check:', error);
+      }
+    }, 2000); // Check every 2 seconds - reliable but not too frequent
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(genreCheckInterval);
+    };
   }, []);
 
   const togglePlayPause = async () => {
@@ -110,10 +493,25 @@ const MusicPlaylists = () => {
 
   const playTrack = async (track: Track) => {
     try {
+      if (!track) {
+        console.error('No track provided to playTrack');
+        return;
+      }
+      if (!track.url) {
+        console.error('Track has no URL:', track);
+        return;
+      }
+
+      console.log('🎵 Setting current track:', track.title);
       setCurrentTrack(track);
+
+      console.log('🎵 Starting audio playback...');
       await audioManager.playTrack(track);
+
+      console.log('🎵 Track playback started successfully');
     } catch (error) {
       console.error('Error playing track:', error);
+      // Don't rethrow the error to prevent onClick handler from failing
     }
   };
 
@@ -122,7 +520,8 @@ const MusicPlaylists = () => {
       {/* Status Bar */}
       <StatusBar
         title="Music Playlists"
-        showHomeButton={true}
+        showBackButton={true}
+        showDriverState={true}
         showTemperature={true}
       />
 
@@ -137,7 +536,19 @@ const MusicPlaylists = () => {
           </div>
           <div className="flex-1">
             <h4 className="text-base font-medium text-black lg:text-xl">
-              {currentTrack ? currentTrack.title : 'Select music genres first, then click play'}
+              {currentTrack ?
+                <span className="flex items-center gap-2">
+                  {currentTrack.title}
+                  {audioState.isPlaying && (
+                    <span className="flex items-center gap-1 text-green-600">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs">Auto-playing</span>
+                    </span>
+                  )}
+                </span>
+                :
+                (isLoadingTracks || isUpdating) ? 'Loading your music...' :
+                'Select music genres first, then click play'}
             </h4>
             <p className="text-xs text-emotion-default lg:text-sm">
               {currentTrack ? (
@@ -150,7 +561,9 @@ const MusicPlaylists = () => {
                   )}
                 </>
               ) : (
-                'Select music genres first to load tracks'
+                (isLoadingTracks || isUpdating) ?
+                  (isUpdating ? 'Updating your playlists...' : 'Loading tracks from your selected genres...') :
+                  'Select music genres first to load tracks'
               )}
             </p>
           </div>
@@ -238,9 +651,58 @@ const MusicPlaylists = () => {
         {/* Audio Source Status */}
         <div className="mt-2 text-center">
           {audioState.error && (
-            <p className="text-xs text-flowkit-red mt-1">
-              Audio Error: {audioState.error}
-            </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-2 mt-2">
+              <p className="text-xs text-red-600 mb-1">
+                🔊 Audio Issue: {audioState.error}
+              </p>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={async () => {
+                    try {
+                      if (currentTrack) {
+                        console.log('🔄 Retrying current track:', currentTrack.title);
+                        await playTrack(currentTrack);
+                      } else {
+                        console.log('🔄 No current track to retry');
+                      }
+                    } catch (error) {
+                      console.error('Retry failed:', error);
+                    }
+                  }}
+                  className="text-xs text-blue-700 underline hover:text-blue-800"
+                >
+                  🔄 Retry
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      console.log('🎵 Trying next track...');
+                      await playNextTrack();
+                    } catch (error) {
+                      console.error('Next track failed:', error);
+                    }
+                  }}
+                  className="text-xs text-green-700 underline hover:text-green-800"
+                  disabled={tracks.length <= 1}
+                >
+                  ⏭️ Next Track
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-xs text-red-700 underline hover:text-red-800"
+                >
+                  🔄 Refresh Page
+                </button>
+              </div>
+            </div>
+          )}
+          {audioState.isLoading && (
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="w-3 h-3 border border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-xs text-emotion-default">
+                ⚡ Loading audio...
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -250,7 +712,7 @@ const MusicPlaylists = () => {
         {/* Spotify Button */}
         <button
           onClick={openSpotify}
-          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-green transition-all duration-200 hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
+          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-green transition-all duration-200 hover:bg-flowkit-green-dark hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
         >
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="none">
             <path fillRule="evenodd" clipRule="evenodd" d="M15.9 8.89999C12.7 6.99999 7.35 6.8 4.3 7.75C3.8 7.9 3.3 7.6 3.15 7.15C3 6.65 3.3 6.15 3.75 6C7.3 4.95 13.15 5.15001 16.85 7.35001C17.3 7.60001 17.45 8.2 17.2 8.65C16.95 9 16.35 9.14999 15.9 8.89999ZM15.8 11.7C15.55 12.05 15.1 12.2 14.75 11.95C12.05 10.3 7.95 9.80001 4.8 10.8C4.4 10.9 3.95 10.7 3.85 10.3C3.75 9.9 3.95 9.45 4.35 9.35C8 8.25 12.5 8.8 15.6 10.7C15.9 10.85 16.05 11.35 15.8 11.7ZM14.6 14.45C14.4 14.75 14.05 14.85 13.75 14.65C11.4 13.2 8.45 12.9 4.95 13.7C4.6 13.8 4.3 13.55 4.2 13.25C4.1 12.9 4.35 12.6 4.65 12.5C8.45 11.65 11.75 12 14.35 13.6C14.7 13.75 14.75 14.15 14.6 14.45ZM10 0C4.5 0 0 4.5 0 10C0 15.5 4.5 20 10 20C15.5 20 20 15.5 20 10C20 4.5 15.55 0 10 0Z" fill="white"/>
@@ -261,7 +723,7 @@ const MusicPlaylists = () => {
         {/* Apple Music Button */}
         <button
           onClick={openAppleMusic}
-          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-emotion-mouth transition-all duration-200 hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
+          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-emotion-mouth transition-all duration-200 hover:bg-emotion-mouth-dark hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
         >
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 21 20" fill="none">
             <g clipPath="url(#clip0_160_1414)">
@@ -280,7 +742,7 @@ const MusicPlaylists = () => {
         {/* YouTube Music Button - Clean Icon */}
         <button
           onClick={openYouTubeMusic}
-          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-red transition-all duration-200 hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
+          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-red transition-all duration-200 hover:bg-flowkit-red-dark hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
         >
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" fill="white"/>
@@ -292,10 +754,38 @@ const MusicPlaylists = () => {
       </div>
 
       {/* Playlists Section - Horizontal Scrolling Layout */}
-      <div className="flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
-        {/* Playlists Header - Left Aligned */}
-        <div className="flex items-center py-2 px-3">
-          <span className="text-xs font-medium text-black">Playlists</span>
+      <div className="relative flex flex-col gap-1 border border-emotion-face rounded-xl p-3 lg:p-4">
+        {/* Playlists Header - Enhanced for multiple genres */}
+        <div className="flex items-center justify-between py-2 px-3">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-black">Playlists</span>
+              {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                <span className="text-xs bg-emotion-orange text-white px-2 py-0.5 rounded-full">
+                  {initialGenresRef.current.length} genres
+                </span>
+              )}
+            </div>
+            {initialGenresRef.current && initialGenresRef.current.length > 0 && (
+              <div className="flex flex-col gap-1 mt-1">
+                <span className="text-xs text-emotion-default opacity-75">
+                  {initialGenresRef.current.length === 1 ? 'Current' : 'Combined'}: {initialGenresRef.current.join(', ')}
+                </span>
+                {initialGenresRef.current.length > 1 && tracks.length > 0 && (
+                  <div className="text-xs text-emotion-default opacity-60">
+                    {initialGenresRef.current.map(genre => {
+                      const genreTracks = tracks.filter(track => track.genre.toLowerCase() === genre.toLowerCase());
+                      return `${genre}: ${genreTracks.length}`;
+                    }).join(' • ')} tracks
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-xs text-emotion-default">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Auto-updating</span>
+          </div>
         </div>
 
         {/* Music Tracks - 2 per row with vertical scrolling */}
@@ -304,13 +794,33 @@ const MusicPlaylists = () => {
             {tracks.map((track, index) => (
               <button
                 key={track.id}
-                onClick={() => playTrack(track)}
+                onClick={() => {
+                  try {
+                    console.log('🎵 Playing track:', track.title);
+                    playTrack(track);
+                  } catch (error) {
+                    console.error('Error in track onClick:', error);
+                  }
+                }}
                 className="flex items-center gap-2 bg-white border border-emotion-face rounded-lg p-2 hover:bg-gray-50 transition-colors"
               >
-                <div className="w-6 h-6 bg-emotion-orange rounded-lg flex-shrink-0"></div>
+                <div className="w-6 h-6 bg-emotion-orange rounded-lg flex-shrink-0 flex items-center justify-center">
+                  {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                    <span className="text-xs text-white font-bold">
+                      {track.genre.charAt(0)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0 py-1">
                   <p className="text-xs font-medium text-emotion-default truncate text-left">{track.title}</p>
-                  <p className="text-xs text-emotion-default truncate opacity-75 text-left">{track.artist}</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs text-emotion-default truncate opacity-75 text-left">{track.artist}</p>
+                    {initialGenresRef.current && initialGenresRef.current.length > 1 && (
+                      <span className="text-xs bg-gray-100 text-gray-600 px-1 rounded text-left flex-shrink-0">
+                        {track.genre}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <span className="text-xs text-emotion-default w-10 text-right flex-shrink-0">{formatTime(track.duration)}</span>
               </button>
@@ -318,13 +828,54 @@ const MusicPlaylists = () => {
           </div>
         </div>
 
-        {/* Show message if no tracks */}
+        {/* Show loading or message if no tracks */}
         {tracks.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-xs text-gray-500">Select music genres to load playlists</p>
+            {(isLoadingTracks || isUpdating) ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-xs text-gray-500">
+                  {isUpdating ? 'Auto-updating playlists...' : 'Loading your music...'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Music will start playing automatically
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <svg className="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v18.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V21.5M12 6l6-2v13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v13.5" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
+                {initialGenresRef.current && initialGenresRef.current.length > 0 ? (
+                  <>
+                    <p className="text-xs text-gray-500">Music loading failed</p>
+                    <p className="text-xs text-gray-400">
+                      Trying to load {initialGenresRef.current.join(', ')} music...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-500">No genres selected</p>
+                    <p className="text-xs text-gray-400">
+                      Go to Music Selection to choose genres, then return here for automatic loading
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Show updating overlay if tracks exist but we're updating */}
+      {isUpdating && tracks.length > 0 && (
+        <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center rounded-xl">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-6 h-6 border-2 border-emotion-orange border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs text-gray-500">Updating playlists...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

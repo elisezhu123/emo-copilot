@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { arduinoService, HeartRateData } from '../services/arduinoService';
+import { useNavigate } from 'react-router-dom';
 
 interface HeartRateMonitorProps {
   className?: string;
 }
 
 const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) => {
+  const navigate = useNavigate();
   const [heartRateData, setHeartRateData] = useState<HeartRateData>({
-    values: [72, 78, 75, 95, 85, 70, 82, 76], // Default values
+    values: [72, 78, 75, 95, 85, 70, 82, 76, 92, 80, 86, 90], // Default values
     timestamp: Date.now()
   });
   const [isConnected, setIsConnected] = useState(false);
@@ -24,30 +26,35 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
       }
     });
 
+    // Subscribe to high heart rate alerts (dangerous levels >120 BPM)
+    const unsubscribeHighHR = arduinoService.subscribeHighHeartRate((heartRate: number) => {
+      console.log(`🚨 EMERGENCY: Heart rate ${heartRate} BPM detected - navigating to AI safety check`);
+
+      // Navigate to AI chatbot with high heart rate alert parameter
+      navigate('/ai-chatbot?high-heart-rate=true&bpm=' + heartRate);
+    });
+
     // Check connection status
     setIsConnected(arduinoService.isConnectedToArduino());
 
-    // Try to connect to Arduino automatically, fallback to mock data if it fails
-    const initializeConnection = async () => {
+    // Start with mock data for heart rate monitoring (Arduino connection requires user interaction)
+    const initializeConnection = () => {
       if (!arduinoService.isConnectedToArduino()) {
-        try {
-          const connected = await arduinoService.connect();
-          setIsConnected(connected);
-          if (!connected) {
-            // If Arduino connection fails, enable mock data
-            arduinoService.enableMockData();
-          }
-        } catch (error) {
-          console.log('Arduino connection failed, using mock data');
-          arduinoService.enableMockData();
-        }
+        console.log('💡 Starting heart rate monitoring with simulated data');
+        arduinoService.enableMockData();
+        setIsConnected(false); // Show that we're using mock data
+      } else {
+        setIsConnected(true); // Arduino is already connected
       }
     };
 
     initializeConnection();
 
-    return unsubscribe;
-  }, []);
+    return () => {
+      unsubscribe();
+      unsubscribeHighHR();
+    };
+  }, [navigate]);
 
   // Function to get bar color based on value and position in array
   const getBarColor = (value: number, index: number, values: number[]): string => {

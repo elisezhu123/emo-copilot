@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import StatusBar from '../components/StatusBar';
 import HeartRateMonitor from '../components/HeartRateMonitor';
@@ -13,7 +13,8 @@ import HotFace from '../components/HotFace';
 import { Track, musicService } from '../services/musicService';
 import { audioManager, AudioState } from '../services/audioManager';
 import { simpleMusicService } from '../services/simpleMusicService';
-import { carStateManager, type CarState } from '../services/carStateManager';
+import { carStateManager, type CarState, type DriverStateType } from '../services/carStateManager';
+import { arduinoService } from '../services/arduinoService';
 
 const EmoCopilotDashboard = () => {
   const navigate = useNavigate();
@@ -28,8 +29,11 @@ const EmoCopilotDashboard = () => {
   const [showAIBotEmoji, setShowAIBotEmoji] = useState(false);
   const [showEnjoyEmoji, setShowEnjoyEmoji] = useState(false);
   const [showHotEmoji, setShowHotEmoji] = useState(false);
+  const [showACEmoji, setShowACEmoji] = useState(false);
+  const [showLightingEmoji, setShowLightingEmoji] = useState(false);
   const [musicStartTime, setMusicStartTime] = useState<number | null>(null);
   const [musicTimer, setMusicTimer] = useState<NodeJS.Timeout | null>(null);
+  const [selectedEmotion, setSelectedEmotion] = useState<DriverStateType>('neutral');
   const [audioState, setAudioState] = useState<AudioState>({
     isPlaying: false,
     isPaused: false,
@@ -42,8 +46,32 @@ const EmoCopilotDashboard = () => {
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
 
+  // Timer states for tracking prolonged stress/anxiety
+  const [stressStartTime, setStressStartTime] = useState<number | null>(null);
+  const [stressTimer, setStressTimer] = useState<NodeJS.Timeout | null>(null);
+
   // Car state from global manager
   const [globalCarState, setGlobalCarState] = useState<CarState>(carStateManager.getState());
+
+  // Arduino auto-connect on startup
+  useEffect(() => {
+    // Auto-connect to Arduino on startup
+    const autoConnect = async () => {
+      try {
+        const success = await arduinoService.connect();
+        if (success) {
+          console.log('✅ Arduino auto-connected successfully - real sensor data active');
+        } else {
+          console.log('ℹ️ Arduino auto-connection failed - using mock data for heart rate');
+        }
+      } catch (error) {
+        console.error('❌ Arduino auto-connection error:', error);
+      }
+    };
+
+    // Attempt auto-connection
+    autoConnect();
+  }, []);
 
   // Subscribe to global car state changes
   useEffect(() => {
@@ -54,16 +82,35 @@ const EmoCopilotDashboard = () => {
       // Update local states to match global state
       setIsCoolingOn(newState.isAcOn);
       setIsLightingOn(newState.lightsOn);
+      setSelectedEmotion(newState.driverState);
       console.log('🚗 Dashboard synced with global car state:', newState);
       
-      // Check if driver state changed to stressed
-      if (previousState.driverState !== 'stressed' && newState.driverState === 'stressed') {
-        console.log('🚨 Stress detected! Navigating to AI chatbot for music therapy...');
-        
-        // Navigate to AI chatbot page with stress indication
-        setTimeout(() => {
-          navigate('/ai-chatbot?stress=true');
-        }, 1000);
+      // Check if driver state changed to stressed or anxious
+      const isStressedOrAnxious = newState.driverState === 'stressed' || newState.driverState === 'anxious';
+      const wasStressedOrAnxious = previousState.driverState === 'stressed' || previousState.driverState === 'anxious';
+
+      if (!wasStressedOrAnxious && isStressedOrAnxious) {
+        // Started being stressed/anxious - start timer
+        console.log(`🚨 ${newState.driverState} state detected! Starting timer...`);
+        setStressStartTime(Date.now());
+
+        // Set timer for 2-5 minutes (120,000 - 300,000 ms) to trigger navigation
+        const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2-4 minutes random
+        const timerDuration = randomMinutes * 60 * 1000;
+        const timer = setTimeout(() => {
+          console.log(`⏰ Driver has been ${newState.driverState} for ${randomMinutes} minutes - navigating to AI chatbot`);
+          navigate('/ai-chatbot?prolonged-stress=true');
+        }, timerDuration);
+
+        setStressTimer(timer);
+      } else if (wasStressedOrAnxious && !isStressedOrAnxious) {
+        // No longer stressed/anxious - clear timer
+        console.log('✅ Driver state improved - clearing stress timer');
+        if (stressTimer) {
+          clearTimeout(stressTimer);
+          setStressTimer(null);
+        }
+        setStressStartTime(null);
       }
       
       previousState = newState;
@@ -75,171 +122,22 @@ const EmoCopilotDashboard = () => {
     setIsCoolingOn(currentState.isAcOn);
     setIsLightingOn(currentState.lightsOn);
 
-    return unsubscribe;
-  }, [navigate]);
-
-  // Wake word recognition ref
-  const wakeWordRecognitionRef = useRef<any>(null);
-
-  // Request microphone permissions automatically for voice features
-  useEffect(() => {
-    const requestMicrophonePermission = async () => {
-      try {
-        console.log('🎤 Requesting microphone permission for wake word detection...');
-        // Request microphone access to get permission
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('✅ Microphone permission granted automatically on dashboard');
-        console.log('🗣️ You can now say "Hey Melo" to navigate to the AI chatbot');
-        // Immediately stop the stream since we just needed permission
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Show user confirmation that wake word is ready
-        setTimeout(() => {
-          console.log('🎯 Wake word detection is now ACTIVE! Say "Hey Melo" to open AI chatbot');
-        }, 2000);
-      } catch (error) {
-        console.log('❌ Microphone permission denied or not available on dashboard:', error);
-        console.log('⚠️ Wake word detection "Hey Melo" will not work without microphone access');
-        
-        // Show user how to enable microphone
-        setTimeout(() => {
-          console.log('💡 To enable "Hey Melo" wake word: Click the microphone icon in your browser\'s address bar and allow microphone access');
-        }, 1000);
-      }
-    };
-
-    // Request permission on component mount
-    requestMicrophonePermission();
-  }, []);
-
-  // Wake word detection for "Hey Melo" - navigate to AI chatbot
-  useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      
-      // Wake word recognition for "Hey Melo"
-      wakeWordRecognitionRef.current = new SpeechRecognition();
-      
-      if (wakeWordRecognitionRef.current) {
-        wakeWordRecognitionRef.current.continuous = true;
-        wakeWordRecognitionRef.current.interimResults = true;
-        wakeWordRecognitionRef.current.lang = 'en-US';
-
-        wakeWordRecognitionRef.current.onresult = (event: any) => {
-          const lastResultIndex = event.results.length - 1;
-          const transcript = event.results[lastResultIndex][0].transcript.toLowerCase().trim();
-          
-          console.log('👂 Dashboard wake word heard:', transcript);
-          console.log('📊 Checking against wake word patterns...');
-
-          // More aggressive wake word detection with broader patterns
-          if (transcript.includes('hey melo') || transcript.includes('hey melow') || 
-              transcript.includes('a melo') || transcript.includes('hey milo') ||
-              transcript.includes('hey mail') || transcript.includes('hey mel') ||
-              transcript.includes('melo') || transcript.includes('melow') ||
-              transcript.includes('hey hello') || transcript.includes('hey yellow') ||
-              transcript.includes('hello') || transcript.includes('yellow') ||
-              transcript.includes('halo') || transcript.includes('helo') ||
-              /hey\s*m[aeiou]+l[aeiou]+/i.test(transcript) ||
-              /m[aeiou]+l[aeiou]+/i.test(transcript)) {
-            
-            console.log('🎯🎯🎯 WAKE WORD DETECTED! NAVIGATION TRIGGERED! 🎯🎯🎯');
-            console.log('📝 Matched transcript:', transcript);
-            console.log('🚀 Navigating to AI chatbot...');
-            
-            // Stop wake word listening before navigation
-            try {
-              wakeWordRecognitionRef.current.stop();
-            } catch (error) {
-              console.log('Error stopping wake word recognition:', error);
-            }
-            
-            // Navigate to AI chatbot page immediately
-            console.log('🔄 Triggering navigation with both methods...');
-            navigate('/ai-chatbot');
-            
-            // Force navigation as backup
-            setTimeout(() => {
-              window.location.href = '/ai-chatbot';
-            }, 100);
-          } else {
-            console.log('❌ No wake word match found in:', transcript);
-            console.log('💡 Try saying: "Hey Melo" clearly');
-          }
-        };
-
-        wakeWordRecognitionRef.current.onstart = () => {
-          console.log('✅ Dashboard wake word recognition started successfully');
-        };
-
-        wakeWordRecognitionRef.current.onerror = (event: any) => {
-          console.error('❌ Dashboard wake word recognition error:', event.error);
-          if (event.error === 'not-allowed') {
-            console.error('🚫 Microphone permission denied - wake word detection disabled');
-            return;
-          }
-          if (event.error !== 'aborted') {
-            setTimeout(() => {
-              console.log('🔄 Retrying wake word detection...');
-              startWakeWordListening();
-            }, 2000);
-          }
-        };
-
-        wakeWordRecognitionRef.current.onend = () => {
-          console.log('👂 Dashboard wake word recognition ended - restarting in 1 second');
-          setTimeout(() => {
-            startWakeWordListening();
-          }, 1000);
-        };
-
-        // Start wake word listening after a small delay to ensure microphone permissions
-        setTimeout(() => {
-          startWakeWordListening();
-        }, 1000);
-      }
-    } else {
-      console.warn('⚠️ Speech Recognition not supported in this browser');
-    }
-
     return () => {
-      if (wakeWordRecognitionRef.current) {
-        try {
-          wakeWordRecognitionRef.current.stop();
-          console.log('🛑 Wake word recognition stopped on cleanup');
-        } catch (error) {
-          console.log('Wake word recognition cleanup error:', error);
-        }
+      unsubscribe();
+      // Clean up stress timer if it exists
+      if (stressTimer) {
+        clearTimeout(stressTimer);
       }
     };
-  }, [navigate]);
+  }, [navigate, stressTimer]);
 
-  // Start wake word listening function
-  const startWakeWordListening = () => {
-    if (!wakeWordRecognitionRef.current) {
-      console.log('❌ Wake word recognition not available on dashboard');
-      return;
-    }
+  // Wake word recognition ref removed - no longer using microphone on dashboard
 
-    try {
-      console.log('👂 Starting dashboard wake word listening for "Hey Melo"...');
-      console.log('🎤 Make sure to speak clearly: "Hey Melo" to navigate to AI chatbot');
-      console.log('🗣️ Wake word detection is now ACTIVE and listening...');
-      wakeWordRecognitionRef.current.start();
-    } catch (error) {
-      console.log('⚠️ Dashboard wake word recognition start failed:', error);
-      // If already running, that's fine
-      if (error.message && error.message.includes('already started')) {
-        console.log('✅ Wake word recognition already running - listening for "Hey Melo"');
-      } else {
-        // Retry after a delay
-        setTimeout(() => {
-          console.log('🔄 Retrying wake word recognition start...');
-          startWakeWordListening();
-        }, 2000);
-      }
-    }
-  };
+  // Microphone permissions are now only requested on AI Chatbot page to prevent Safari conflicts
+
+  // Wake word detection removed from dashboard to prevent Safari microphone permission conflicts
+
+  // Wake word listening function removed - no longer needed on dashboard
 
   // Enable audio on first user interaction
   useEffect(() => {
@@ -266,10 +164,12 @@ const EmoCopilotDashboard = () => {
       const savedGenres = musicService.loadSelectedGenres();
       
       if (savedGenres && savedGenres.length > 0) {
-        console.log('🎵 Loading music for selected genres:', savedGenres);
-        await simpleMusicService.updateGenres(savedGenres);
-        
-        // Get tracks from service
+        console.log('🎲 Loading DYNAMIC music for selected genres:', savedGenres);
+
+        // Use dynamic loading for fresh playlists every time
+        await simpleMusicService.forceFreshReload(savedGenres);
+
+        // Get fresh dynamic tracks from service
         const allTracks = await simpleMusicService.getAllTracks();
         setPlaylist(allTracks);
 
@@ -277,13 +177,13 @@ const EmoCopilotDashboard = () => {
           setCurrentTrack(allTracks[0]);
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
-          console.log('🎵 Music loaded but not auto-playing. User must click play.');
+          console.log('🎲 Dynamic music loaded but not auto-playing. User must click play.');
         } else {
           // Set playlist in audio manager for continuous playback
           audioManager.setPlaylist(allTracks);
         }
 
-        console.log('🎵 Loaded playlist with', allTracks.length, 'tracks from Freesound');
+        console.log('🎲 Loaded dynamic playlist with', allTracks.length, 'tracks from Freesound');
       } else {
         console.log('🎵 No genres selected, no music will be loaded');
         setPlaylist([]);
@@ -356,14 +256,16 @@ const EmoCopilotDashboard = () => {
     };
   }, [audioEnabled]);
 
-  // Update playlist when returning from music selection
+  // Update playlist when returning from music selection - with dynamic results
   const refreshPlaylist = async () => {
-    // Reload music based on newly selected genres
+    // Reload music based on newly selected genres with fresh dynamic results
     const savedGenres = musicService.loadSelectedGenres();
 
     if (savedGenres && savedGenres.length > 0) {
-      console.log('🎵 Refreshing playlist for genres:', savedGenres);
-      await simpleMusicService.updateGenres(savedGenres);
+      console.log('🎲 Refreshing playlist with DYNAMIC music for genres:', savedGenres);
+
+      // Force fresh dynamic reload
+      await simpleMusicService.forceFreshReload(savedGenres);
 
       const allTracks = await simpleMusicService.getAllTracks();
       setPlaylist(allTracks);
@@ -374,13 +276,13 @@ const EmoCopilotDashboard = () => {
         // Set playlist in audio manager for continuous playback
         audioManager.setPlaylist(allTracks);
 
-        console.log('🎵 Music ready to play after genre selection. User must click play.');
+        console.log('🎲 Dynamic music ready to play after genre selection. User must click play.');
       } else {
         // Set playlist in audio manager for continuous playback
         audioManager.setPlaylist(allTracks);
       }
 
-      console.log('🎵 Playlist refreshed with', allTracks.length, 'tracks');
+      console.log('��� Dynamic playlist refreshed with', allTracks.length, 'tracks');
     } else {
       console.log('🎵 No genres selected, clearing playlist');
       setPlaylist([]);
@@ -440,6 +342,12 @@ const EmoCopilotDashboard = () => {
     audioManager.toggleMute();
   };
 
+  const handleEmotionSelect = (emotion: DriverStateType) => {
+    console.log('🧠 Manual emotion selected:', emotion);
+    setSelectedEmotion(emotion);
+    carStateManager.setDriverState(emotion, true); // Set as manual override
+  };
+
   const playNextTrack = async () => {
     try {
       await audioManager.playNextTrack();
@@ -461,10 +369,21 @@ const EmoCopilotDashboard = () => {
     console.log('🎵 Track', isFavorited ? 'removed from' : 'added to', 'favorites');
   };
 
+  // Helper function to remove emojis from text
+  const removeEmojis = (text: string): string => {
+    // Remove emojis using Unicode ranges
+    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+               .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{238C}-\u{2454}]|[\u{20D0}-\u{20FF}]/gu, '')
+               .replace(/[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '') // Remove variation selectors and zero-width joiners
+               .trim();
+  };
+
   // Text-to-speech function
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Clean the text by removing emojis before speaking
+      const cleanedText = removeEmojis(text);
+      const utterance = new SpeechSynthesisUtterance(cleanedText);
       utterance.rate = 0.9;
       utterance.pitch = 1;
       utterance.volume = 0.8;
@@ -481,7 +400,11 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Air conditioner turned on" : "Air conditioner turned off");
 
-
+    // Show AC emoji for 3 seconds only when turning ON
+    if (newState) {
+      setShowACEmoji(true);
+      setTimeout(() => setShowACEmoji(false), 3000);
+    }
   };
 
   const toggleLighting = () => {
@@ -493,7 +416,11 @@ const EmoCopilotDashboard = () => {
 
     speakText(newState ? "Lighting turned on" : "Lighting turned off");
 
-
+    // Show Lighting emoji for 3 seconds only when turning ON
+    if (newState) {
+      setShowLightingEmoji(true);
+      setTimeout(() => setShowLightingEmoji(false), 3000);
+    }
   };
 
   // Check temperature and show hot emoji if > 35°C
@@ -557,6 +484,7 @@ const EmoCopilotDashboard = () => {
         title="Emo Copilot"
         showHomeButton={false}
         showTemperature={true}
+        showDriverState={false}
       />
 
       {/* Conditional Content - Show emoji dashboard or normal dashboard */}
@@ -607,12 +535,66 @@ const EmoCopilotDashboard = () => {
                 <p className="text-xs text-black lg:text-sm">Real-time Detection</p>
               </div>
               <div className="grid grid-cols-3 gap-1 lg:gap-2">
-                <span className="px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Anxious</span>
-                <span className="px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Stressed</span>
-                <span className="px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Neutral</span>
-                <span className="px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Focused</span>
-                <span className="px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Calm</span>
-                <span className="px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border border-emotion-face lg:px-3 lg:py-2 lg:text-sm">Relaxed</span>
+                <button
+                  onClick={() => handleEmotionSelect('anxious')}
+                  className={`px-2 py-1 bg-flowkit-red text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'anxious'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Anxious
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('stressed')}
+                  className={`px-2 py-1 bg-emotion-mouth text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'stressed'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Stressed
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('neutral')}
+                  className={`px-2 py-1 bg-emotion-default text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'neutral'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Neutral
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('focused')}
+                  className={`px-2 py-1 bg-emotion-orange text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'focused'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Focused
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('calm')}
+                  className={`px-2 py-1 bg-emotion-blue text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'calm'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Calm
+                </button>
+                <button
+                  onClick={() => handleEmotionSelect('relaxed')}
+                  className={`px-2 py-1 bg-flowkit-green text-white text-xs text-center rounded-xl border ${
+                    selectedEmotion === 'relaxed'
+                      ? 'border-black border-2 shadow-lg scale-105'
+                      : 'border-emotion-face'
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
+                >
+                  Relaxed
+                </button>
               </div>
             </div>
 
@@ -757,7 +739,7 @@ const EmoCopilotDashboard = () => {
               console.log('AI Chatbot button clicked');
               navigate('/ai-chatbot');
             }}
-            className="flex items-center justify-center gap-2 bg-emotion-mouth text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 hover:scale-105 transition-transform duration-200"
+            className="flex items-center justify-center gap-2 bg-emotion-mouth text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 hover:bg-emotion-mouth-dark hover:scale-105 transition-all duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
               <path d="M12.5 6C11.9477 6 11.5 6.44772 11.5 7C11.5 7.55228 11.9477 8 12.5 8C13.0523 8 13.5 7.55228 13.5 7C13.5 6.44772 13.0523 6 12.5 6ZM7.5 7C7.5 6.44772 7.94772 6 8.5 6C9.05228 6 9.5 6.44772 9.5 7C9.5 7.55228 9.05228 8 8.5 8C7.94772 8 7.5 7.55228 7.5 7ZM11 3C11 2.72386 10.7761 2.5 10.5 2.5C10.2239 2.5 10 2.72386 10 3V3.5H7C6.17157 3.5 5.5 4.17157 5.5 5V9C5.5 9.82843 6.17157 10.5 7 10.5H14C14.8284 10.5 15.5 9.82843 15.5 9V5C15.5 4.17157 14.8284 3.5 14 3.5H11V3ZM7 4.5H14C14.2761 4.5 14.5 4.72386 14.5 5V9C14.5 9.27614 14.2761 9.5 14 9.5H7C6.72386 9.5 6.5 9.27614 6.5 9V5C6.5 4.72386 6.72386 4.5 7 4.5ZM10.75 18.4984C13.3656 18.4649 14.9449 17.9031 15.8718 17.0574C16.747 16.2588 16.9607 15.2813 16.9947 14.5019H17V13.8124C17 12.8131 16.19 12.0031 15.1907 12.0031H12V12H9V12.0031H5.8093C4.81005 12.0031 4 12.8131 4 13.8124V14.5019H4.00533C4.03931 15.2813 4.25297 16.2588 5.1282 17.0574C6.05506 17.9031 7.63442 18.4649 10.25 18.4984V18.5H10.75V18.4984ZM5.8093 13.0031H15.1907C15.6377 13.0031 16 13.3654 16 13.8124V14.25C16 14.9396 15.8688 15.7064 15.1978 16.3187C14.5103 16.946 13.1605 17.5 10.5 17.5C7.83946 17.5 6.48969 16.946 5.80224 16.3187C5.13123 15.7064 5 14.9396 5 14.25V13.8124C5 13.3654 5.36233 13.0031 5.8093 13.0031Z" fill="white"/>
@@ -770,7 +752,7 @@ const EmoCopilotDashboard = () => {
               console.log('Music Selection button clicked');
               navigate('/music-selection');
             }}
-            className="flex-1 flex items-center justify-center gap-2 bg-emotion-orange text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 hover:scale-105 transition-transform duration-200"
+            className="flex-1 flex items-center justify-center gap-2 bg-emotion-orange text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 hover:bg-emotion-orange-dark hover:scale-105 transition-all duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
               <path d="M15.5351 2.72561C16.179 2.52439 16.8334 3.00545 16.8334 3.68009V14C16.8334 15.3807 15.7141 16.5 14.3334 16.5C12.9527 16.5 11.8334 15.3807 11.8334 14C11.8334 12.6193 12.9527 11.5 14.3334 11.5C14.8962 11.5 15.4155 11.686 15.8334 11.9998V6.68009L8.83337 8.8676V16C8.83337 17.3807 7.71409 18.5 6.33337 18.5C4.95266 18.5 3.83337 17.3807 3.83337 16C3.83337 14.6193 4.95266 13.5 6.33337 13.5C6.89618 13.5 7.41554 13.686 7.83337 13.9998V5.86759C7.83337 5.43021 8.11762 5.04358 8.5351 4.91311L15.5351 2.72561ZM8.83337 7.8199L15.8334 5.6324V3.68009L8.83337 5.86759V7.8199ZM6.33337 14.5C5.50495 14.5 4.83337 15.1716 4.83337 16C4.83337 16.8284 5.50495 17.5 6.33337 17.5C7.1618 17.5 7.83337 16.8284 7.83337 16C7.83337 15.1716 7.1618 14.5 6.33337 14.5ZM12.8334 14C12.8334 14.8284 13.5049 15.5 14.3334 15.5C15.1618 15.5 15.8334 14.8284 15.8334 14C15.8334 13.1716 15.1618 12.5 14.3334 12.5C13.5049 12.5 12.8334 13.1716 12.8334 14Z" fill="white"/>
@@ -781,7 +763,7 @@ const EmoCopilotDashboard = () => {
           <button
             onClick={toggleCooling}
             className={`flex-1 flex items-center justify-center gap-2 text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 transition-all duration-200 hover:scale-105 ${
-              isCoolingOn ? 'bg-emotion-blue-dark' : 'bg-emotion-blue'
+              isCoolingOn ? 'bg-emotion-blue-dark hover:bg-emotion-blue-dark' : 'bg-emotion-blue hover:bg-emotion-blue-dark'
             }`}
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
@@ -793,7 +775,7 @@ const EmoCopilotDashboard = () => {
           <button
             onClick={toggleLighting}
             className={`flex-1 flex items-center justify-center gap-2 text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 transition-all duration-200 hover:scale-105 ${
-              isLightingOn ? 'bg-flowkit-green-dark' : 'bg-flowkit-green'
+              isLightingOn ? 'bg-flowkit-green-dark hover:bg-flowkit-green-dark' : 'bg-flowkit-green hover:bg-flowkit-green-dark'
             }`}
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
@@ -804,6 +786,24 @@ const EmoCopilotDashboard = () => {
         </div>
         </div>
         </>
+      )}
+
+      {/* AC Emoji Popup Overlay */}
+      {showACEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-[480px] max-h-[280px] w-[480px] h-[280px] flex items-center justify-center animate-spontaneous-pop shadow-2xl">
+            <ACFace />
+          </div>
+        </div>
+      )}
+
+      {/* Lighting Emoji Popup Overlay */}
+      {showLightingEmoji && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-[480px] max-h-[280px] w-[480px] h-[280px] flex items-center justify-center animate-spontaneous-pop shadow-2xl">
+            <LightingFace />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -9,6 +9,8 @@ interface CarState {
   musicVolume: number;
   lightsOn: boolean;
   driverState: DriverStateType;
+  manualOverride: boolean;
+  manualOverrideStartTime: number | null;
 }
 
 class CarStateManager {
@@ -19,15 +21,29 @@ class CarStateManager {
   constructor() {
     // Load state from localStorage or use defaults
     const savedState = localStorage.getItem('carState');
-    this.state = savedState ? JSON.parse(savedState) : {
+    const defaultState = {
       acTemperature: 22,
       isAcOn: false,
       isHeatingOn: false,
       seatHeating: false,
       musicVolume: 50,
       lightsOn: false,
-      driverState: 'neutral' as DriverStateType
+      driverState: 'neutral' as DriverStateType,
+      manualOverride: false,
+      manualOverrideStartTime: null
     };
+
+    if (savedState) {
+      const parsed = JSON.parse(savedState);
+      // Always start with AC and lights off, but preserve other settings
+      this.state = {
+        ...parsed,
+        isAcOn: false,
+        lightsOn: false
+      };
+    } else {
+      this.state = defaultState;
+    }
   }
 
   static getInstance(): CarStateManager {
@@ -83,8 +99,46 @@ class CarStateManager {
     this.updateState({ musicVolume: Math.max(0, Math.min(100, volume)) });
   }
 
-  setDriverState(driverState: DriverStateType): void {
-    this.updateState({ driverState });
+  setDriverState(driverState: DriverStateType, isManual: boolean = false): void {
+    const updates: Partial<CarState> = { driverState };
+
+    if (isManual) {
+      updates.manualOverride = true;
+      updates.manualOverrideStartTime = Date.now();
+      console.log('🧠 Manual driver state set:', driverState, 'with 5-minute override');
+    }
+
+    this.updateState(updates);
+  }
+
+  checkManualOverrideExpiry(): boolean {
+    if (!this.state.manualOverride || !this.state.manualOverrideStartTime) {
+      return false;
+    }
+
+    const elapsed = Date.now() - this.state.manualOverrideStartTime;
+    const fiveMinutes = 5 * 60 * 1000;
+
+    if (elapsed >= fiveMinutes) {
+      console.log('🧠 Manual override expired after 5 minutes, resuming automatic detection');
+      this.updateState({
+        manualOverride: false,
+        manualOverrideStartTime: null
+      });
+      return true; // Override expired
+    }
+
+    return false; // Override still active
+  }
+
+  isManualOverrideActive(): boolean {
+    if (!this.state.manualOverride) {
+      return false;
+    }
+
+    // Check if override has expired
+    this.checkManualOverrideExpiry();
+    return this.state.manualOverride;
   }
 }
 

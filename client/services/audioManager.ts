@@ -81,15 +81,68 @@ class AudioManager {
   }
 
   private onError(error: Event) {
-    console.error('❌ Audio error event:', error);
-    console.error('❌ Audio element error details:', {
-      error: this.audio?.error,
-      code: this.audio?.error?.code,
-      message: this.audio?.error?.message,
-      networkState: this.audio?.networkState,
-      readyState: this.audio?.readyState,
-      src: this.audio?.src
-    });
+    const audioError = this.audio?.error;
+
+    // Don't log AbortError as it's normal when switching tracks
+    if (audioError?.code === MediaError.MEDIA_ERR_ABORTED) {
+      console.log('ℹ️ Audio loading aborted (normal when switching tracks)');
+      return;
+    }
+
+    // Get human-readable error details
+    const getErrorCodeName = (code: number | undefined): string => {
+      if (!code) return 'Unknown';
+      switch (code) {
+        case MediaError.MEDIA_ERR_ABORTED: return 'ABORTED (Operation was aborted)';
+        case MediaError.MEDIA_ERR_NETWORK: return 'NETWORK (Network error occurred)';
+        case MediaError.MEDIA_ERR_DECODE: return 'DECODE (Error occurred while decoding)';
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: return 'SRC_NOT_SUPPORTED (Audio format not supported)';
+        default: return `Unknown error code: ${code}`;
+      }
+    };
+
+    const getNetworkStateName = (state: number | undefined): string => {
+      if (!state) return 'Unknown';
+      switch (state) {
+        case HTMLMediaElement.NETWORK_EMPTY: return 'EMPTY (No data)';
+        case HTMLMediaElement.NETWORK_IDLE: return 'IDLE (Not loading)';
+        case HTMLMediaElement.NETWORK_LOADING: return 'LOADING (Downloading data)';
+        case HTMLMediaElement.NETWORK_NO_SOURCE: return 'NO_SOURCE (No valid source)';
+        default: return `Unknown network state: ${state}`;
+      }
+    };
+
+    const getReadyStateName = (state: number | undefined): string => {
+      if (!state) return 'Unknown';
+      switch (state) {
+        case HTMLMediaElement.HAVE_NOTHING: return 'HAVE_NOTHING (No data)';
+        case HTMLMediaElement.HAVE_METADATA: return 'HAVE_METADATA (Metadata loaded)';
+        case HTMLMediaElement.HAVE_CURRENT_DATA: return 'HAVE_CURRENT_DATA (Current frame loaded)';
+        case HTMLMediaElement.HAVE_FUTURE_DATA: return 'HAVE_FUTURE_DATA (Some future data loaded)';
+        case HTMLMediaElement.HAVE_ENOUGH_DATA: return 'HAVE_ENOUGH_DATA (Enough data to play)';
+        default: return `Unknown ready state: ${state}`;
+      }
+    };
+
+    console.error('❌ Audio error event type:', error.type);
+    console.error('❌ Audio error details:');
+    console.error('   Error Code:', getErrorCodeName(audioError?.code));
+    console.error('   Error Message:', audioError?.message || 'No message');
+    console.error('   Network State:', getNetworkStateName(this.audio?.networkState));
+    console.error('   Ready State:', getReadyStateName(this.audio?.readyState));
+    console.error('   Source URL:', this.audio?.src || 'No source');
+    console.error('   Current Time:', this.audio?.currentTime || 0);
+    console.error('   Duration:', this.audio?.duration || 'Unknown');
+
+    // Log a user-friendly error message
+    if (audioError?.code === MediaError.MEDIA_ERR_NETWORK) {
+      console.error('🌐 Network error: Unable to load audio. Check your internet connection or try a different track.');
+    } else if (audioError?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+      console.error('🔧 Format error: This audio format is not supported by your browser.');
+    } else if (audioError?.code === MediaError.MEDIA_ERR_DECODE) {
+      console.error('🎵 Decode error: The audio file appears to be corrupted or invalid.');
+    }
+
     this.notifyListeners();
   }
 
@@ -108,23 +161,32 @@ class AudioManager {
       };
     }
 
-    const state = {
-      isPlaying: !this.audio.paused && !this.audio.ended,
-      isPaused: this.audio.paused,
-      currentTime: this.audio.currentTime,
-      duration: this.audio.duration || 0,
-      volume: this.audio.volume,
-      isMuted: this.audio.muted,
-      isLoading: false, // Force loading to false - we'll manage this manually
-      error: this.audio.error ? this.audio.error.message : null
-    };
+    try {
+      const state = {
+        isPlaying: !this.audio.paused && !this.audio.ended,
+        isPaused: this.audio.paused,
+        currentTime: this.audio.currentTime || 0,
+        duration: this.audio.duration || 0,
+        volume: this.audio.volume || 0.7,
+        isMuted: this.audio.muted || false,
+        isLoading: false, // Force loading to false - we'll manage this manually
+        error: this.audio.error ? (this.audio.error.message || 'Audio error occurred') : null
+      };
 
-    // Log state changes for debugging
-    if (state.error) {
-      console.error('🔴 Audio State Error:', state.error);
+      return state;
+    } catch (error) {
+      console.error('❌ Error getting audio state:', error);
+      return {
+        isPlaying: false,
+        isPaused: true,
+        currentTime: 0,
+        duration: 0,
+        volume: 0.7,
+        isMuted: false,
+        isLoading: false,
+        error: 'Audio state error'
+      };
     }
-
-    return state;
   }
 
   // Load and play a track with improved error handling
@@ -135,127 +197,183 @@ class AudioManager {
 
     try {
       this.currentTrack = track;
-      
+
       // Update current track index if this track is in the playlist
       const trackIndex = this.playlist.findIndex(t => t.id === track.id);
       if (trackIndex >= 0) {
         this.currentTrackIndex = trackIndex;
       }
-      
-      const audioUrl = track.url;
-      
-      if (!audioUrl) {
-        throw new Error('No audio URL provided for this track');
+
+      let audioUrl = track.url;
+
+      // Check if URL is invalid or points to the app routes instead of audio files
+      if (!audioUrl || audioUrl.includes('/music-playlists') || audioUrl.includes('/ai-chatbot') || audioUrl.includes('fly.dev') || !this.isValidAudioUrl(audioUrl)) {
+        console.warn('⚠️ Invalid or missing audio URL detected, using test audio');
+        console.log('🔗 Invalid URL was:', audioUrl);
+        audioUrl = this.getTestAudioUrl();
       }
 
       console.log('🎵 Loading track:', track.title);
-      console.log('🔗 Audio URL:', audioUrl);
+      console.log('🔗 Final audio URL:', audioUrl);
+      console.log('🔗 Original track URL was:', track.url);
 
-      // Stop any current playback
-      if (!this.audio.paused) {
-        this.audio.pause();
-      }
+      // Properly stop current audio to prevent abort errors
+      this.stopCurrentAudio();
 
-      // Reset audio element
-      this.audio.currentTime = 0;
-      
-      // Set the source
+      // Clear the source to prevent loading old URLs
+      this.audio.src = '';
+      this.audio.removeAttribute('src');
+
+      // Small delay to let the stop complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Set the new source
       this.audio.src = audioUrl;
-      this.audio.volume = 0.8;
+      this.audio.volume = 0.5; // Lower volume to avoid issues
       this.audio.muted = false;
 
-      // Wait for the audio to be ready
-      await new Promise((resolve, reject) => {
-        const handleCanPlay = () => {
-          console.log('✅ Audio ready to play');
-          this.audio?.removeEventListener('canplay', handleCanPlay);
-          this.audio?.removeEventListener('error', handleError);
-          resolve(true);
-        };
+      // Simplified loading approach
+      try {
+        // Start loading immediately
+        this.audio.load();
 
-        const handleError = (event: Event) => {
-          console.error('❌ Audio load error:', event);
-          this.audio?.removeEventListener('canplay', handleCanPlay);
-          this.audio?.removeEventListener('error', handleError);
-          reject(new Error('Failed to load audio'));
-        };
+        // Try to play immediately without waiting for full load
+        console.log('🎵 Attempting immediate playback...');
+        await this.audio.play();
 
-        this.audio?.addEventListener('canplay', handleCanPlay);
-        this.audio?.addEventListener('error', handleError);
+        console.log('✅ Now playing:', track.title, 'by', track.artist);
+        this.notifyListeners();
 
-        // Start loading
-        this.audio?.load();
+      } catch (playError) {
+        console.warn('⚠️ Immediate playback failed:', playError);
+        console.log('🔧 Error details:', {
+          name: playError.name,
+          message: playError.message,
+          code: playError.code
+        });
 
-        // Timeout after 10 seconds
-        setTimeout(() => {
-          this.audio?.removeEventListener('canplay', handleCanPlay);
-          this.audio?.removeEventListener('error', handleError);
-          reject(new Error('Audio loading timeout'));
-        }, 10000);
-      });
-
-      // Now try to play
-      console.log('🎵 Starting playback...');
-      await this.audio.play();
-      
-      console.log('✅ Now playing:', track.title, 'by', track.artist);
-      this.notifyListeners();
+        // If immediate playback fails, try with a test audio URL
+        console.log('🔄 Trying fallback audio sources...');
+        await this.tryTestAudio(track);
+      }
 
     } catch (error) {
       console.error('❌ Error playing track:', error);
-      
-      // Handle specific browser errors
-      if (error instanceof DOMException) {
-        switch (error.name) {
-          case 'NotAllowedError':
-            throw new Error('Browser blocked autoplay. Please interact with the page first, then try again.');
-          case 'AbortError':
-            throw new Error('Audio loading was interrupted. Please try again.');
-          case 'NotSupportedError':
-            throw new Error('Audio format not supported by your browser.');
-          case 'NetworkError':
-            throw new Error('Network error loading audio. Check your internet connection.');
-          default:
-            throw new Error(`Audio error: ${error.message || error.name || 'Unknown error'}`);
+
+      // Try fallback audio as last resort
+      try {
+        await this.tryTestAudio(track);
+      } catch (fallbackError) {
+        console.error('❌ Even fallback audio failed:', fallbackError);
+
+        // Handle specific browser errors
+        if (error instanceof DOMException) {
+          switch (error.name) {
+            case 'NotAllowedError':
+              throw new Error('Browser blocked autoplay. Click play again to start music.');
+            case 'AbortError':
+              throw new Error('Audio loading was canceled. Please try again.');
+            case 'NotSupportedError':
+              throw new Error('Audio format not supported by your browser.');
+            case 'NetworkError':
+              throw new Error('Network error loading audio. Check your connection.');
+            default:
+              throw new Error(`Audio error: ${error.message || error.name || 'Unknown error'}`);
+          }
         }
+
+        throw new Error(`Playback failed: ${error.message || 'Unknown error'}`);
       }
-      
-      throw new Error(`Playback failed: ${error.message || 'Unknown error'}`);
     }
   }
 
-  // Get a reliable fallback audio URL
-  private getFallbackAudioUrl(): string {
-    // These are known working audio URLs for demonstration
-    const fallbackUrls = [
-      'https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav',
-      'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
-      'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav',
-      'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'
+  // Get a reliable test audio URL that actually works
+  private getTestAudioUrl(): string {
+    // Use reliable test audio files that work cross-origin
+    const testUrls = [
+      'https://www.w3schools.com/html/horse.mp3',
+      'https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3',
+      'https://archive.org/download/testmp3testfile/mpthreetest.mp3'
     ];
-    return fallbackUrls[Math.floor(Math.random() * fallbackUrls.length)];
+
+    return testUrls[Math.floor(Math.random() * testUrls.length)];
   }
 
-  // Try fallback audio if primary URL fails
-  private async tryFallbackAudio(track: Track): Promise<void> {
+  // Validate if an audio URL is potentially valid
+  private isValidAudioUrl(url: string): boolean {
+    if (!url || url.trim() === '') {
+      console.warn('⚠️ Empty or null audio URL');
+      return false;
+    }
+
+    // Check for common audio file extensions or data URLs
+    const validPatterns = [
+      /\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i,  // Audio file extensions
+      /^data:audio\//i,                          // Data URLs
+      /^https?:\/\/.*\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i, // HTTP(S) audio URLs
+      /cdn\.freesound\.org/i,                    // Freesound CDN
+      /archive\.org/i                            // Archive.org audio files
+    ];
+
+    const isValid = validPatterns.some(pattern => pattern.test(url));
+
+    if (!isValid) {
+      console.warn('⚠️ Potentially invalid audio URL format:', url.substring(0, 100) + '...');
+    }
+
+    return isValid;
+  }
+
+  // Get alternative working audio URLs for testing
+  private getWorkingAudioUrls(): string[] {
+    return [
+      // Archive.org hosted audio files (more reliable)
+      'https://archive.org/download/testmp3testfile/mpthreetest.mp3',
+      'https://archive.org/download/testmp3testfile/SampleAudio_0.4mb_mp3.mp3',
+      // Data URL as ultimate fallback
+      this.getTestAudioUrl()
+    ];
+  }
+
+  // Try test audio with multiple fallbacks
+  private async tryTestAudio(track: Track): Promise<void> {
     if (!this.audio) return;
 
-    try {
-      // Use a very simple, known working audio URL for testing
-      const testUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEUCjyRzfPBeCkCKYPH8diNOwhZsEd+ynZtNcbvFZdXN3Qnpgj7TGqKjQf3lEkxhBrGMl4SQCX+SqO0MKtMcUKnCbpLnoqzpQj8KXEOm9Z2Qz0c4lM3yq5WMKcJJ1hxf6TKTXpgpzLKcYzm1t7dq2JEg0g9UcN6PnuQqJD5LDXiSAGZ2/rJaKA3F8ZrVqRp4QhkSsJgHlKJggzLFZnY5XtKDzL8k0VNyKV2WRrDLVq5IWNVNCo5bQhvGGHyZVEAJJYjqDi7hWnNc3F9IIcHh2d7XqZcjcY2AQAPAAAAgJT2';
+    const testUrls = this.getWorkingAudioUrls();
 
-      console.log('🔄 Trying simple test audio...');
+    for (let i = 0; i < testUrls.length; i++) {
+      try {
+        const testUrl = testUrls[i];
+        console.log(`🔄 Trying fallback audio ${i + 1}/${testUrls.length}:`, testUrl.substring(0, 50) + '...');
 
-      this.audio.src = testUrl;
+        // Reset audio completely
+        this.audio.src = '';
+        this.audio.load();
+        this.audio.src = testUrl;
+        this.audio.volume = 0.3; // Even lower volume for test
 
-      // Don't wait for load for data URL
-      await this.audio.play();
+        // For data URLs, play immediately. For HTTP URLs, wait a moment
+        if (testUrl.startsWith('data:')) {
+          await this.audio.play();
+        } else {
+          // Give a small delay for network URLs
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await this.audio.play();
+        }
 
-      console.log('✅ Test audio playing for:', track.title);
+        console.log(`✅ Fallback audio ${i + 1} playing for:`, track.title);
+        this.notifyListeners();
+        return; // Success, exit the loop
 
-    } catch (fallbackError) {
-      console.error('❌ Even test audio failed:', fallbackError);
-      this.notifyListeners();
+      } catch (fallbackError) {
+        console.warn(`❌ Fallback audio ${i + 1} failed:`, fallbackError);
+        if (i === testUrls.length - 1) {
+          // Last attempt failed
+          console.error('❌ All fallback audio URLs failed');
+          this.notifyListeners();
+          throw new Error('Unable to play any audio. Please check your browser settings.');
+        }
+      }
     }
   }
 
@@ -277,7 +395,7 @@ class AudioManager {
         this.audio?.removeEventListener('canplay', onLoad);
         this.audio?.removeEventListener('loadeddata', onLoad);
         this.audio?.removeEventListener('error', onError);
-        console.log('⚠️ Audio loading timeout, proceeding anyway');
+        console.log('⚠�� Audio loading timeout, proceeding anyway');
         resolve(); // Resolve instead of reject to avoid blocking
       }, 3000); // Reduced to 3 seconds
 
@@ -305,20 +423,43 @@ class AudioManager {
 
   // Play/resume audio
   async play(): Promise<void> {
-    if (!this.audio) return;
+    if (!this.audio) {
+      console.warn('⚠️ Cannot play - audio not initialized');
+      return;
+    }
 
     try {
+      // Check if audio source is valid
+      if (!this.audio.src || this.audio.src === '') {
+        console.warn('⚠️ Cannot play - no audio source');
+        return;
+      }
+
       console.log('🎵 Attempting to play audio...');
       console.log('🎵 Audio state before play:', {
-        src: this.audio.src,
+        src: this.audio.src.substring(0, 50) + '...',
         readyState: this.audio.readyState,
         paused: this.audio.paused,
-        duration: this.audio.duration
+        duration: this.audio.duration || 'Unknown',
+        currentTime: this.audio.currentTime || 0
       });
+
+      // Check if audio is in a valid state to play
+      if (this.audio.error) {
+        console.error('❌ Cannot play - audio element has error:', this.audio.error.message);
+        return;
+      }
 
       await this.audio.play();
       console.log('✅ Audio playing successfully');
+      this.notifyListeners();
     } catch (error) {
+      // Don't log AbortError as error - it's normal when switching tracks
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log('ℹ️ Audio play aborted (normal when switching tracks)');
+        return;
+      }
+
       console.error('❌ Error playing audio:', error);
 
       // Handle common play() rejection reasons
@@ -326,17 +467,43 @@ class AudioManager {
         switch (error.name) {
           case 'NotAllowedError':
             console.error('❌ Audio blocked - user interaction required');
+            console.log('💡 Try clicking on the page first, then play audio');
             break;
           case 'NotSupportedError':
             console.error('❌ Audio format not supported');
+            console.log('💡 Try a different audio source');
             break;
-          case 'AbortError':
-            console.error('❌ Audio loading aborted');
+          case 'NetworkError':
+            console.error('❌ Network error loading audio');
+            console.log('💡 Check your internet connection');
             break;
           default:
             console.error('❌ Unknown audio error:', error.name, error.message);
         }
       }
+
+      // Notify listeners of the error state
+      this.notifyListeners();
+    }
+  }
+
+  // Properly stop current audio before loading new track
+  private stopCurrentAudio(): void {
+    if (!this.audio) return;
+
+    try {
+      // Pause first to avoid interruption errors
+      if (!this.audio.paused) {
+        this.audio.pause();
+      }
+
+      // Clear the source to stop loading
+      this.audio.src = '';
+      this.audio.load(); // This will abort any ongoing load
+
+    } catch (error) {
+      // Ignore errors when stopping - they're expected
+      console.log('ℹ️ Stopped current audio (ignoring stop errors)');
     }
   }
 

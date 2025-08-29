@@ -10,9 +10,13 @@ const MusicSelection = () => {
 
   // Load saved genres on component mount
   useEffect(() => {
+    console.log('🔍 MusicSelection: Component mounted, loading saved genres');
     const savedGenres = musicService.loadSelectedGenres();
-    console.log('🎵 Loaded saved genres:', savedGenres);
+    console.log('🔍 MusicSelection: Loaded saved genres:', savedGenres);
+    console.log('🔍 MusicSelection: Genres type:', typeof savedGenres);
+    console.log('🔍 MusicSelection: Genres length:', savedGenres?.length || 0);
     setSelectedGenres(savedGenres || []);
+    console.log('🔍 MusicSelection: Set selectedGenres state');
   }, []);
 
   const handleNavigateToPlaylists = () => {
@@ -24,28 +28,37 @@ const MusicSelection = () => {
   const musicGenres = [
     { name: 'Classical', color: 'bg-emotion-default' },
     { name: 'Ambient', color: 'bg-emotion-mouth' },
-    { name: 'Piano', color: 'bg-emotion-blue' },
-    { name: 'Peaceful', color: 'bg-emotion-orange' },
-    { name: 'Jazz', color: 'bg-emotion-mouth' },
-    { name: 'Electronic', color: 'bg-emotion-blue' },
+    { name: 'Jazz', color: 'bg-emotion-blue' },
     { name: 'Folk', color: 'bg-emotion-orange' },
-    { name: 'Meditation', color: 'bg-emotion-default' },
-    { name: 'Natural', color: 'bg-emotion-blue' },
-    { name: 'Chill', color: 'bg-emotion-orange' },
-    { name: 'Instrumental', color: 'bg-emotion-default' },
-    { name: 'Relaxing', color: 'bg-emotion-mouth' },
+    { name: 'Rock', color: 'bg-emotion-mouth' },
+    { name: 'Blues', color: 'bg-emotion-blue' },
+    { name: 'Chillout', color: 'bg-emotion-orange' },
+    { name: 'Country', color: 'bg-emotion-default' },
+    { name: 'Hip-Pop', color: 'bg-emotion-blue' },
+    { name: 'Electro Pop', color: 'bg-emotion-orange' },
+    { name: 'Downbeat', color: 'bg-emotion-default' },
+    { name: 'New Age', color: 'bg-emotion-mouth' },
   ];
 
   const toggleGenre = async (genreName: string) => {
+    console.log('🔍 MusicSelection: Toggling genre:', genreName);
+    console.log('🔍 MusicSelection: Current selected genres:', selectedGenres);
+
     const newGenres = selectedGenres.includes(genreName)
       ? selectedGenres.filter(genre => genre !== genreName)
       : [...selectedGenres, genreName];
 
+    console.log('🔍 MusicSelection: New genres after toggle:', newGenres);
     setSelectedGenres(newGenres);
-    
+
     // Save to both services
+    console.log('🔍 MusicSelection: Saving genres to localStorage');
     musicService.saveSelectedGenres(newGenres);
-    
+
+    // Verify save worked
+    const savedCheck = musicService.loadSelectedGenres();
+    console.log('🔍 MusicSelection: Verification - genres saved as:', savedCheck);
+
     // Update simple music service with new genres
     if (newGenres.length > 0) {
       console.log('🎵 Updating music selection with genres:', newGenres);
@@ -62,7 +75,8 @@ const MusicSelection = () => {
       {/* Status Bar */}
       <StatusBar
         title="Music Selection"
-        showHomeButton={true}
+        showBackButton={true}
+        showDriverState={true}
         showTemperature={true}
       />
 
@@ -130,6 +144,10 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
+                focus:ring-0 active:ring-0 focus:shadow-none active:shadow-none
+                [&:focus]:border-emotion-face [&:active]:border-emotion-face
+                no-focus-border
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >
@@ -165,6 +183,10 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
+                focus:ring-0 active:ring-0 focus:shadow-none active:shadow-none
+                [&:focus]:border-emotion-face [&:active]:border-emotion-face
+                no-focus-border
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >
@@ -200,6 +222,10 @@ const MusicSelection = () => {
                 ${genre.color} text-white font-medium
                 text-sm lg:text-base h-20 lg:h-24
                 transition-all duration-200 hover:scale-105
+                focus:outline-none active:outline-none focus:border-emotion-face active:border-emotion-face
+                focus:ring-0 active:ring-0 focus:shadow-none active:shadow-none
+                [&:focus]:border-emotion-face [&:active]:border-emotion-face
+                no-focus-border
                 ${isSelected(genre.name) ? 'ring-2 ring-emotion-default' : ''}
               `}
             >

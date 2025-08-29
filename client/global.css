@@ -87,10 +87,13 @@
     --flowkit-green: #29CC6A;
     --flowkit-green-dark: #1a8f47;
     --flowkit-red: #FC5555;
+    --flowkit-red-dark: #d13333;
     --flowkit-white: #FFF;
     --emotion-face: rgba(255, 220, 220, 0.8);
     --emotion-orange: rgba(255, 166, 128, 1);
+    --emotion-orange-dark: rgba(230, 141, 103, 1);
     --emotion-mouth: rgba(255, 139, 126, 1);
+    --emotion-mouth-dark: rgba(230, 114, 101, 1);
     --emotion-blue: rgba(166, 219, 255, 1);
     --emotion-blue-dark: rgba(76, 170, 255, 1);
     --emotion-default: rgba(58, 32, 24, 1);
@@ -143,4 +146,53 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Remove all button focus outlines and borders globally */
+  button:focus,
+  button:active,
+  button:focus-visible,
+  button:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+  }
+
+  /* Specifically target music selection buttons */
+  button[class*="border-emotion-face"]:focus,
+  button[class*="border-emotion-face"]:active,
+  button[class*="border-emotion-face"]:focus-visible {
+    border-color: rgba(255, 220, 220, 0.8) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-appearance: none !important;
+    -webkit-focus-ring-color: transparent !important;
+  }
+
+  /* Remove all possible webkit/mobile borders */
+  button {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-appearance: none !important;
+    -webkit-focus-ring-color: transparent !important;
+  }
+}
+
+/* Utility class to force remove all borders and outlines */
+.no-focus-border {
+  outline: none !important;
+  border-color: rgba(255, 220, 220, 0.8) !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
+.no-focus-border:focus,
+.no-focus-border:active,
+.no-focus-border:focus-visible,
+.no-focus-border:focus-within {
+  outline: none !important;
+  border-color: rgba(255, 220, 220, 0.8) !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }

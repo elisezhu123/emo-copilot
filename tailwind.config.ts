@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'inter': ['Inter', '-apple-system', 'Roboto', 'Helvetica', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -61,10 +64,13 @@ export default {
         "flowkit-green": "var(--flowkit-green)",
         "flowkit-green-dark": "var(--flowkit-green-dark)",
         "flowkit-red": "var(--flowkit-red)",
+        "flowkit-red-dark": "var(--flowkit-red-dark)",
         "flowkit-white": "var(--flowkit-white)",
         "emotion-face": "var(--emotion-face)",
         "emotion-orange": "var(--emotion-orange)",
+        "emotion-orange-dark": "var(--emotion-orange-dark)",
         "emotion-mouth": "var(--emotion-mouth)",
+        "emotion-mouth-dark": "var(--emotion-mouth-dark)",
         "emotion-blue": "var(--emotion-blue)",
         "emotion-blue-dark": "var(--emotion-blue-dark)",
         "emotion-default": "var(--emotion-default)",
