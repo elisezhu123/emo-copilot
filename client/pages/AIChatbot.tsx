@@ -99,34 +99,15 @@ const AIChatbot = () => {
   const [seatHeating, setSeatHeating] = useState(false);
   const [musicVolume, setMusicVolume] = useState(50);
   const [lightsOn, setLightsOn] = useState(false);
-  // Load and preserve conversation history for context
-  const [messages, setMessages] = useState<Message[]>(() => {
-    // Try to load existing conversation history
-    const savedHistory = localStorage.getItem('ai-chatbot-history');
-
-    if (savedHistory) {
-      try {
-        const parsedHistory = JSON.parse(savedHistory);
-        console.log('📚 Loaded conversation history:', parsedHistory.length, 'messages');
-        return parsedHistory.map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
-      } catch (error) {
-        console.warn('Failed to parse conversation history:', error);
-      }
+  // Fresh conversation history for each session (clears on npm run dev)
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
+      type: 'bot',
+      timestamp: new Date()
     }
-
-    // Return default greeting if no history
-    return [
-      {
-        id: '1',
-        text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
-        type: 'bot',
-        timestamp: new Date()
-      }
-    ];
-  });
+  ]);
 
   const recognitionRef = useRef<any>(null);
   const wakeWordRecognitionRef = useRef<any>(null);
@@ -1234,7 +1215,7 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n����� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
@@ -3463,7 +3444,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
               }
             }, 500);
           } else {
-            console.log('❌ Not restarting recognition - conditions not met');
+            console.log('��� Not restarting recognition - conditions not met');
           }
         };
       }
