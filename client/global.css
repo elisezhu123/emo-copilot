@@ -176,3 +176,23 @@
     -webkit-focus-ring-color: transparent !important;
   }
 }
+
+/* Utility class to force remove all borders and outlines */
+.no-focus-border {
+  outline: none !important;
+  border-color: rgba(255, 220, 220, 0.8) !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
+.no-focus-border:focus,
+.no-focus-border:active,
+.no-focus-border:focus-visible,
+.no-focus-border:focus-within {
+  outline: none !important;
+  border-color: rgba(255, 220, 220, 0.8) !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
