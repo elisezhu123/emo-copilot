@@ -21,7 +21,7 @@ class CarStateManager {
   constructor() {
     // Load state from localStorage or use defaults
     const savedState = localStorage.getItem('carState');
-    this.state = savedState ? JSON.parse(savedState) : {
+    const defaultState = {
       acTemperature: 22,
       isAcOn: false,
       isHeatingOn: false,
@@ -32,6 +32,18 @@ class CarStateManager {
       manualOverride: false,
       manualOverrideStartTime: null
     };
+
+    if (savedState) {
+      const parsed = JSON.parse(savedState);
+      // Always start with AC and lights off, but preserve other settings
+      this.state = {
+        ...parsed,
+        isAcOn: false,
+        lightsOn: false
+      };
+    } else {
+      this.state = defaultState;
+    }
   }
 
   static getInstance(): CarStateManager {
