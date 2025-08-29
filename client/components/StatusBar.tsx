@@ -122,7 +122,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
   // Manual sync function to force refresh
   const forceDriverStateSync = () => {
     // Clear localStorage cache
-    console.log('��� Clearing localStorage cache');
+    console.log('🧹 Clearing localStorage cache');
     localStorage.removeItem('carState');
 
     // Force reset to neutral and then let dashboard component set the correct state
@@ -235,16 +235,16 @@ const StatusBar: React.FC<StatusBarProps> = ({
           setIsUsingUserLocation(false);
           resolve(null);
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 300000
+        { 
+          enableHighAccuracy: true, 
+          timeout: 15000, 
+          maximumAge: 300000 
         }
       );
     });
   };
 
-  // Fetch weather data for Limerick, Ireland
+  // Fetch weather data
   const fetchWeather = async (lat: number, lng: number) => {
     try {
       const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
@@ -275,7 +275,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
       const data = await response.json();
       const temp = Math.round(data.main.temp);
       setTemperature(`${temp}°C`);
-      console.log('🌡️ StatusBar temperature updated for Limerick area:', `${temp}°C`);
+      console.log('🌡️ StatusBar temperature updated:', `${temp}°C`);
 
       // Check for extreme weather conditions
       const weatherCondition = data.weather[0].main.toLowerCase();
@@ -288,7 +288,6 @@ const StatusBar: React.FC<StatusBarProps> = ({
         console.log('🔥 Temperature exceeds 35°C, triggering AC permission dialog');
         onTemperatureExceed(temp);
       }
-      console.log('🌡️ Real OpenWeather API temperature:', temp, '°C for location:', weatherLat, weatherLng);
 
       // Check for extreme weather conditions
       const extremeConditions = [
@@ -316,151 +315,33 @@ const StatusBar: React.FC<StatusBarProps> = ({
       console.log('🌡️ Real OpenWeather API failed, using fallback temperature');
 
       // Only use fallback if real API fails
-      const randomValue = Math.random();
-      let fallbackTemp = 20; // Default Limerick temperature
-      let simulatedWeather = null;
-
-      if (randomValue < 0) { // DISABLED: was 15% chance of extreme weather - preventing unwanted alerts
-        const extremeWeatherTypes = [
-          { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
-          { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 },
-          { condition: 'thunderstorm', temp: 18, description: 'Severe thunderstorm', windSpeed: 20 },
-          { condition: 'blizzard', temp: -8, description: 'Blizzard conditions', windSpeed: 25 }
-        ];
-
-        simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
-        fallbackTemp = simulatedWeather.temp;
-
-        console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
-
-        if (onExtremeWeather) {
-          onExtremeWeather({
-            condition: simulatedWeather.condition,
-            visibility: simulatedWeather.visibility || 10000,
-            windSpeed: simulatedWeather.windSpeed || 0,
-            temp: fallbackTemp,
-            description: simulatedWeather.description
-          });
-        }
-      } else if (randomValue < 0.25) { // 10% chance of high temp - DISABLED for user experience
-        fallbackTemp = 18 + Math.floor(Math.random() * 5); // Use realistic temperature 18-23°C around Limerick current
-        // if (onTemperatureExceed) {
-        //   onTemperatureExceed(fallbackTemp);
-        // }
-      }
-
+      const fallbackTemp = 20; // Default Limerick temperature
       setTemperature(`${fallbackTemp}°C`);
-      console.log(`🌡️ StatusBar using simulated temperature: ${fallbackTemp}°C (Limerick realistic range)`);
+      console.log(`🌡️ StatusBar using fallback temperature: ${fallbackTemp}°C`);
     }
   };
 
   // Get user's location and weather
   useEffect(() => {
-    if (navigator.geolocation && showTemperature) {
-      console.log('🌍 Attempting to get user location...');
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          console.log('📍 Location obtained:', location.lat, location.lng);
-          setCurrentLocation(location);
+    if (showTemperature) {
+      const initializeWeather = async () => {
+        console.log('🌍 Initializing weather with location check...');
+        
+        // Try to get user location
+        const location = await requestLocationAccess();
+        
+        if (location) {
+          // Use user's location
           fetchWeather(location.lat, location.lng);
-        },
-        (error) => {
-          // Handle geolocation errors gracefully - this is normal behavior
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              console.log('🌡️ StatusBar: Location access denied, using Limerick weather');
-              break;
-            case error.POSITION_UNAVAILABLE:
-              console.log('🌡️ StatusBar: Location unavailable, using Limerick weather');
-              break;
-            case error.TIMEOUT:
-              console.log('🌡����� StatusBar: Location request timed out, using Limerick weather');
-              break;
-            default:
-              console.log('🌡️ StatusBar: Location service unavailable, using Limerick weather');
-              break;
-          }
-
-          // Fallback to Limerick weather when location is not available
-          // For testing: occasionally simulate weather conditions
-          const randomValue = Math.random();
-          if (randomValue < 0) { // DISABLED: was 20% chance of simulation - preventing unwanted alerts
-            if (randomValue < 0.1) {
-              // Simulate extreme weather
-              const extremeWeatherTypes = [
-                { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
-                { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 }
-              ];
-
-              const simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
-              setTemperature(`${simulatedWeather.temp}°C`);
-              console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
-
-              if (onExtremeWeather) {
-                onExtremeWeather({
-                  condition: simulatedWeather.condition,
-                  visibility: simulatedWeather.visibility || 10000,
-                  windSpeed: simulatedWeather.windSpeed || 0,
-                  temp: simulatedWeather.temp,
-                  description: simulatedWeather.description
-                });
-              }
-            } else {
-              // Simulate realistic temperature - DISABLED high temp simulation
-              const simulatedTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C Limerick realistic range
-              setTemperature(`${simulatedTemp}°C`);
-              // if (onTemperatureExceed) {
-              //   onTemperatureExceed(simulatedTemp);
-              // }
-            }
-          } else {
-            console.log('🌍 Using Limerick coordinates for weather');
-            fetchWeather(52.6638, -8.6267); // Limerick coordinates
-          }
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
-      );
-    } else if (showTemperature) {
-      // Fallback to Limerick weather when geolocation is not supported
-      console.log('🌡️ StatusBar: Geolocation not supported, using Limerick weather');
-      // For testing: occasionally simulate weather conditions
-      const randomValue = Math.random();
-      if (randomValue < 0) { // DISABLED: was 20% chance of simulation - preventing unwanted alerts
-        if (randomValue < 0.1) {
-          // Simulate extreme weather
-          const extremeWeatherTypes = [
-            { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
-            { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 }
-          ];
-
-          const simulatedWeather = extremeWeatherTypes[Math.floor(Math.random() * extremeWeatherTypes.length)];
-          setTemperature(`${simulatedWeather.temp}°C`);
-          console.log(`⚠️ Simulated extreme weather: ${simulatedWeather.condition}`);
-
-          if (onExtremeWeather) {
-            onExtremeWeather({
-              condition: simulatedWeather.condition,
-              visibility: simulatedWeather.visibility || 10000,
-              windSpeed: simulatedWeather.windSpeed || 0,
-              temp: simulatedWeather.temp,
-              description: simulatedWeather.description
-            });
-          }
         } else {
-          // Simulate realistic temperature - DISABLED high temp simulation
-          const simulatedTemp = 18 + Math.floor(Math.random() * 5); // 18-23°C Limerick realistic range
-          setTemperature(`${simulatedTemp}°C`);
-          // if (onTemperatureExceed) {
-          //   onTemperatureExceed(simulatedTemp);
-          // }
+          // Fallback to Limerick weather
+          console.log('🌍 Using Limerick coordinates for weather');
+          setIsUsingUserLocation(false);
+          fetchWeather(52.6638, -8.6267); // Limerick coordinates
         }
-      } else {
-        fetchWeather(52.6638, -8.6267); // Limerick coordinates
-      }
+      };
+
+      initializeWeather();
     }
   }, [showTemperature]);
 
@@ -517,7 +398,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               >
                 Temperature: {temperature} {isUsingUserLocation ? '📍' : '🏠'}
               </span>
-              {locationStatus === 'denied' || locationStatus === 'unavailable' ? (
+              {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
                 <button
                   onClick={async () => {
                     const location = await requestLocationAccess();
@@ -532,7 +413,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
                 >
                   📍
                 </button>
-              ) : null}
+              )}
             </div>
           )}
 
@@ -553,16 +434,15 @@ const StatusBar: React.FC<StatusBarProps> = ({
           )}
         </div>
 
-        {/* Right Side - Arduino + Time + Battery + Home */}
+        {/* Right Side - Time + Battery + Home */}
         <div className="flex justify-end items-center gap-2">
-
           <span className="text-[#3A2018] text-center font-inter text-sm font-semibold leading-normal">
             {formatTime(currentTime)}
           </span>
 
           {/* WiFi Icon */}
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.8323 7.38331C17.2417 7.7927 17.6285 8.2608 17.9653 8.74874C18.1222 8.97601 18.0651 9.28741 17.8378 9.44426C17.6105 9.60112 17.2991 9.54403 17.1423 9.31676C16.8391 8.87752 16.4908 8.45604 16.1252 8.09041C12.7621 4.72735 7.30951 4.72735 3.94644 8.09041C3.5982 8.43865 3.25362 8.86 2.93943 9.31289C2.78203 9.53978 2.4705 9.59611 2.24361 9.43871C2.01672 9.28131 1.96039 8.96978 2.11779 8.74289C2.46426 8.24347 2.84617 7.77647 3.23934 7.38331C6.99293 3.62972 13.0787 3.62972 16.8323 7.38331ZM14.5966 9.35675C15.0689 9.82908 15.4784 10.4028 15.7904 11.0128C15.9162 11.2587 15.8188 11.5599 15.5729 11.6856C15.3271 11.8114 15.0259 11.714 14.9001 11.4682C14.6343 10.9485 14.2857 10.46 13.8895 10.0639C11.7612 7.93552 8.31045 7.93552 6.18212 10.0639C5.76874 10.4772 5.43278 10.9422 5.17417 11.4535C5.04953 11.6999 4.74874 11.7986 4.50232 11.674C4.25591 11.5494 4.15719 11.2486 4.28183 11.0022C4.58807 10.3967 4.98645 9.84531 5.47501 9.35675C7.99387 6.83788 12.0778 6.83788 14.5966 9.35675ZM12.8876 11.8539C13.2419 12.2082 13.5338 12.644 13.737 13.1076C13.8478 13.3605 13.7326 13.6554 13.4797 13.7662C13.2268 13.8771 12.9319 13.7619 12.8211 13.509C12.6667 13.1567 12.4445 12.825 12.1805 12.561C10.996 11.3765 9.07559 11.3765 7.89109 12.561C7.62839 12.8237 7.41558 13.1429 7.26003 13.4984C7.14933 13.7514 6.85451 13.8668 6.60153 13.7561C6.34854 13.6454 6.23319 13.3506 6.34389 13.0976C6.54802 12.6311 6.83035 12.2075 7.18398 11.8539C8.759 10.2789 11.3126 10.2789 12.8876 11.8539ZM10.963 13.7865C11.47 14.2936 11.47 15.1157 10.963 15.6228C10.4559 16.1298 9.63379 16.1298 9.12673 15.6228C8.61966 15.1157 8.61966 14.2936 9.12673 13.7865C9.63379 13.2795 10.4559 13.2795 10.963 13.7865Z" fill="#242424"/>
+            <path d="M16.8323 7.38331C17.2417 7.7927 17.6285 8.2608 17.9653 8.74874C18.1222 8.97601 18.0651 9.28741 17.8378 9.44426C17.6105 9.60112 17.2991 9.54403 17.1423 9.31676C16.8391 8.87752 16.4908 8.45604 16.1252 8.09041C12.7621 4.72735 7.30951 4.72735 3.94644 8.09041C3.5982 8.43865 3.25362 8.86 2.93943 9.31289C2.78203 9.53978 2.4705 9.59611 2.24361 9.43871C2.01672 9.28131 1.96039 8.96978 2.11779 8.74289C2.46426 8.24347 2.84617 7.77647 3.23934 7.38331C6.99293 3.62972 13.0787 3.62972 16.8323 7.38331ZM14.5966 9.35675C15.0689 9.82908 15.4784 10.4028 15.7904 11.0128C15.9162 11.2587 15.8188 11.5599 15.5729 11.6856C15.3271 11.8114 15.0259 11.714 14.9001 11.4682C14.6343 10.9485 14.2857 10.46 13.8895 10.0639C11.7612 7.93552 8.31045 7.93552 6.18212 10.0639C5.76874 10.4772 5.43278 10.9422 5.17417 11.4535C5.04953 11.6999 4.74874 11.7986 4.50232 11.674C4.25591 11.5494 4.15719 11.2486 4.28183 11.0022C4.58807 10.3967 4.98645 9.84531 5.47501 9.35675C7.99387 6.83788 12.0778 6.83788 14.5966 9.35675ZM12.8876 11.8539C13.2419 12.2082 13.5338 12.644 13.737 13.1076C13.8478 13.3605 13.7326 13.6554 13.4797 13.7662C13.2268 13.8771 12.9319 13.7619 12.8211 13.509C12.6667 13.1567 12.4445 12.825 12.1805 12.561C10.996 11.3765 9.07559 11.3765 7.89109 12.561C7.62839 12.8237 7.41558 13.1429 7.26003 13.4984C7.14933 13.7514 6.85451 13.8668 6.60153 13.7561C6.34854 13.6454 6.23319 13.3506 6.34389 13.0976C6.54802 12.6311 6.83035 12.2075 7.18398 11.8539C8.759 10.2789 11.3126 10.2789 12.8876 11.8539ZM10.963 14.8284C11.1216 14.9871 11.1216 15.2394 10.963 15.398C10.8043 15.5566 10.552 15.5566 10.3934 15.398C10.2348 15.2394 10.2348 14.9871 10.3934 14.8284C10.552 14.6698 10.8043 14.6698 10.963 14.8284Z" fill="#242424"/>
           </svg>
 
           {/* Battery Icon */}
@@ -625,7 +505,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
             >
               Temperature: {temperature} {isUsingUserLocation ? '📍' : '🏠'}
             </span>
-            {locationStatus === 'denied' || locationStatus === 'unavailable' ? (
+            {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
               <button
                 onClick={async () => {
                   const location = await requestLocationAccess();
@@ -640,7 +520,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               >
                 📍
               </button>
-            ) : null}
+            )}
           </div>
         )}
 
@@ -668,7 +548,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
         {/* WiFi Icon */}
         <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16.8323 7.38331C17.2417 7.7927 17.6285 8.2608 17.9653 8.74874C18.1222 8.97601 18.0651 9.28741 17.8378 9.44426C17.6105 9.60112 17.2991 9.54403 17.1423 9.31676C16.8391 8.87752 16.4908 8.45604 16.1252 8.09041C12.7621 4.72735 7.30951 4.72735 3.94644 8.09041C3.5982 8.43865 3.25362 8.86 2.93943 9.31289C2.78203 9.53978 2.4705 9.59611 2.24361 9.43871C2.01672 9.28131 1.96039 8.96978 2.11779 8.74289C2.46426 8.24347 2.84617 7.77647 3.23934 7.38331C6.99293 3.62972 13.0787 3.62972 16.8323 7.38331ZM14.5966 9.35675C15.0689 9.82908 15.4784 10.4028 15.7904 11.0128C15.9162 11.2587 15.8188 11.5599 15.5729 11.6856C15.3271 11.8114 15.0259 11.714 14.9001 11.4682C14.6343 10.9485 14.2857 10.46 13.8895 10.0639C11.7612 7.93552 8.31045 7.93552 6.18212 10.0639C5.76874 10.4772 5.43278 10.9422 5.17417 11.4535C5.04953 11.6999 4.74874 11.7986 4.50232 11.674C4.25591 11.5494 4.15719 11.2486 4.28183 11.0022C4.58807 10.3967 4.98645 9.84531 5.47501 9.35675C7.99387 6.83788 12.0778 6.83788 14.5966 9.35675ZM12.8876 11.8539C13.2419 12.2082 13.5338 12.644 13.737 13.1076C13.8478 13.3605 13.7326 13.6554 13.4797 13.7662C13.2268 13.8771 12.9319 13.7619 12.8211 13.509C12.6667 13.1567 12.4445 12.825 12.1805 12.561C10.996 11.3765 9.07559 11.3765 7.89109 12.561C7.62839 12.8237 7.41558 13.1429 7.26003 13.4984C7.14933 13.7514 6.85451 13.8668 6.60153 13.7561C6.34854 13.6454 6.23319 13.3506 6.34389 13.0976C6.54802 12.6311 6.83035 12.2075 7.18398 11.8539C8.759 10.2789 11.3126 10.2789 12.8876 11.8539ZM10.963 13.7865C11.47 14.2936 11.47 15.1157 10.963 15.6228C10.4559 16.1298 9.63379 16.1298 9.12673 15.6228C8.61966 15.1157 8.61966 14.2936 9.12673 13.7865C9.63379 13.2795 10.4559 13.2795 10.963 13.7865Z" fill="#242424"/>
+          <path d="M16.8323 7.38331C17.2417 7.7927 17.6285 8.2608 17.9653 8.74874C18.1222 8.97601 18.0651 9.28741 17.8378 9.44426C17.6105 9.60112 17.2991 9.54403 17.1423 9.31676C16.8391 8.87752 16.4908 8.45604 16.1252 8.09041C12.7621 4.72735 7.30951 4.72735 3.94644 8.09041C3.5982 8.43865 3.25362 8.86 2.93943 9.31289C2.78203 9.53978 2.4705 9.59611 2.24361 9.43871C2.01672 9.28131 1.96039 8.96978 2.11779 8.74289C2.46426 8.24347 2.84617 7.77647 3.23934 7.38331C6.99293 3.62972 13.0787 3.62972 16.8323 7.38331ZM14.5966 9.35675C15.0689 9.82908 15.4784 10.4028 15.7904 11.0128C15.9162 11.2587 15.8188 11.5599 15.5729 11.6856C15.3271 11.8114 15.0259 11.714 14.9001 11.4682C14.6343 10.9485 14.2857 10.46 13.8895 10.0639C11.7612 7.93552 8.31045 7.93552 6.18212 10.0639C5.76874 10.4772 5.43278 10.9422 5.17417 11.4535C5.04953 11.6999 4.74874 11.7986 4.50232 11.674C4.25591 11.5494 4.15719 11.2486 4.28183 11.0022C4.58807 10.3967 4.98645 9.84531 5.47501 9.35675C7.99387 6.83788 12.0778 6.83788 14.5966 9.35675ZM12.8876 11.8539C13.2419 12.2082 13.5338 12.644 13.737 13.1076C13.8478 13.3605 13.7326 13.6554 13.4797 13.7662C13.2268 13.8771 12.9319 13.7619 12.8211 13.509C12.6667 13.1567 12.4445 12.825 12.1805 12.561C10.996 11.3765 9.07559 11.3765 7.89109 12.561C7.62839 12.8237 7.41558 13.1429 7.26003 13.4984C7.14933 13.7514 6.85451 13.8668 6.60153 13.7561C6.34854 13.6454 6.23319 13.3506 6.34389 13.0976C6.54802 12.6311 6.83035 12.2075 7.18398 11.8539C8.759 10.2789 11.3126 10.2789 12.8876 11.8539ZM10.963 14.8284C11.1216 14.9871 11.1216 15.2394 10.963 15.398C10.8043 15.5566 10.552 15.5566 10.3934 15.398C10.2348 15.2394 10.2348 14.9871 10.3934 14.8284C10.552 14.6698 10.8043 14.6698 10.963 14.8284Z" fill="#242424"/>
         </svg>
 
         {/* Battery Icon */}
