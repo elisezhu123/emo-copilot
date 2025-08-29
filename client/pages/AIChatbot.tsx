@@ -3525,8 +3525,8 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
             console.log('��� Displaying interim result:', interimTranscript);
           }
 
-          // Process final results
-          if (finalTranscript.length > 1) {
+          // Process final results with enhanced confidence filtering
+          if (finalTranscript.length > 1 && highestConfidence > 0.4) {
             console.log('�� Processing final transcript:', finalTranscript);
 
             // Clear interim transcript
