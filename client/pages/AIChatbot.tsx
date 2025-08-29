@@ -2076,7 +2076,7 @@ ${response}
     // Vehicle breakdown assistance
     if (message.includes('car trouble') || message.includes('breakdown') || message.includes('won\'t start') || 
         message.includes('flat tire') || message.includes('engine') || message.includes('overheating')) {
-      return `���� VEHICLE BREAKDOWN ASSISTANCE:
+      return `�� VEHICLE BREAKDOWN ASSISTANCE:
 
 ������ SAFETY FIRST:
 • Pull over safely (shoulder, parking lot)
@@ -3561,6 +3561,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
       const permissionGranted = await requestMicrophonePermission();
       if (!permissionGranted) {
         console.error('❌ Microphone permission denied');
+        setUserWantsListening(false); // Reset state on failure
         alert('Please allow microphone access to use voice features. Check your browser settings and try again.');
         return;
       }
