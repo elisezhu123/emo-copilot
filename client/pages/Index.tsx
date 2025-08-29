@@ -46,6 +46,9 @@ const EmoCopilotDashboard = () => {
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
 
+  // Arduino connection state
+  const [isArduinoConnected, setIsArduinoConnected] = useState(false);
+
   // Timer states for tracking prolonged stress/anxiety
   const [stressStartTime, setStressStartTime] = useState<number | null>(null);
   const [stressTimer, setStressTimer] = useState<NodeJS.Timeout | null>(null);
