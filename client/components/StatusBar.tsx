@@ -39,6 +39,8 @@ const StatusBar: React.FC<StatusBarProps> = ({
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [driverState, setDriverState] = useState<DriverStateType>('neutral');
   const [isArduinoConnected, setIsArduinoConnected] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<'unknown' | 'requesting' | 'granted' | 'denied' | 'unavailable'>('unknown');
+  const [isUsingUserLocation, setIsUsingUserLocation] = useState(false);
 
   // Real-time clock update
   useEffect(() => {
