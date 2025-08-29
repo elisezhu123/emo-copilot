@@ -520,7 +520,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'anxious'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Anxious
                 </button>
@@ -530,7 +530,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'stressed'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Stressed
                 </button>
@@ -540,7 +540,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'neutral'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Neutral
                 </button>
@@ -550,7 +550,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'focused'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Focused
                 </button>
@@ -560,7 +560,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'calm'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Calm
                 </button>
@@ -570,7 +570,7 @@ const EmoCopilotDashboard = () => {
                     selectedEmotion === 'relaxed'
                       ? 'border-black border-2 shadow-lg scale-105'
                       : 'border-emotion-face'
-                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer`}
+                  } lg:px-3 lg:py-2 lg:text-sm hover:opacity-80 active:scale-95 transition-all duration-150 cursor-pointer no-focus-border`}
                 >
                   Relaxed
                 </button>
