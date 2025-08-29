@@ -58,7 +58,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
 
       // Get current state without modifying it
       const currentState = carStateManager.getState();
-      console.log('�� StatusBar - Current car state:', currentState);
+      console.log('🧠 StatusBar - Current car state:', currentState);
       setDriverState(currentState.driverState);
 
       const unsubscribe = carStateManager.subscribe((newState) => {
@@ -377,7 +377,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
         </div>
 
         {/* Center - Temperature and Driver State */}
-        <div className="flex items-center gap-32">
+        <div className="flex items-center gap-40">
           {/* Temperature */}
           {showTemperature && temperature && (
             <div className="flex justify-center items-center gap-2">
