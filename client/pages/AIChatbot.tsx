@@ -3058,12 +3058,15 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
 
       // Music and entertainment requests (enhanced for stress support)
       // Only navigate to music selection if no specific genre was mentioned (handled above)
+      // But don't navigate if user explicitly said "play music" - they want immediate playback
       const hasSpecificGenre = userLower.includes('rock') || userLower.includes('classical') ||
                               userLower.includes('jazz') || userLower.includes('ambient') ||
                               userLower.includes('pop') || userLower.includes('electronic') ||
                               userLower.includes('country') || userLower.includes('blues');
 
-      if (!hasSpecificGenre &&
+      const isPlayCommand = userLower.includes('play music') || userLower.includes('start music');
+
+      if (!hasSpecificGenre && !isPlayCommand &&
           (userLower.includes('music') && (userLower.includes('suggest') || userLower.includes('recommend') ||
           userLower.includes('listen') || userLower.includes('song')) ||
           userLower.includes('yes') && userLower.includes('music') ||
