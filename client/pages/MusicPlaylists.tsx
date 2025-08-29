@@ -742,7 +742,7 @@ const MusicPlaylists = () => {
         {/* YouTube Music Button - Clean Icon */}
         <button
           onClick={openYouTubeMusic}
-          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-red transition-all duration-200 hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
+          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-flowkit-red transition-all duration-200 hover:bg-flowkit-red-dark hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
         >
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" fill="white"/>
