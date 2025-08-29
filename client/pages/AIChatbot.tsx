@@ -158,10 +158,9 @@ const AIChatbot = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const isProlongedStress = urlParams.get('prolonged-stress') === 'true';
-    const hasSeenGreeting = localStorage.getItem('meloGreetingSeen') === 'true';
 
-    // Only speak initial greeting if not coming from prolonged stress AND it's first visit
-    if (!isProlongedStress && hasSeenGreeting && messages.length > 0) {
+    // Only speak initial greeting if not coming from prolonged stress AND it's first visit (messages contains greeting)
+    if (!isProlongedStress && messages.length > 0) {
       const timer = setTimeout(() => {
         speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
       }, 1000); // Small delay to ensure everything is loaded
@@ -1205,7 +1204,7 @@ const AIChatbot = () => {
     try {
       // Note: Direct API calls from browser may have CORS issues
       // In production, this should go through a backend proxy
-      console.log(`���� Searching for ${query} near location:`, currentLocation);
+      console.log(`������ Searching for ${query} near location:`, currentLocation);
 
       // Simulate location-based response for now
       const responses = {
@@ -1700,7 +1699,7 @@ const AIChatbot = () => {
 
     // Test AC emoji sequence
     if (message.includes('test ac sequence')) {
-      console.log('❄️ Testing AC emoji sequence');
+      console.log('���️ Testing AC emoji sequence');
       setTimeout(() => {
         setShowACEmoji(true);
         setTimeout(() => {
