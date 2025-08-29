@@ -154,13 +154,14 @@ const AIChatbot = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Initial voice greeting (skip for prolonged stress navigation)
+  // Initial voice greeting (skip for prolonged stress navigation and returning users)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const isProlongedStress = urlParams.get('prolonged-stress') === 'true';
+    const hasSeenGreeting = localStorage.getItem('meloGreetingSeen') === 'true';
 
-    // Only speak initial greeting if not coming from prolonged stress
-    if (!isProlongedStress) {
+    // Only speak initial greeting if not coming from prolonged stress AND it's first visit
+    if (!isProlongedStress && hasSeenGreeting && messages.length > 0) {
       const timer = setTimeout(() => {
         speakText("Hello, I am Melo, your co-driver assistant. How can I help make your drive better?");
       }, 1000); // Small delay to ensure everything is loaded
