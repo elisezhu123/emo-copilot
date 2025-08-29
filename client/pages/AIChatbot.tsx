@@ -280,6 +280,33 @@ const AIChatbot = () => {
         speakText("I noticed you've been in focused driving mode for 5 minutes. Would you like me to guide you through a quick breathing exercise to help you stay relaxed and alert?");
       }, 3000); // Wait for initial greeting to finish
     }
+
+    if (isHighHeartRateNavigation) {
+      console.log('🚨 Arrived at AI chatbot due to DANGEROUS high heart rate detection');
+
+      // Clear the high-heart-rate parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Replace the initial greeting with immediate emergency alert
+      const emergencyBpm = heartRateBpm || '120+';
+      const emergencyMessage = `🚨 EMERGENCY ALERT: Your heart rate is ${emergencyBpm} BPM - this is dangerously high for driving! You may be experiencing a medical emergency, under the influence, or in extreme distress. Please pull over safely immediately and do not continue driving until your heart rate normalizes.`;
+
+      setMessages([{
+        id: '1',
+        text: emergencyMessage,
+        type: 'bot',
+        timestamp: new Date()
+      }]);
+
+      // Show alert emoji for emergency
+      setShowAlertEmoji(true);
+      setTimeout(() => setShowAlertEmoji(false), 6000); // Longer display for emergency
+
+      // Speak the emergency alert immediately (no initial greeting)
+      setTimeout(() => {
+        speakText(`Emergency alert! Your heart rate is ${emergencyBpm} B P M. This is dangerously high for driving. Please pull over safely immediately and do not continue driving until your heart rate normalizes.`);
+      }, 1000);
+    }
   }, []); // Only run once on mount
 
   // Format time for display
@@ -1415,7 +1442,7 @@ const AIChatbot = () => {
 
     // Don't start if main listening is active
     if (userWantsListening || isListening) {
-      console.log('⏭��� Skipping wake word start - main listening is active');
+      console.log('⏭️ Skipping wake word start - main listening is active');
       return;
     }
 
@@ -2320,7 +2347,7 @@ ${response}
       return;
     }
 
-    // Alert system triggers → ShockFace emoji (enhanced)
+    // Alert system triggers �� ShockFace emoji (enhanced)
     if (message.includes('emergency') || message.includes('help') || message.includes('urgent') ||
         message.includes('accident') || message.includes('dangerous') || message.includes('warning') ||
         message.includes('alert') || message.includes('problem') || message.includes('trouble') ||
