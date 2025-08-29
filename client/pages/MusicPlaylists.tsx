@@ -330,7 +330,7 @@ const MusicPlaylists = () => {
           const genresChanged = JSON.stringify(newGenres?.sort()) !== JSON.stringify(currentGenres?.sort());
 
           if (genresChanged) {
-            console.log('���� Real-time: Genre change detected via localStorage event');
+            console.log('🔄 Real-time: Genre change detected via localStorage event');
             console.log('🔄 Real-time: New genres:', newGenres);
             console.log('🔄 Real-time: Previous genres:', currentGenres);
             initialGenresRef.current = newGenres || [];
@@ -723,7 +723,7 @@ const MusicPlaylists = () => {
         {/* Apple Music Button */}
         <button
           onClick={openAppleMusic}
-          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-emotion-mouth transition-all duration-200 hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
+          className="flex flex-1 h-8 px-2 py-1 justify-center items-center gap-2 rounded-lg border border-emotion-face bg-emotion-mouth transition-all duration-200 hover:bg-emotion-mouth-dark hover:scale-105 sm:px-3 sm:py-1.5 lg:h-8"
         >
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 21 20" fill="none">
             <g clipPath="url(#clip0_160_1414)">
