@@ -261,7 +261,7 @@ const EmoCopilotDashboard = () => {
         audioManager.setPlaylist(allTracks);
       }
 
-      console.log('🎲 Dynamic playlist refreshed with', allTracks.length, 'tracks');
+      console.log('��� Dynamic playlist refreshed with', allTracks.length, 'tracks');
     } else {
       console.log('🎵 No genres selected, clearing playlist');
       setPlaylist([]);
@@ -754,7 +754,7 @@ const EmoCopilotDashboard = () => {
           <button
             onClick={toggleLighting}
             className={`flex-1 flex items-center justify-center gap-2 text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 transition-all duration-200 hover:scale-105 ${
-              isLightingOn ? 'bg-flowkit-green-dark' : 'bg-flowkit-green'
+              isLightingOn ? 'bg-flowkit-green-dark hover:bg-flowkit-green-dark' : 'bg-flowkit-green hover:bg-flowkit-green-dark'
             }`}
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
