@@ -130,15 +130,8 @@ const AIChatbot = () => {
     }
   }, [pendingTranscript]);
 
-  // Save conversation history to localStorage whenever messages change
-  useEffect(() => {
-    try {
-      localStorage.setItem('ai-chatbot-history', JSON.stringify(messages));
-      console.log('💾 Conversation history saved to localStorage');
-    } catch (error) {
-      console.error('Failed to save conversation history:', error);
-    }
-  }, [messages]);
+  // Chat history maintained in memory only (clears on page refresh/npm run dev)
+  // This allows learning during current session but starts fresh each time
 
   // Real-time clock update
   useEffect(() => {
@@ -1215,7 +1208,7 @@ const AIChatbot = () => {
       
       let safetyAdvice = "";
       if (safetyWarnings.length > 0) {
-        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n����� SAFETY TIPS:\n`;
+        safetyAdvice = `\n\n🚨 ROUTE SAFETY ALERTS:\n${safetyWarnings.join('\n')}\n\n��� SAFETY TIPS:\n`;
         safetyAdvice += "• Check your fuel level before departure\n";
         safetyAdvice += "• Keep emergency kit in car (water, snacks, blanket)\n";
         safetyAdvice += "�� Share your route with someone\n";
@@ -2085,7 +2078,7 @@ ${response}
         message.includes('flat tire') || message.includes('engine') || message.includes('overheating')) {
       return `�� VEHICLE BREAKDOWN ASSISTANCE:
 
-����️ SAFETY FIRST:
+������ SAFETY FIRST:
 • Pull over safely (shoulder, parking lot)
 • Turn on hazard lights
 • Exit away from traffic if safe
@@ -3444,7 +3437,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
               }
             }, 500);
           } else {
-            console.log('��� Not restarting recognition - conditions not met');
+            console.log('❌ Not restarting recognition - conditions not met');
           }
         };
       }
