@@ -742,7 +742,7 @@ const EmoCopilotDashboard = () => {
           <button
             onClick={toggleCooling}
             className={`flex-1 flex items-center justify-center gap-2 text-white text-xs font-medium py-2 px-3 rounded-md border border-emotion-face lg:text-sm lg:py-3 lg:px-4 transition-all duration-200 hover:scale-105 ${
-              isCoolingOn ? 'bg-emotion-blue-dark' : 'bg-emotion-blue'
+              isCoolingOn ? 'bg-emotion-blue-dark hover:bg-emotion-blue-dark' : 'bg-emotion-blue hover:bg-emotion-blue-dark'
             }`}
           >
             <svg className="w-5 h-5" viewBox="0 0 21 21" fill="none">
