@@ -90,7 +90,9 @@
     --flowkit-white: #FFF;
     --emotion-face: rgba(255, 220, 220, 0.8);
     --emotion-orange: rgba(255, 166, 128, 1);
+    --emotion-orange-dark: rgba(230, 141, 103, 1);
     --emotion-mouth: rgba(255, 139, 126, 1);
+    --emotion-mouth-dark: rgba(230, 114, 101, 1);
     --emotion-blue: rgba(166, 219, 255, 1);
     --emotion-blue-dark: rgba(76, 170, 255, 1);
     --emotion-default: rgba(58, 32, 24, 1);
