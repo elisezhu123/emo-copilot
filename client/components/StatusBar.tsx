@@ -396,7 +396,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
                 }}
                 title={`Click to refresh temperature ${isUsingUserLocation ? '(using your location)' : '(using Limerick, Ireland)'}`}
               >
-                Temperature: {temperature} {isUsingUserLocation ? '📍' : '🏠'}
+                Temperature: {temperature}
               </span>
               {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
                 <button
@@ -503,7 +503,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
               }}
               title={`Click to refresh temperature ${isUsingUserLocation ? '(using your location)' : '(using Limerick, Ireland)'}`}
             >
-              Temperature: {temperature} {isUsingUserLocation ? '📍' : '🏠'}
+              Temperature: {temperature}
             </span>
             {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
               <button
