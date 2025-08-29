@@ -2076,7 +2076,7 @@ ${response}
     // Vehicle breakdown assistance
     if (message.includes('car trouble') || message.includes('breakdown') || message.includes('won\'t start') || 
         message.includes('flat tire') || message.includes('engine') || message.includes('overheating')) {
-      return `�� VEHICLE BREAKDOWN ASSISTANCE:
+      return `���� VEHICLE BREAKDOWN ASSISTANCE:
 
 ������ SAFETY FIRST:
 • Pull over safely (shoulder, parking lot)
@@ -3569,11 +3569,11 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
 
       setUserWantsListening(true); // User wants continuous listening
 
-      // Start continuous listening - remove conditional check to avoid race condition
+      // Start continuous listening with reduced delay for better responsiveness
       setTimeout(() => {
         console.log('🎤 Starting continuous listening...');
         startContinuousListening();
-      }, 500);
+      }, 200);
 
       // No test messages needed
     }
