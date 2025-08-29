@@ -14,6 +14,7 @@ import { Track, musicService } from '../services/musicService';
 import { audioManager, AudioState } from '../services/audioManager';
 import { simpleMusicService } from '../services/simpleMusicService';
 import { carStateManager, type CarState, type DriverStateType } from '../services/carStateManager';
+import { arduinoService } from '../services/arduinoService';
 
 const EmoCopilotDashboard = () => {
   const navigate = useNavigate();
