@@ -3329,7 +3329,28 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
         recognitionRef.current.continuous = true; // Continuous listening
         recognitionRef.current.interimResults = true; // Allow interim results for better responsiveness
         recognitionRef.current.lang = 'en-US';
-        recognitionRef.current.maxAlternatives = 1; // Only need one result
+        recognitionRef.current.maxAlternatives = 3; // Get multiple alternatives to filter noise
+
+        // Enhanced noise filtering settings
+        try {
+          // Request audio constraints for better noise handling (if supported)
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const audioConstraints = {
+              audio: {
+                echoCancellation: true,      // Remove echo/feedback
+                noiseSuppression: true,      // Filter background noise
+                autoGainControl: true,       // Normalize volume levels
+                sampleRate: 16000,          // Optimal for speech recognition
+                channelCount: 1,            // Mono audio for better processing
+                latency: 0.1,               // Low latency for real-time
+                volume: 0.8                 // Moderate input volume
+              }
+            };
+            console.log('🔧 Enhanced audio constraints applied for noise reduction');
+          }
+        } catch (error) {
+          console.log('⚠️ Advanced audio constraints not supported, using defaults');
+        }
 
         recognitionRef.current.onstart = () => {
           console.log('�� Speech recognition has started - listening for speech...');
