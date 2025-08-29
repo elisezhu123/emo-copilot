@@ -261,7 +261,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
       let fallbackTemp = 20; // Default Limerick temperature
       let simulatedWeather = null;
 
-      if (randomValue < 0.15) { // 15% chance of extreme weather
+      if (randomValue < 0) { // DISABLED: was 15% chance of extreme weather - preventing unwanted alerts
         const extremeWeatherTypes = [
           { condition: 'snow', temp: -2, description: 'Heavy snow', windSpeed: 8 },
           { condition: 'fog', temp: 8, description: 'Dense fog', visibility: 200, windSpeed: 5 },
