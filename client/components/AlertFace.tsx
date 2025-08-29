@@ -3,10 +3,10 @@ import React from 'react';
 const AlertFace = () => {
   return (
     <div className="w-full h-full flex items-center justify-center bg-white rounded-lg">
-      <svg 
-        className="w-full h-full max-w-full max-h-full" 
-        viewBox="0 0 382 234" 
-        fill="none" 
+      <svg
+        className="w-full h-full max-w-[382px] max-h-[234px]"
+        viewBox="0 0 382 234"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
       >
