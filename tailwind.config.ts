@@ -64,6 +64,7 @@ export default {
         "flowkit-green": "var(--flowkit-green)",
         "flowkit-green-dark": "var(--flowkit-green-dark)",
         "flowkit-red": "var(--flowkit-red)",
+        "flowkit-red-dark": "var(--flowkit-red-dark)",
         "flowkit-white": "var(--flowkit-white)",
         "emotion-face": "var(--emotion-face)",
         "emotion-orange": "var(--emotion-orange)",
