@@ -46,7 +46,7 @@ class ArduinoService {
   async connect(): Promise<boolean> {
     try {
       if (!('serial' in navigator)) {
-        console.log('�� Web Serial API not supported - using mock data for heart rate monitoring');
+        console.log('💡 Web Serial API not supported - using mock data for heart rate monitoring');
         this.startMockData();
         return false;
       }
@@ -191,7 +191,23 @@ class ArduinoService {
       this.heartRateValues = this.heartRateValues.slice(-this.maxValues);
     }
 
-    // Notify subscribers
+    // Check for dangerously high heart rate (>120 BPM)
+    const currentTime = Date.now();
+    if (value > 120 && (currentTime - this.lastHighHeartRateAlert) > 30000) { // 30 second cooldown
+      console.log(`🚨 CRITICAL: Heart rate ${value} BPM exceeds safe driving threshold!`);
+      this.lastHighHeartRateAlert = currentTime;
+
+      // Notify high heart rate subscribers
+      this.highHeartRateSubscribers.forEach(callback => {
+        try {
+          callback(value);
+        } catch (error) {
+          console.error('❌ Error in high heart rate subscriber callback:', error);
+        }
+      });
+    }
+
+    // Notify regular subscribers
     const data: HeartRateData = {
       values: [...this.heartRateValues],
       timestamp: Date.now()
