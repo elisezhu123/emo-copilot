@@ -100,14 +100,26 @@ const AIChatbot = () => {
   const [musicVolume, setMusicVolume] = useState(50);
   const [lightsOn, setLightsOn] = useState(false);
   // Fresh conversation history for each session (clears on npm run dev)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
-      type: 'bot',
-      timestamp: new Date()
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Check if user has already seen the greeting in this session
+    const hasSeenGreeting = localStorage.getItem('meloGreetingSeen') === 'true';
+
+    if (hasSeenGreeting) {
+      // Return empty array for returning users
+      return [];
+    } else {
+      // Mark greeting as seen and show it for first-time users
+      localStorage.setItem('meloGreetingSeen', 'true');
+      return [
+        {
+          id: '1',
+          text: "Hello, I'm Melo, your co-driver assistant. How can I help make your drive better?",
+          type: 'bot',
+          timestamp: new Date()
+        }
+      ];
     }
-  ]);
+  });
 
   const recognitionRef = useRef<any>(null);
   const wakeWordRecognitionRef = useRef<any>(null);
