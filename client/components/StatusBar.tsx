@@ -398,22 +398,6 @@ const StatusBar: React.FC<StatusBarProps> = ({
               >
                 Temperature: {temperature}
               </span>
-              {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
-                <button
-                  onClick={async () => {
-                    const location = await requestLocationAccess();
-                    if (location) {
-                      fetchWeather(location.lat, location.lng);
-                    } else {
-                      fetchWeather(52.6638, -8.6267); // Fallback to Limerick
-                    }
-                  }}
-                  className="ml-1 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  title="Enable location for local weather"
-                >
-                  📍
-                </button>
-              )}
             </div>
           )}
 
@@ -505,22 +489,6 @@ const StatusBar: React.FC<StatusBarProps> = ({
             >
               Temperature: {temperature}
             </span>
-            {(locationStatus === 'denied' || locationStatus === 'unavailable') && (
-              <button
-                onClick={async () => {
-                  const location = await requestLocationAccess();
-                  if (location) {
-                    fetchWeather(location.lat, location.lng);
-                  } else {
-                    fetchWeather(52.6638, -8.6267); // Fallback to Limerick
-                  }
-                }}
-                className="ml-1 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                title="Enable location for local weather"
-              >
-                📍
-              </button>
-            )}
           </div>
         )}
 
