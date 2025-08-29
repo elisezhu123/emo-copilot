@@ -3,10 +3,10 @@ import React from 'react';
 const MusicFace = () => {
   return (
     <div className="w-full h-full flex items-center justify-center bg-white rounded-lg">
-      <svg 
-        className="w-full h-full max-w-full max-h-full" 
-        viewBox="0 0 400 142" 
-        fill="none" 
+      <svg
+        className="w-full h-full max-w-[400px] max-h-[142px]"
+        viewBox="0 0 400 142"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
       >
