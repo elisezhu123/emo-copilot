@@ -163,6 +163,8 @@ const AIChatbot = () => {
     const isStressNavigation = urlParams.get('stress') === 'true';
     const isProlongedStressNavigation = urlParams.get('prolonged-stress') === 'true';
     const isWeatherNavigation = urlParams.get('weather') === 'extreme';
+    const isHighHeartRateNavigation = urlParams.get('high-heart-rate') === 'true';
+    const heartRateBpm = urlParams.get('bpm');
 
     if (isStressNavigation) {
       console.log('🚨 Arrived at AI chatbot due to stress detection');
@@ -1413,7 +1415,7 @@ const AIChatbot = () => {
 
     // Don't start if main listening is active
     if (userWantsListening || isListening) {
-      console.log('⏭️ Skipping wake word start - main listening is active');
+      console.log('⏭��� Skipping wake word start - main listening is active');
       return;
     }
 
