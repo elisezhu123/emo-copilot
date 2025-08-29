@@ -7,6 +7,7 @@ interface HeartRateMonitorProps {
 }
 
 const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) => {
+  const navigate = useNavigate();
   const [heartRateData, setHeartRateData] = useState<HeartRateData>({
     values: [72, 78, 75, 95, 85, 70, 82, 76, 92, 80, 86, 90], // Default values
     timestamp: Date.now()
