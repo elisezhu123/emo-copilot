@@ -26,6 +26,14 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
       }
     });
 
+    // Subscribe to high heart rate alerts (dangerous levels >120 BPM)
+    const unsubscribeHighHR = arduinoService.subscribeHighHeartRate((heartRate: number) => {
+      console.log(`🚨 EMERGENCY: Heart rate ${heartRate} BPM detected - navigating to AI safety check`);
+
+      // Navigate to AI chatbot with high heart rate alert parameter
+      navigate('/ai-chatbot?high-heart-rate=true&bpm=' + heartRate);
+    });
+
     // Check connection status
     setIsConnected(arduinoService.isConnectedToArduino());
 
@@ -42,8 +50,11 @@ const HeartRateMonitor: React.FC<HeartRateMonitorProps> = ({ className = '' }) =
 
     initializeConnection();
 
-    return unsubscribe;
-  }, []);
+    return () => {
+      unsubscribe();
+      unsubscribeHighHR();
+    };
+  }, [navigate]);
 
   // Function to get bar color based on value and position in array
   const getBarColor = (value: number, index: number, values: number[]): string => {
