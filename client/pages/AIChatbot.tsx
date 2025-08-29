@@ -1342,6 +1342,63 @@ const AIChatbot = () => {
                .trim();
   };
 
+  // Enhanced noise filtering for voice recognition
+  const filterNoiseWords = (transcript: string): string => {
+    if (!transcript) return '';
+
+    // Common noise patterns to filter out
+    const noisePatterns = [
+      /^(uh|um|er|ah|eh)+\s*/gi,          // Filler words at start
+      /\s+(uh|um|er|ah|eh)+\s*/gi,        // Filler words in middle
+      /^(the|a|an)\s*$/gi,                // Single articles (likely noise)
+      /^(and|or|but)\s*$/gi,              // Single conjunctions
+      /^[^a-zA-Z]*$/,                     // Non-alphabetic noise
+      /^\s*[a-zA-Z]\s*$/,                 // Single letters
+      /engine|radio|music|noise/gi,       // Background car sounds
+    ];
+
+    let cleaned = transcript.trim();
+
+    // Apply noise filters
+    noisePatterns.forEach(pattern => {
+      cleaned = cleaned.replace(pattern, ' ');
+    });
+
+    // Clean up extra whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+    // Reject very short or repetitive results (likely noise)
+    if (cleaned.length < 2) return '';
+    if (/^(.)\1+$/.test(cleaned)) return ''; // Repeated single character
+
+    return cleaned;
+  };
+
+  // Voice activity detection - check if speech sounds intentional
+  const isIntentionalSpeech = (transcript: string, confidence: number): boolean => {
+    if (!transcript || transcript.length < 2) return false;
+    if (confidence < 0.4) return false;
+
+    // Check for wake words (higher confidence required)
+    const wakeWords = ['hey melo', 'melo', 'hello', 'hi'];
+    const hasWakeWord = wakeWords.some(word =>
+      transcript.toLowerCase().includes(word)
+    );
+
+    if (hasWakeWord) return confidence > 0.3; // Lower threshold for wake words
+
+    // Check for command words (medium confidence)
+    const commandWords = ['play', 'stop', 'turn', 'set', 'help', 'navigate', 'music'];
+    const hasCommand = commandWords.some(word =>
+      transcript.toLowerCase().includes(word)
+    );
+
+    if (hasCommand) return confidence > 0.5;
+
+    // Regular speech needs higher confidence
+    return confidence > 0.6;
+  };
+
   // Text-to-speech function
   const speakText = (text: string): Promise<void> => {
     return new Promise((resolve) => {
@@ -3371,7 +3428,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
 
         recognitionRef.current.onspeechstart = () => {
           console.log('🗣️ Speech detected - processing...');
-          console.log('✅ Your microphone is working! Continue speaking...');
+          console.log('��� Your microphone is working! Continue speaking...');
 
           // Interrupt Melo's speech immediately when driver starts speaking
           if (isSpeaking && 'speechSynthesis' in window) {
