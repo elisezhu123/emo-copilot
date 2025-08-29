@@ -1644,7 +1644,7 @@ const AIChatbot = () => {
       setTimeout(() => {
         handleTemperatureExceed(currentTemp > 35 ? currentTemp : 37); // Use real temp if hot, otherwise simulate 37°C
       }, 1000);
-      return `Testing temperature trigger! Real API temperature: ${temperature || '15°C'} from OpenWeather${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C for demo)'}...`;
+      return `Testing temperature trigger! Real API temperature: ${temperature || '15��C'} from OpenWeather${currentTemp > 35 ? ' (already hot!)' : ' (simulating 37°C for demo)'}...`;
     }
 
     // Test "too hot" complaint
@@ -3556,7 +3556,10 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
     } else {
       console.log('🎤 User starting speech recognition...');
 
-      // Always request microphone permission when starting
+      // Immediately update UI state for responsive feedback
+      setUserWantsListening(true);
+
+      // Request microphone permission
       console.log('🎤 Requesting microphone permission...');
       const permissionGranted = await requestMicrophonePermission();
       if (!permissionGranted) {
