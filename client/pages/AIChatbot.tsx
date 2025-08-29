@@ -1803,6 +1803,14 @@ const AIChatbot = () => {
       return "🎤 Microphone test successful! I can hear you clearly. Your speech recognition is working properly.";
     }
 
+    if (message.includes('test high heart rate') || message.includes('test emergency heart rate')) {
+      // Simulate high heart rate emergency for testing
+      setTimeout(() => {
+        window.location.href = '/ai-chatbot?high-heart-rate=true&bpm=130';
+      }, 2000);
+      return "🧪 Testing high heart rate emergency alert. Simulating 130 BPM dangerous level in 2 seconds...";
+    }
+
     if (message.includes('test') && message.includes('speech')) {
       return "Speech recognition test successful! I can hear you clearly. Try asking me about music, navigation, or car controls.";
     }
@@ -2347,7 +2355,7 @@ ${response}
       return;
     }
 
-    // Alert system triggers �� ShockFace emoji (enhanced)
+    // Alert system triggers → ShockFace emoji (enhanced)
     if (message.includes('emergency') || message.includes('help') || message.includes('urgent') ||
         message.includes('accident') || message.includes('dangerous') || message.includes('warning') ||
         message.includes('alert') || message.includes('problem') || message.includes('trouble') ||
@@ -3536,7 +3544,7 @@ Always prioritize driver safety and emotional wellbeing. Remember our conversati
       stream.getTracks().forEach(track => track.stop());
       return true;
     } catch (error: any) {
-      console.error('❌ Microphone permission error:', error);
+      console.error('��� Microphone permission error:', error);
       if (error.name === 'NotAllowedError') {
         console.log('💡 User denied microphone permission. Please allow it in browser settings.');
         setMicrophoneStatus('permission-denied');
