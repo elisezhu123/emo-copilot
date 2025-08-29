@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { arduinoService, HeartRateData } from '../services/arduinoService';
+import { useNavigate } from 'react-router-dom';
 
 interface HeartRateMonitorProps {
   className?: string;
