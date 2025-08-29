@@ -56,6 +56,35 @@ const EmoCopilotDashboard = () => {
   // Car state from global manager
   const [globalCarState, setGlobalCarState] = useState<CarState>(carStateManager.getState());
 
+  // Arduino connection monitoring
+  useEffect(() => {
+    // Check initial connection status
+    setIsArduinoConnected(arduinoService.isConnectedToArduino());
+
+    // Monitor connection status every few seconds
+    const connectionCheck = setInterval(() => {
+      setIsArduinoConnected(arduinoService.isConnectedToArduino());
+    }, 3000);
+
+    return () => clearInterval(connectionCheck);
+  }, []);
+
+  // Function to connect to Arduino
+  const connectArduino = async () => {
+    try {
+      const success = await arduinoService.connect();
+      setIsArduinoConnected(success);
+      if (success) {
+        console.log('✅ Arduino connected successfully from Dashboard');
+      } else {
+        console.log('ℹ️ Arduino connection failed - using mock data');
+      }
+    } catch (error) {
+      console.error('❌ Arduino connection error:', error);
+      setIsArduinoConnected(false);
+    }
+  };
+
   // Subscribe to global car state changes
   useEffect(() => {
     let previousState = carStateManager.getState();
